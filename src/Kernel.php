@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace MacCore;
 
 use MacCore\Contracts\Service;
-use MacCore\Services\Core\ApplyAdminBranding;
+use MacCore\Services\Core\ApplyBranding;
 use MacCore\Services\Core\DisableAdminBar;
 use MacCore\Services\Core\DisableAutoUpdates;
 use MacCore\Services\Core\DisableSiteHealth;
@@ -51,7 +51,7 @@ final class Kernel
     {
         return [
             // Core
-            new ApplyAdminBranding(),
+            new ApplyBranding(),
             new DisableAdminBar(),
             new DisableAutoUpdates(),
             new DisableSiteHealth(),
