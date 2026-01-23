@@ -11,8 +11,6 @@ namespace MacCore\Services\Core;
 
 use MacCore\Contracts\Service;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
-
 final class DisableAutoUpdates implements Service
 {
     /**
