@@ -1,21 +1,23 @@
-## Project Overview
+This file is authoritative for the `mac-core` WordPress plugin.
 
-- Project name: `mac-core`
-- Project type: WordPress plugin
-- Purpose: Standard functionality plugin used across starter WordPress templates
+If something is not explicitly allowed here, assume it is not allowed.
+
+`mac-core` is **infrastructure code** used across many client sites.
+
+It must be boring, stable, predictable, and safe.
+
+## Project Facts
+
+- Plugin name: `mac-core`
+- Type: WordPress plugin
 - Ownership: Company-owned (`thecirceaco`)
 - Namespace root: `MacCore\`
-- PHP version target: >= 8.0
-- Architecture: Object-oriented, service-based
-- Scope: Applies ONLY to the `mac-core` plugin
+- PHP target: >= 8.0
+- Scope: **ONLY** this plugin
 
-This plugin is infrastructure code.
+This plugin is **not** a theme and must not assume theme behavior.
 
-It must be stable, predictable, and reusable across multiple projects.
-
-## Core Philosophy
-
-All code must prioritize:
+## Core Principles (in priority order)
 
 1. Security
 2. Correctness
@@ -23,107 +25,67 @@ All code must prioritize:
 4. Scalability
 5. WordPress standards + modern PHP
 
-If there is ever a trade-off, choose clarity and safety over cleverness.
+When in doubt, choose **clarity and safety over cleverness**.
 
-## Non-Negotiable Rules
+## Architecture Rules (mandatory)
 
-These rules are mandatory.
+### Service-based architecture
 
-Do not improvise or deviate without explicit instruction.
-
-## Architecture Rules
-
-### Service-based architecture (mandatory)
-
-- Every feature is implemented as a Service
+- Every feature is a **Service**
 - Every service:
     - is a class
-    - implements:
+    - implements `MacCore\Contracts\Service`
+    - exposes **only**:
 
         ```php
-        MacCore\Contracts\Service
+        public function register(): void;
         ```
 
-    - exposes exactly:
 
-        ```php
-        publicfunctionregister():void;
-        ```
+Rules:
 
-- Services:
-    - MUST NOT execute logic in constructors
-    - MUST register all hooks inside `register()`
-    - MUST NOT perform bootstrapping
+- Services MUST NOT execute logic in constructors
+- Services MUST register all hooks inside `register()`
+- Services MUST NOT bootstrap other services
 
-### Kernel / Bootstrap Rules
+### Kernel rules
 
-- The plugin has a single entry flow
-- Services are:
-    - instantiated only in the Kernel
-    - registered centrally
+- There is exactly **one entry flow**
+- The Kernel:
+    - instantiates services
+    - calls `$service->register()`
+- The Kernel contains **no business logic**
 
-Kernel responsibilities:
+No service may self-register or bypass the Kernel.
 
-- instantiate services
-- call `$service->register()`
-- contain no business logic
-
-## Autoloading Rules
+## Autoloading
 
 - Custom autoloader using `spl_autoload_register`
 - PSR-4–style mapping:
 
-```php
-MacCore\Foo\Bar →src/Foo/Bar.php
-```
+    ```
+    MacCore\Foo\Bar → src/Foo/Bar.php
+    ```
+
 
 Rules:
 
-- Autoloader must bail early if namespace does not match
-- Autoloader must include only readable files
+- Bail early if namespace does not match
+- Include only readable files
 - No silent failures for core logic
-- Composer is not used unless explicitly decided later
+- Composer is NOT used unless explicitly decided later
 
-## PHP File Structure Rules (VERY IMPORTANT)
+## PHP File Rules (very important)
 
-### 1. Non-namespaced files (entry / executable files)
+### Non-namespaced files
 
-Examples:
-
-- plugin main file
-- bootstrap files
-- files loaded directly by WordPress
+(plugin entry file, bootstrap files, files loaded directly by WordPress)
 
 Required order:
 
 ```php
 <?php
 declare(strict_types=1);
-
-if ( ! defined( 'ABSPATH' ) ) exit;
-```
-
-Rules:
-
-- `declare(strict_types=1);` MUST be the first statement
-- ABSPATH guard is REQUIRED
-- No namespace allowed
-
-### 2. Namespaced files (classes, services, Kernel)
-
-Examples:
-
-- `src/Kernel.php`
-- `src/Services/*.php`
-- `src/Contracts/*.php`
-
-Required order:
-
-```php
-<?php
-declare(strict_types=1);
-
-namespaceMacCore\Some\Namespace;
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 ```
@@ -131,19 +93,35 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 Rules:
 
 - `declare(strict_types=1);` MUST be first
+- ABSPATH guard is REQUIRED
+- No namespace allowed
+
+### Namespaced files
+
+(classes, services, Kernel)
+
+Required order:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace MacCore\Some\Namespace;
+```
+
+Rules:
+
+- `declare(strict_types=1);` MUST be first
 - `namespace` MUST be second
-- ABSPATH guard comes after the namespace
 - ABSPATH guard:
-    - REQUIRED for entry-like or executable files
-    - OPTIONAL (and usually omitted) for pure class definitions
+    - REQUIRED only for entry-like or executable files
+    - usually omitted for pure class definitions
 
-### 3. Pure definition files
+If unsure, omit the guard.
 
-Examples:
+### Pure definition files
 
-- interfaces
-- value objects
-- enums
+(interfaces, value objects, enums)
 
 Rules:
 
@@ -151,41 +129,36 @@ Rules:
 - namespace required
 - ABSPATH guard usually omitted
 
-## ABSPATH Guard Decision Matrix
+## WordPress & PHP usage rules
 
-Use the guard only when it makes sense.
+Inside namespaced files:
 
-### Use ABSPATH guard in:
+- WordPress functions MUST be prefixed with `\`
 
-- plugin entry file
-- bootstrap files
-- files that execute logic immediately
+```php
+\add_action(...)
+\get_option(...)
+```
 
-### Do NOT use ABSPATH guard in:
+- PHP built-ins should be prefixed when clarity matters:
 
-- service classes
-- interfaces
-- Kernel (unless it executes logic directly)
+```php
+\file_exists()
+\is_readable()
+```
 
-If unsure: do not add a guard. Ask or default to minimal.
-
-## Coding Standards
-
-### PHP formatting
+## Coding standards
 
 - Indentation: 4 spaces
 - Tabs: spaces only
-- Line endings: Unix (LF)
-- Braces: PSR-12 style
-- Visibility: always explicit (`public`, `private`, `protected`)
+- Line endings: LF
+- Braces: PSR-12
+- Visibility: always explicit
 
-### Quotes
+Quotes:
 
-- Follow WordPress Coding Standards
 - Prefer single quotes
 - Use double quotes only when interpolation is required
-
-### DocBlocks
 
 DocBlocks are required for:
 
@@ -193,37 +166,11 @@ DocBlocks are required for:
 - all interfaces
 - public methods
 - public properties
-- typed properties when non-obvious
-- complex arrays (`array<int,string>`, etc.)
+- complex or non-obvious types
 
-DocBlocks must be:
+DocBlocks must be accurate, minimal, and WordPress-compatible.
 
-- accurate
-- minimal
-- never redundant
-- WordPress-compatible
-
-## Namespaces & Global Functions
-
-Inside namespaced files:
-
-- WordPress functions MUST be prefixed with `\`
-
-Example:
-
-```php
-\add_action(...)
-\get_option(...)
-```
-
-PHP built-ins should also be prefixed when clarity matters:
-
-```php
-\file_exists()
-\is_readable()
-```
-
-## Security Rules
+## Security rules (mandatory)
 
 Always enforce:
 
@@ -231,41 +178,77 @@ Always enforce:
 - least privilege
 - no unvalidated input
 - no silent fallbacks for core logic
-- no global state mutation without WordPress APIs
+- no global state mutation outside WordPress APIs
 - no direct database access unless explicitly required
 
-## Error Handling Philosophy
+Fail early. Fail explicitly.
 
-- Fail early
-- Fail explicitly
-- Never hide fatal configuration errors
-- Deprecated notices from third-party plugins are not fixed here
+## Licensing & Updates (important)
 
-## Forbidden Actions
+### Licensing model
+
+- `mac-core` **uses license keys**
+- Licensing authority is **SureCart**
+- SureCart is the **source of truth** for:
+    - license validity
+    - activations
+    - expiration
+    - entitlements
+
+`mac-core` implements a **License Service** that:
+
+- stores the license key locally
+- communicates with the SureCart API (directly or via SDK)
+- caches license state
+- exposes normalized states internally
+
+License states are explicit and finite (e.g. valid, expired, invalid, unknown).
+
+### Update model (Etch-style)
+
+- Updates are gated by license validity
+- License checking and updating are **separate concerns**
+
+`mac-core` implements:
+
+- a **License Service** (no update logic)
+- an **Updater Service** (no license validation logic)
+
+Updater rules:
+
+- Uses WordPress’ native plugin update system
+- Checks the License Service before offering updates
+- Does NOT talk directly to SureCart
+- Does NOT implement custom update UI
+- Does NOT break the plugin if the license is invalid or expired
+
+Expired or invalid license:
+
+- no updates
+- plugin continues to function
+
+Update artifacts may be hosted via GitHub Releases or a private endpoint.
+
+## Forbidden actions
 
 Do NOT:
 
-- introduce procedural logic into services
+- add procedural logic to services
 - bypass the Kernel
 - add global helper functions
 - remove `strict_types`
 - reorder `declare`, `namespace`, or guards
 - mix theme assumptions into this plugin
-- add guards blindly
+- scatter license checks across services
+- couple updater logic directly to SureCart
 
-## Decision Priority (when uncertain)
+Violations are bugs, not style preferences.
 
-Always decide in this order:
+## Decision rule
+
+If unsure, decide in this order:
 
 1. WordPress Coding Standards
 2. Modern PHP best practices
-3. Explicit, readable code over clever abstractions
-4. Security > scalability > convenience
-
-## Final Note
-
-This file is authoritative.
-
-If instructions conflict with intuition, follow this file.
-
-Violating these rules is considered a bug, not a style preference.
+3. Explicit, readable code
+4. Security over convenience
