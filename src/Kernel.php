@@ -16,7 +16,7 @@ use MacCore\Services\Core\ApplyAdminBranding;
 use MacCore\Services\Core\DisableAdminBar;
 use MacCore\Services\Core\DisableAutoUpdates;
 use MacCore\Services\Core\DisableSiteHealth;
-use MacCore\Services\Core\CustomizeExcerpts;
+use MacCore\Services\Core\TruncateExcerpts;
 use MacCore\Services\Core\AddLastLoginAdminColumn;
 use MacCore\Services\Core\RemoveDashboardClutter;
 use MacCore\Services\Media\AddCustomImageSizes;
@@ -55,7 +55,7 @@ final class Kernel
             new DisableAdminBar(),
             new DisableAutoUpdates(),
             new DisableSiteHealth(),
-            new CustomizeExcerpts(),
+            new TruncateExcerpts(),
             new AddLastLoginAdminColumn(),
             new RemoveDashboardClutter(),
 
