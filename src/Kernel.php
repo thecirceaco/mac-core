@@ -12,20 +12,19 @@ declare(strict_types=1);
 namespace MacCore;
 
 use MacCore\Contracts\Service;
+use MacCore\Services\Core\AddLastLoginAdminColumn;
 use MacCore\Services\Core\ApplyBranding;
+use MacCore\Services\Core\ControlComments;
 use MacCore\Services\Core\DisableAdminBar;
 use MacCore\Services\Core\DisableAutoUpdates;
 use MacCore\Services\Core\DisableSiteHealth;
-use MacCore\Services\Core\TruncateExcerpts;
-use MacCore\Services\Core\AddLastLoginAdminColumn;
 use MacCore\Services\Core\RemoveDashboardClutter;
+use MacCore\Services\Core\TruncateExcerpts;
 use MacCore\Services\Media\AddCustomImageSizes;
-use MacCore\Services\Media\RemoveDefaultImageSizes;
-use MacCore\Services\Media\DisableImageCompression;
 use MacCore\Services\Media\AllowFontMimeTypes;
+use MacCore\Services\Media\DisableImageCompression;
 use MacCore\Services\Media\DisallowVideoMimeTypes;
-use MacCore\Services\Comments\EnforceCommentPolicy;
-use MacCore\Services\Comments\CustomizeCommentsAdminUi;
+use MacCore\Services\Media\RemoveDefaultImageSizes;
 use MacCore\Services\Updater\GitHubUpdater;
 
 final class Kernel
@@ -52,23 +51,20 @@ final class Kernel
         return [
             // Core
             new ApplyBranding(),
+            new ControlComments(),
             new DisableAdminBar(),
             new DisableAutoUpdates(),
             new DisableSiteHealth(),
             new TruncateExcerpts(),
-            new AddLastLoginAdminColumn(),
             new RemoveDashboardClutter(),
+            new AddLastLoginAdminColumn(),
 
             // Media
             new AddCustomImageSizes(),
-            new RemoveDefaultImageSizes(),
-            new DisableImageCompression(),
             new AllowFontMimeTypes(),
+            new DisableImageCompression(),
             new DisallowVideoMimeTypes(),
-
-            // Comments
-            new EnforceCommentPolicy(),
-            new CustomizeCommentsAdminUi(),
+            new RemoveDefaultImageSizes(),
 
             // Updater (placeholder, no logic yet)
             new GitHubUpdater(),
