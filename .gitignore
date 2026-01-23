@@ -1,0 +1,14 @@
+.vscode/launch.json
+.vscode/tasks.json
+
+.DS_Store
+Thumbs.db
+
+node_modules/
+vendor/
+
+*.log
+.env
+.env.local
+
+wp-config.php
