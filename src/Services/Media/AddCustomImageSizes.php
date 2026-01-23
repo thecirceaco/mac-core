@@ -43,7 +43,7 @@ final class AddCustomImageSizes implements Service
 
         foreach ( self::WIDTHS as $width ) {
             \add_image_size(
-                'image_' . $width,
+                'mac_image_' . $width,
                 $width,
                 0,
                 false
@@ -54,7 +54,7 @@ final class AddCustomImageSizes implements Service
     public function add_sizes_to_media_selector( array $sizes ): array
     {
         foreach ( self::WIDTHS as $width ) {
-            $sizes[ 'image_' . $width ] = 'image-' . $width;
+            $sizes[ 'mac_image_' . $width ] = 'mac-image-' . $width;
         }
 
         return $sizes;
