@@ -45,7 +45,7 @@ final class ApplyBranding implements Service
         echo "\n<!-- " . \esc_html( $comment ) . " -->\n";
     }
 
-    public function filter_admin_footer_text( string $text ): string
+    public function filter_admin_footer_text( ?string $text ): string
     {
         $label = sprintf(
             'Built by %s @ %s',
