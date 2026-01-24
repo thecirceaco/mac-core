@@ -1,29 +1,30 @@
 <?php
 /**
- * @package     mac-core
- * @author      Mihai Circea <mihai@circea.co>
- * @copyright   2026 circea.co
- * @license     GPL-2.0-or-later
- * @version     0.1.0
- * @since       0.1.0
- * @link        https://github.com/thecirceaco/mac-core
+ * MAC Core
+ *
+ * @package           mac-core
+ * @author            Circea
+ * @copyright         2026 Circea
  *
  * @wordpress-plugin
- * Plugin Name:        mac-core
- * Plugin URI:         https://github.com/thecirceaco/mac-core
- * Description:        Company standard core functionality plugin for WordPress projects.
- * Version:            0.1.0
- * Requires at least:  6.0
- * Requires PHP:       8.0
- * Author:             Mihai Circea
- * Author URI:         https://circea.co
- * License:            GNU General Public License v2 or later
- * License URI:        https://www.gnu.org/licenses/gpl-2.0.html
+ * Plugin Name:       MAC Core
+ * Plugin URI:        https://circea.co
+ * Description:       Company standard core functionality plugin for WordPress projects.
+ * Version:           0.1.0
+ * Author:            Circea
+ * Author URI:        https://circea.co
+ * Update URI:        https://github.com/thecirceaco/mac-core
+ * Requires PHP:      8.0
+ * Requires at least: 6.0
+ * License:           GPL v3 or later
+ * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
 declare(strict_types=1);
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/includes/autoload.php';
