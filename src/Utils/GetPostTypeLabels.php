@@ -8,7 +8,7 @@ use WP_Post_Type;
 /**
  * Post type label helpers.
  */
-final class PostTypeLabels
+final class GetPostTypeLabels
 {
     /** @var array<string,string> */
     private static array $cacheSingular = [];

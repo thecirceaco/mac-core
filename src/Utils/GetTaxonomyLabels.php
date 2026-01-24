@@ -9,7 +9,7 @@ use WP_Term;
 /**
  * Taxonomy label helpers.
  */
-final class TaxonomyLabels
+final class GetTaxonomyLabels
 {
     /** @var array<string,string> */
     private static array $cacheSingular = [];
