@@ -29,4 +29,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/includes/autoload.php';
 
-(new \MacCore\Kernel())->boot();
+\MacCore\Kernel::boot();
