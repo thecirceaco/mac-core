@@ -17,14 +17,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Plugin slug.
 define( 'MAC_CORE_SLUG', 'mac-core' );
 
-// Main plugin file.
-define( 'MAC_CORE_PLUGIN_FILE', dirname( __DIR__ ) . '/mac-core.php' );
-
 // Plugin paths.
-define( 'MAC_CORE_PATH', plugin_dir_path( MAC_CORE_PLUGIN_FILE ) );
+define( 'MAC_CORE_PATH', __DIR__ . '/' );
 define( 'MAC_CORE_SRC_PATH', MAC_CORE_PATH . 'src/' );
 define( 'MAC_CORE_ASSETS_PATH', MAC_CORE_PATH . 'assets/' );
 
 // Plugin URLs.
-define( 'MAC_CORE_URL', plugin_dir_url( MAC_CORE_PLUGIN_FILE ) );
+define( 'MAC_CORE_URL', plugin_dir_url( __FILE__ ) );
 define( 'MAC_CORE_ASSETS_URL', MAC_CORE_URL . 'assets/' );
