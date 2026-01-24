@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 \spl_autoload_register(
     static function ( string $class ): void {
         $prefix   = 'MacCore\\';
-        $base_dir = MAC_CORE_SRC_PATH;
+        $base_dir = rtrim( MAC_CORE_SRC_PATH, '/\\' ) . '/';
 
         // Bail if the class does not use the MacCore namespace.
         if ( \strncmp( $prefix, $class, \strlen( $prefix ) ) !== 0 ) {

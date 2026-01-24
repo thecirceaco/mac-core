@@ -57,7 +57,9 @@ final class Kernel
     private function register_services(): void
     {
         foreach ($this->get_services() as $service) {
-            $service->register();
+            if ($service instanceof Service) {
+                $service->register();
+            }
         }
     }
 
