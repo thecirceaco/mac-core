@@ -16,8 +16,8 @@
  * Update URI:        https://github.com/thecirceaco/mac-core
  * Requires PHP:      8.0
  * Requires at least: 6.0
- * License:           GPL v3 or later
- * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
+ * License:           GNU General Public License v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 declare(strict_types=1);
