@@ -10,7 +10,9 @@
 
 declare(strict_types=1);
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 // Plugin version.
 define( 'MAC_CORE_VERSION', '0.1.0' );

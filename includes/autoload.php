@@ -9,7 +9,9 @@
 
 declare(strict_types=1);
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 \spl_autoload_register(
     static function ( string $class ): void {
