@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-require_once __DIR__ . '/constants.php';
-require_once __DIR__ . '/includes/autoload.php';
+require_once __DIR__ . '/inc/constants.php';
+require_once __DIR__ . '/inc/autoload.php';
 
 \MacCore\Kernel::boot();
