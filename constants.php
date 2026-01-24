@@ -14,9 +14,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-// Plugin version.
-define( 'MAC_CORE_VERSION', '0.1.0' );
-
 // Plugin slug.
 define( 'MAC_CORE_SLUG', 'mac-core' );
 
