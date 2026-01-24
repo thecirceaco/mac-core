@@ -47,16 +47,17 @@ final class ApplyBranding implements Service
 
     public function filter_admin_footer_text( ?string $text ): string
     {
-        $label = sprintf(
-            'Built by %s @ %s',
-            self::AUTHOR,
-            self::COMPANY
+        $author  = \esc_html( self::AUTHOR );
+        $company = sprintf(
+            '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+            \esc_url( self::URL ),
+            \esc_html( self::COMPANY )
         );
 
         return sprintf(
-            '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
-            \esc_url( self::URL ),
-            \esc_html( $label )
+            'Built by %s @ %s',
+            $author,
+            $company
         );
     }
 }
