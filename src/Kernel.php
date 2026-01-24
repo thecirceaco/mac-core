@@ -30,11 +30,32 @@ use MacCore\Services\Updater\GitHubUpdater;
 final class Kernel
 {
     /**
-     * Register all plugin services.
+     * Prevent double bootstrapping.
+     */
+    private static bool $booted = false;
+
+    /**
+     * Bootstrap all plugin services.
      *
      * @return void
      */
-    public function boot(): void
+    public static function boot(): void
+    {
+        if (self::$booted) {
+            return;
+        }
+
+        self::$booted = true;
+
+        (new self())->register_services();
+    }
+
+    /**
+     * Instantiate and register all services.
+     *
+     * @return void
+     */
+    private function register_services(): void
     {
         foreach ($this->get_services() as $service) {
             $service->register();
@@ -42,7 +63,7 @@ final class Kernel
     }
 
     /**
-     * Instantiate all services.
+     * List of services to load.
      *
      * @return array<int,Service>
      */
@@ -66,7 +87,7 @@ final class Kernel
             new DisallowVideoMimeTypes(),
             new RemoveDefaultImageSizes(),
 
-            // Updater (placeholder, no logic yet)
+            // Updater (placeholder)
             new GitHubUpdater(),
         ];
     }
