@@ -25,7 +25,6 @@ use MacCore\Services\Media\AllowFontMimeTypes;
 use MacCore\Services\Media\DisableImageCompression;
 use MacCore\Services\Media\DisallowVideoMimeTypes;
 use MacCore\Services\Media\RemoveDefaultImageSizes;
-use MacCore\Services\Updater\GitHubUpdater;
 
 final class Kernel
 {
@@ -86,9 +85,6 @@ final class Kernel
             new DisableImageCompression(),
             new DisallowVideoMimeTypes(),
             new RemoveDefaultImageSizes(),
-
-            // Updater (placeholder)
-            new GitHubUpdater(),
         ];
     }
 }
