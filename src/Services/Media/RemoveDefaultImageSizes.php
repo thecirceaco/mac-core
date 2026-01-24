@@ -49,6 +49,11 @@ final class RemoveDefaultImageSizes implements Service
             'intermediate_image_sizes_advanced',
             [$this, 'filter_advanced_sizes']
         );
+
+        \add_filter(
+            'image_size_names_choose',
+            [$this, 'filter_size_names']
+        );
     }
 
     public function filter_intermediate_sizes( array $sizes ): array
@@ -64,6 +69,15 @@ final class RemoveDefaultImageSizes implements Service
     public function filter_advanced_sizes( array $sizes ): array
     {
         foreach ( \array_merge( self::SIZES, self::ADVANCED_SIZES ) as $size ) {
+            unset( $sizes[ $size ] );
+        }
+
+        return $sizes;
+    }
+
+    public function filter_size_names( array $sizes ): array
+    {
+        foreach ( self::ADVANCED_SIZES as $size ) {
             unset( $sizes[ $size ] );
         }
 
