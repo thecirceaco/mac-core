@@ -24,6 +24,12 @@ Features may evolve over time and are tailored to the agency’s development sta
 
 == Changelog ==
 
+= 0.4.0 =
+* Added release workflow.
+
+= 0.3.0 =
+* Updated README.md
+
 = 0.2.0 =
 * Fixed Kernel autoload path resolution
 * Normalized plugin bootstrap

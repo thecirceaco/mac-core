@@ -1,0 +1,37 @@
+name: Build release ZIP
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare release directory
+        run: |
+          mkdir -p dist/mac-core
+          rsync -av \
+            --exclude='.git*' \
+            --exclude='.github' \
+            --exclude='README.md' \
+            --exclude='readme.txt' \
+            --exclude='dist' \
+            ./ dist/mac-core/
+
+      - name: Create ZIP
+        run: |
+          cd dist
+          zip -r mac-core-${GITHUB_REF_NAME}.zip mac-core
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/mac-core-${{ github.ref_name }}.zip
