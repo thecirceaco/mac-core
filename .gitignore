@@ -3,12 +3,18 @@
 
 .DS_Store
 Thumbs.db
+*~
+
+*.log
+
+.env
+.env.local
 
 node_modules/
 vendor/
 
-*.log
-.env
-.env.local
+.ddev/
+.ddev/.dbimageBuild/
+.ddev/.webimageBuild/
 
 wp-config.php
