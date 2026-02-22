@@ -24,6 +24,12 @@ Features may evolve over time and are tailored to the agency’s development sta
 
 == Changelog ==
 
+= 0.4.2 =
+* Updated version number.
+
+= 0.4.1 =
+* Updated README.md.
+
 = 0.4.0 =
 * Added release workflow.
 
