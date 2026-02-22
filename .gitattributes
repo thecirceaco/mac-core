@@ -1,3 +1,5 @@
+# Export Ignore (exclude from git archive / releases)
+
 /.github            export-ignore
 /.gitignore         export-ignore
 /.gitattributes     export-ignore
@@ -13,3 +15,35 @@ vendor              export-ignore
 
 .DS_Store           export-ignore
 Thumbs.db           export-ignore
+
+# Line Ending Normalization
+
+*                   text=auto
+
+# Force LF for Text Source Files
+
+*.md                text eol=lf
+*.mdx               text eol=lf
+*.txt               text eol=lf
+
+*.html              text eol=lf
+*.css               text eol=lf
+*.scss              text eol=lf
+
+*.js                text eol=lf
+*.jsx               text eol=lf
+*.ts                text eol=lf
+*.tsx               text eol=lf
+
+*.php               text eol=lf
+
+*.json              text eol=lf
+*.jsonc             text eol=lf
+*.yml               text eol=lf
+*.yaml              text eol=lf
+*.xml               text eol=lf
+
+*.ps1               text eol=lf
+*.psm1              text eol=lf
+*.psd1              text eol=lf
+*.sh                text eol=lf
