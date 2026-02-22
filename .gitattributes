@@ -1,4 +1,4 @@
-# Export Ignore (exclude from git archive / releases)
+# Export Ignore (exclude from releases)
 
 /.github            export-ignore
 /.gitignore         export-ignore

@@ -24,6 +24,9 @@ Features may evolve over time and are tailored to the agency’s development sta
 
 == Changelog ==
 
+= 0.4.3 =
+* Updated .gitattributes and normalized.
+
 = 0.4.2 =
 * Updated version number.
 
