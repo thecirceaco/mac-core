@@ -292,7 +292,7 @@ final class FormatDatetime
                     . '</span>';
             }
 
-            return $diffText;
+            return self::escHtml($diffText);
         }
 
         $startDateKey   = self::formatTimestamp('Y-m-d', $start['timestamp']);
@@ -399,7 +399,7 @@ final class FormatDatetime
                 try {
                     return new DateTimeZone($timezoneString);
                 } catch (Exception $exception) {
-                    // Fall back to PHP's configured timezone.
+                    $timezoneString = '';
                 }
             }
         }
@@ -422,16 +422,14 @@ final class FormatDatetime
 
     private static function now(): int
     {
-        return \function_exists('current_time')
-            ? (int) \current_time('timestamp', true)
-            : \time();
+        return \time();
     }
 
     private static function formatTimestamp(string $format, int $timestamp): string
     {
         return \function_exists('wp_date')
             ? \wp_date($format, $timestamp)
-            : \date($format, $timestamp);
+            : (new DateTimeImmutable('@' . $timestamp))->setTimezone(self::timezone())->format($format);
     }
 
     private static function wpOptionFormat(string $optionName, string $fallback): string
@@ -475,7 +473,11 @@ final class FormatDatetime
             $postId = (int) $postId;
         }
 
-        return $postId ?: null;
+        if ($postId === 0 || $postId === false) {
+            return null;
+        }
+
+        return $postId;
     }
 
     private static function getFieldValue(string $fieldName, int|string $postId): mixed
@@ -964,7 +966,13 @@ final class FormatDatetime
             $parts[] = $timezone;
         }
 
-        return \implode(' ', $parts);
+        return \implode(
+            ' ',
+            \array_map(
+                static fn (string $part): string => self::escHtml($part),
+                $parts
+            )
+        );
     }
 
     /**

@@ -14,8 +14,8 @@
  * Author:            Circea
  * Author URI:        https://circea.co
  * Update URI:        https://github.com/thecirceaco/mac-core
- * Requires PHP:      8.0
- * Requires at least: 6.0
+ * Requires PHP:      8.3
+ * Requires at least: 6.9
  * License:           GPL v3 or later
  * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
  */

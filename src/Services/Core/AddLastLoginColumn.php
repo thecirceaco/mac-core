@@ -58,7 +58,7 @@ final class AddLastLoginColumn implements Service
         \update_user_meta(
             $user->ID,
             self::META_KEY,
-            (string) \current_time( 'timestamp' )
+            (string) time()
         );
     }
 

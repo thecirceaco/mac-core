@@ -1,9 +1,9 @@
 === MAC Core ===
 Contributors: thecirceaco
 Tags: core, agency
-Requires at least: 6.0
+Requires at least: 6.9
 Tested up to: 6.9
-Requires PHP: 8.0
+Requires PHP: 8.3
 Stable tag: 0.5.0
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt

@@ -35,10 +35,10 @@
 
 ## Tests
 
-- [ ] Add PHPUnit coverage for licensing service hook registration after the MAC Core PHPUnit harness exists.
-- [ ] Add PHPUnit coverage for missing-token skip behavior after the MAC Core PHPUnit harness exists.
-- [ ] Add PHPUnit coverage for configured SDK initialization after the MAC Core PHPUnit harness exists.
-- [ ] Add PHPUnit coverage for `release.json` metadata synchronization after the MAC Core PHPUnit harness exists.
+- [ ] Add PHPUnit coverage for licensing service hook registration.
+- [ ] Add PHPUnit coverage for missing-token skip behavior.
+- [ ] Add PHPUnit coverage for configured SDK initialization.
+- [ ] Add PHPUnit coverage for `release.json` metadata synchronization.
 
 ## Verification
 
@@ -46,4 +46,4 @@
 - [x] Run PHP syntax checks on MAC Core licensing service and SDK runtime files.
 - [x] Confirm `release.json` and `licensing/` are not `export-ignore`.
 - [x] Confirm release workflow packaging rules keep licensing artifacts.
-- [ ] Run `composer install`, `composer lint`, and `composer test` after Composer/PHPUnit tooling exists.
+- [x] Run `composer install`, `composer lint`, and `composer test` after Composer/PHPUnit tooling exists.

@@ -27,7 +27,10 @@ namespace MacCore\Utils {
                 return 0;
             }
 
-            $postId = $postId ?: (int) \get_the_ID();
+            if ( $postId === null || $postId <= 0 ) {
+                $postId = (int) \get_the_ID();
+            }
+
             if ( $postId <= 0 ) {
                 return 0;
             }

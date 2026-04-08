@@ -6,12 +6,18 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 
 - `plans/mac-core-alignment.md`: Full alignment plan for bringing MAC Core in line with the `mac-bricks` and `mac-etch` baseline while preserving the plugin OOP architecture.
 - `plans/surecart-licensing.md`: SureCart licensing implementation plan for activation and licensed manual updates.
+- `plans/scalable-plugin-tooling.md`: Composer, PHPUnit, CI, and future module-boundary plan inspired by the Etch review.
 - `context/surecart-licensing-research.md`: Research notes from the SureCart licensing docs and `surecart/wordpress-sdk`.
+- `context/surecart-sdk-provenance.md`: Source, tag, and maintenance notes for the vendored SureCart WordPress SDK.
+- `context/etch-1.4.9-review.md`: Detailed notes from reviewing the Etch 1.4.9 plugin ZIP and how to adapt the useful patterns.
 - `todos/mac-core-alignment.md`: Actionable implementation checklist and verification steps for the alignment pass.
 - `todos/surecart-licensing.md`: SureCart licensing implementation and verification checklist.
 - `skills/wordpress-plugin-oop.md`: MAC Core-specific implementation discipline for adding WordPress behavior through the plugin service architecture.
 - `skills/surecart-licensing.md`: MAC Core-specific rules for maintaining the SureCart licensing integration.
 - `skills/release.md`: MAC Core release process, version checks, and branch discipline.
+- `skills/dev-branch-git.md`: Add/commit/push guardrails for keeping normal work on `dev`.
+- `reports/security_best_practices_report.md`: Security best-practices review findings for MAC Core.
+- `reports/mac-core-threat-model.md`: Repo-grounded threat model for MAC Core.
 
 ## Usage
 

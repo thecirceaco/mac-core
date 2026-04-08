@@ -35,6 +35,7 @@ jobs:
             --exclude='/composer.json' \
             --exclude='/phpcs.xml.dist' \
             --exclude='/phpunit.xml.dist' \
+            --exclude='/licensing/README.md' \
             --exclude='/tests' \
             --exclude='/bin/install-wp-tests.sh' \
             --exclude='coverage' \

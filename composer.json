@@ -1,0 +1,39 @@
+{
+  "name": "thecirceaco/mac-core",
+  "description": "Company standard core functionality plugin for WordPress projects.",
+  "type": "wordpress-plugin",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "php": ">=8.3"
+  },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "phpunit/phpunit": "^11.0",
+    "squizlabs/php_codesniffer": "^3.10",
+    "wp-coding-standards/wpcs": "^3.1",
+    "yoast/phpunit-polyfills": "^3.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "MacCore\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MacCore\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "lint": "phpcs --standard=phpcs.xml.dist",
+    "lint:fix": "phpcbf --standard=phpcs.xml.dist",
+    "test": "phpunit --configuration phpunit.xml.dist"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="tests/bootstrap.php"
+	cacheDirectory=".phpunit.cache"
+	colors="true"
+	beStrictAboutOutputDuringTests="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
+>
+	<testsuites>
+		<testsuite name="unit">
+			<directory suffix="Test.php">tests/Unit</directory>
+		</testsuite>
+	</testsuites>
+	<source>
+		<include>
+			<directory suffix=".php">src</directory>
+			<directory suffix=".php">inc</directory>
+			<file>mac-core.php</file>
+		</include>
+	</source>
+</phpunit>

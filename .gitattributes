@@ -18,6 +18,7 @@
 /composer.lock      export-ignore
 /phpcs.xml.dist     export-ignore
 /phpunit.xml.dist   export-ignore
+/licensing/README.md export-ignore
 
 /tests              export-ignore
 /tests/**           export-ignore

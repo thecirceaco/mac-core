@@ -76,7 +76,7 @@ final class GetPostTerms
             }
 
             if ($format === 'plain') {
-                $items[] = $value;
+                $items[] = \esc_html($value);
                 continue;
             }
 
@@ -107,7 +107,7 @@ final class GetPostTerms
         }
 
         if ($format === 'plain') {
-            return \implode($sep, $items);
+            return \implode(\esc_html($sep), $items);
         }
 
         if ($items === []) {

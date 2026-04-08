@@ -1,6 +1,6 @@
 # SureCart WordPress SDK Provenance
 
-The files in this directory are vendored from the SureCart WordPress SDK.
+The bundled SDK files are vendored from the SureCart WordPress SDK.
 
 - Source repository: https://github.com/surecart/wordpress-sdk
 - Pinned tag: `v1.1.2`

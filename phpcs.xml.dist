@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<ruleset name="MAC Core">
+	<description>WordPress coding standards for MAC Core first-party runtime code.</description>
+
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/>
+	<arg value="s"/>
+
+	<config name="testVersion" value="8.3-"/>
+
+	<file>mac-core.php</file>
+	<file>index.php</file>
+	<file>uninstall.php</file>
+	<file>inc</file>
+	<file>src</file>
+
+	<exclude-pattern>*/.codex/*</exclude-pattern>
+	<exclude-pattern>*/.github/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/licensing/*</exclude-pattern>
+	<exclude-pattern>*/tests/*</exclude-pattern>
+	<exclude-pattern>*/coverage/*</exclude-pattern>
+	<exclude-pattern>*/dist/*</exclude-pattern>
+	<exclude-pattern>*/.phpunit.cache/*</exclude-pattern>
+
+	<rule ref="WordPress">
+		<!-- MAC Core is an OOP plugin with PSR-4 class filenames, not legacy class-*.php files. -->
+		<exclude name="WordPress.Files.FileName"/>
+
+		<!-- Keep the existing OOP formatting style; do not force classic WordPress tabs/Yoda/snake_case. -->
+		<exclude name="Generic.Classes.OpeningBraceSameLine"/>
+		<exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
+		<exclude name="Generic.Formatting.MultipleStatementAlignment"/>
+		<exclude name="Generic.WhiteSpace.ArbitraryParenthesesSpacing"/>
+		<exclude name="Generic.WhiteSpace.DisallowSpaceIndent"/>
+		<exclude name="Generic.WhiteSpace.ScopeIndent"/>
+		<exclude name="NormalizedArrays.Arrays.ArrayBraceSpacing"/>
+		<exclude name="PEAR.Functions.FunctionCallSignature"/>
+		<exclude name="PSR2.Files.EndFileNewline"/>
+		<exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing"/>
+		<exclude name="Squiz.PHP.DisallowMultipleAssignments"/>
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="Universal.Files.SeparateFunctionsFromOO.Mixed"/>
+		<exclude name="Universal.Namespaces.DisallowCurlyBraceSyntax"/>
+		<exclude name="Universal.Namespaces.DisallowDeclarationWithoutName"/>
+		<exclude name="Universal.Namespaces.OneDeclarationPerFile"/>
+		<exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames"/>
+		<exclude name="WordPress.Arrays.ArrayKeySpacingRestrictions"/>
+		<exclude name="WordPress.Arrays.MultipleStatementAlignment"/>
+		<exclude name="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound"/>
+		<exclude name="WordPress.NamingConventions.ValidFunctionName"/>
+		<exclude name="WordPress.NamingConventions.ValidVariableName"/>
+		<exclude name="WordPress.PHP.YodaConditions"/>
+		<exclude name="WordPress.WhiteSpace"/>
+
+		<!-- Keep comments useful without requiring exhaustive docblocks for every small method. -->
+		<exclude name="Generic.Commenting.DocComment"/>
+		<exclude name="Squiz.Commenting"/>
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="mac-core"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<exclude name="WordPress.NamingConventions.PrefixAllGlobals.ShortPrefixPassed"/>
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="MAC_CORE"/>
+				<element value="MacCore"/>
+				<element value="mac_core"/>
+				<element value="mac"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>

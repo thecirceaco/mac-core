@@ -38,7 +38,7 @@ final class DisableAdminBar implements Service
             return;
         }
 
-        if ( \current_user_can( 'administrator' ) ) {
+        if ( \current_user_can( 'manage_options' ) ) {
             return;
         }
 
