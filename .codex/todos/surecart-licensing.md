@@ -35,10 +35,10 @@
 
 ## Tests
 
-- [ ] Add PHPUnit coverage for licensing service hook registration.
-- [ ] Add PHPUnit coverage for missing-token skip behavior.
-- [ ] Add PHPUnit coverage for configured SDK initialization.
-- [ ] Add PHPUnit coverage for `release.json` metadata synchronization.
+- [x] Add PHPUnit coverage for licensing service hook registration.
+- [x] Add PHPUnit coverage for missing-token skip behavior.
+- [x] Add PHPUnit coverage for configured SDK initialization.
+- [x] Add PHPUnit coverage for `release.json` metadata synchronization.
 
 ## Verification
 

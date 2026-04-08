@@ -109,11 +109,13 @@ function mac_core_tests_reset_wp_state(): void
 {
 	$GLOBALS['mac_core_test_actions']         = [];
 	$GLOBALS['mac_core_test_filters']         = [];
+	$GLOBALS['mac_core_test_filter_returns']  = [];
 	$GLOBALS['mac_core_test_terms']           = [];
 	$GLOBALS['mac_core_test_term_links']      = [];
 	$GLOBALS['mac_core_test_post_meta']       = [];
 	$GLOBALS['mac_core_test_current_post_id'] = 0;
 	$GLOBALS['mac_core_test_current_time']    = strtotime( '2026-04-08 12:00:00 UTC' );
+	$GLOBALS['mac_core_test_user_caps']       = [];
 }
 
 mac_core_tests_reset_wp_state();
@@ -144,10 +146,36 @@ if ( ! function_exists( 'add_filter' ) ) {
 	}
 }
 
+if ( ! function_exists( 'apply_filters' ) ) {
+	function apply_filters( string $hook_name, mixed $value, mixed ...$args ): mixed
+	{
+		$filtered = $value;
+
+		foreach ( $GLOBALS['mac_core_test_filters'][ $hook_name ] ?? [] as $registration ) {
+			$callback = $registration['callback'] ?? null;
+
+			if ( ! is_callable( $callback ) ) {
+				continue;
+			}
+
+			$filtered = $callback( $filtered, ...$args );
+		}
+
+		return $filtered;
+	}
+}
+
 if ( ! function_exists( 'plugin_dir_url' ) ) {
 	function plugin_dir_url( string $file ): string
 	{
 		return 'https://example.test/wp-content/plugins/mac-core/';
+	}
+}
+
+if ( ! function_exists( 'current_user_can' ) ) {
+	function current_user_can( string $capability ): bool
+	{
+		return (bool) ( $GLOBALS['mac_core_test_user_caps'][ $capability ] ?? false );
 	}
 }
 
