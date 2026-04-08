@@ -11,6 +11,7 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 - `todos/surecart-licensing.md`: SureCart licensing implementation and verification checklist.
 - `skills/wordpress-plugin-oop.md`: MAC Core-specific implementation discipline for adding WordPress behavior through the plugin service architecture.
 - `skills/surecart-licensing.md`: MAC Core-specific rules for maintaining the SureCart licensing integration.
+- `skills/release.md`: MAC Core release process, version checks, and branch discipline.
 
 ## Usage
 
