@@ -1,6 +1,6 @@
 <?php
 
-namespace SureCart\Licensing;
+namespace MacCore\Vendor\SureCart\Licensing;
 
 /**
  * The settings class.

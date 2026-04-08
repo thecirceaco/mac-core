@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace SureCart\Licensing;
+namespace MacCore\Vendor\SureCart\Licensing;
 
 final class Client
 {

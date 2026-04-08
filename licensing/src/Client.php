@@ -1,5 +1,5 @@
 <?php
-namespace SureCart\Licensing;
+namespace MacCore\Vendor\SureCart\Licensing;
 
 /**
  * SureCart Client

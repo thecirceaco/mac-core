@@ -25,7 +25,7 @@ final class LicensingTest extends TestCase
 		require_once dirname( __DIR__ ) . '/stubs/FakeSureCartClient.php';
 
 		\mac_core_tests_reset_wp_state();
-		\SureCart\Licensing\Client::reset();
+		\MacCore\Vendor\SureCart\Licensing\Client::reset();
 
 		if ( ! defined( 'MAC_CORE_PATH' ) ) {
 			define( 'MAC_CORE_PATH', dirname( __DIR__, 2 ) . '/' );
@@ -48,7 +48,7 @@ final class LicensingTest extends TestCase
 		$service->initialize();
 
 		$this->assertArrayHasKey( 'admin_notices', $GLOBALS['mac_core_test_actions'] );
-		$this->assertCount( 0, \SureCart\Licensing\Client::$instances );
+		$this->assertCount( 0, \MacCore\Vendor\SureCart\Licensing\Client::$instances );
 
 		$GLOBALS['mac_core_test_user_caps']['manage_options'] = true;
 
@@ -77,12 +77,12 @@ final class LicensingTest extends TestCase
 					'file'         => \MAC_CORE_PATH . 'mac-core.php',
 				],
 			],
-			\SureCart\Licensing\Client::$instances
+			\MacCore\Vendor\SureCart\Licensing\Client::$instances
 		);
-		$this->assertSame( ['mac-core'], \SureCart\Licensing\Client::$textdomains );
-		$this->assertCount( 1, \SureCart\Licensing\Client::$pages );
+		$this->assertSame( ['mac-core'], \MacCore\Vendor\SureCart\Licensing\Client::$textdomains );
+		$this->assertCount( 1, \MacCore\Vendor\SureCart\Licensing\Client::$pages );
 
-		$page = \SureCart\Licensing\Client::$pages[0];
+		$page = \MacCore\Vendor\SureCart\Licensing\Client::$pages[0];
 
 		$this->assertSame( 'menu', $page['type'] );
 		$this->assertSame( 'MAC Core License', $page['page_title'] );

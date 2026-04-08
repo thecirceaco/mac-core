@@ -43,6 +43,7 @@ Also check platform compatibility metadata when relevant:
 - Run available syntax/tooling checks. At minimum run PHP syntax checks for files changed in the release.
 - Check `git archive` contents before tagging so release ZIPs include runtime assets and exclude dev-only files.
 - Confirm SureCart licensing releases include `release.json` and `licensing/`.
+- Confirm the release workflow will publish the ZIP, matching `.sha256` checksum file, and provenance JSON.
 - Confirm agent/dev files such as `.codex/`, `AGENTS.md`, `.github/`, root `README.md`, root `readme.txt`, root Composer/PHPCS/PHPUnit files, tests, caches, and local environment folders are excluded from release ZIPs.
 
 ## Release Flow
@@ -54,7 +55,7 @@ Also check platform compatibility metadata when relevant:
 5. Create the release tag on `main`, for example `v0.5.0`.
 6. Push `dev`, `main`, and the tag.
 7. Verify the tag-triggered GitHub Actions release workflow succeeds.
-8. Verify the GitHub release exists and the ZIP asset uploaded.
+8. Verify the GitHub release exists and the ZIP, checksum, and provenance assets uploaded.
 9. Switch back to `dev`.
 10. Confirm `git status --short` is clean.
 

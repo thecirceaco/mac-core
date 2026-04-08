@@ -46,7 +46,7 @@ final class Licensing implements Service
             return;
         }
 
-        $client = new \SureCart\Licensing\Client(
+        $client = new \MacCore\Vendor\SureCart\Licensing\Client(
             'MAC Core',
             $public_token,
             \MAC_CORE_PATH . 'mac-core.php'
@@ -93,7 +93,7 @@ final class Licensing implements Service
      */
     private function load_sdk(): bool
     {
-        if ( \class_exists( 'SureCart\Licensing\Client' ) ) {
+        if ( \class_exists( 'MacCore\Vendor\SureCart\Licensing\Client' ) ) {
             return true;
         }
 
@@ -105,7 +105,7 @@ final class Licensing implements Service
 
         require_once $sdk_file;
 
-        return \class_exists( 'SureCart\Licensing\Client' );
+        return \class_exists( 'MacCore\Vendor\SureCart\Licensing\Client' );
     }
 
     /**

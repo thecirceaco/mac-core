@@ -50,7 +50,30 @@ jobs:
           cd dist
           zip -r mac-core-${GITHUB_REF_NAME}.zip mac-core
 
+      - name: Generate checksum and provenance
+        run: |
+          cd dist
+          sha256sum mac-core-${GITHUB_REF_NAME}.zip > mac-core-${GITHUB_REF_NAME}.zip.sha256
+          checksum=$(cut -d' ' -f1 mac-core-${GITHUB_REF_NAME}.zip.sha256)
+          built_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          cat > mac-core-${GITHUB_REF_NAME}.provenance.json <<EOF
+          {
+            "tag": "${GITHUB_REF_NAME}",
+            "commit": "${GITHUB_SHA}",
+            "repository": "${GITHUB_REPOSITORY}",
+            "workflow": "${GITHUB_WORKFLOW}",
+            "run_id": "${GITHUB_RUN_ID}",
+            "run_attempt": "${GITHUB_RUN_ATTEMPT}",
+            "built_at_utc": "${built_at}",
+            "zip_file": "mac-core-${GITHUB_REF_NAME}.zip",
+            "sha256": "${checksum}"
+          }
+          EOF
+
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/mac-core-${{ github.ref_name }}.zip
+          files: |
+            dist/mac-core-${{ github.ref_name }}.zip
+            dist/mac-core-${{ github.ref_name }}.zip.sha256
+            dist/mac-core-${{ github.ref_name }}.provenance.json

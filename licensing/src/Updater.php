@@ -1,5 +1,5 @@
 <?php
-namespace SureCart\Licensing;
+namespace MacCore\Vendor\SureCart\Licensing;
 
 /**
  * This class will handle the updates.
