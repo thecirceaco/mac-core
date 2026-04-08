@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin version.
-define( 'MAC_CORE_VERSION', '0.5.0' );
+define( 'MAC_CORE_VERSION', '0.5.1' );
 
 // SureCart licensing public token.
 define( 'MAC_CORE_SURECART_PUBLIC_TOKEN', 'pt_gkYCpfc8FGWpJ1dFTfnNxC9D' );

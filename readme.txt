@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 8.3
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,11 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 0.5.1 =
+* Added Composer-based coding standards and PHPUnit tooling.
+* Added PHPUnit coverage for SureCart licensing behavior and release metadata sync.
+* Hardened helper output escaping and core capability/timestamp handling.
 
 = 0.5.0 =
 * Added SureCart licensing support for licensed manual updates.
