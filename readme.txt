@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 8.3
-Stable tag: 0.5.2
+Stable tag: 0.5.3
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,9 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 0.5.3 =
+* Refreshed the MAC logomark SVG assets used by the plugin.
 
 = 0.5.2 =
 * Replaced the default MAC Core license menu cog with the outline MAC logomark.
