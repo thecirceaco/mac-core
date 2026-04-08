@@ -60,7 +60,7 @@ final class Licensing implements Service
                 'menu_title' => 'MAC Core',
                 'capability' => 'manage_options',
                 'menu_slug'  => 'mac-core-license',
-                'icon_url'   => '',
+                'icon_url'   => $this->menu_icon_url(),
                 'position'   => null,
             ]
         );
@@ -106,6 +106,47 @@ final class Licensing implements Service
         require_once $sdk_file;
 
         return \class_exists( 'SureCart\Licensing\Client' );
+    }
+
+    /**
+     * Build the MAC Core admin menu icon URL from the outline logomark SVG.
+     *
+     * @return string
+     */
+    private function menu_icon_url(): string
+    {
+        static $icon_url = null;
+
+        if ( $icon_url !== null ) {
+            return $icon_url;
+        }
+
+        $icon_file = \MAC_CORE_PATH . 'assets/img/mac-logomark-outline.svg';
+
+        if ( ! \is_readable( $icon_file ) ) {
+            $icon_url = '';
+            return $icon_url;
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reading a bundled local SVG asset, not a remote URL.
+        $svg = \file_get_contents( $icon_file );
+
+        if ( ! \is_string( $svg ) || $svg === '' ) {
+            $icon_url = '';
+            return $icon_url;
+        }
+
+        $svg = \str_replace( '#000000', '#a7aaad', $svg );
+
+        $minified_svg = \preg_replace( '/>\s+</', '><', $svg );
+        if ( \is_string( $minified_svg ) && $minified_svg !== '' ) {
+            $svg = $minified_svg;
+        }
+
+        // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- WordPress admin menu icons accept base64-encoded SVG data URIs.
+        $icon_url = 'data:image/svg+xml;base64,' . \base64_encode( $svg );
+
+        return $icon_url;
     }
 
     /**

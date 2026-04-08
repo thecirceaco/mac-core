@@ -80,20 +80,18 @@ final class LicensingTest extends TestCase
 			\SureCart\Licensing\Client::$instances
 		);
 		$this->assertSame( ['mac-core'], \SureCart\Licensing\Client::$textdomains );
-		$this->assertSame(
-			[
-				[
-					'type'       => 'menu',
-					'page_title' => 'MAC Core License',
-					'menu_title' => 'MAC Core',
-					'capability' => 'manage_options',
-					'menu_slug'  => 'mac-core-license',
-					'icon_url'   => '',
-					'position'   => null,
-				],
-			],
-			\SureCart\Licensing\Client::$pages
-		);
+		$this->assertCount( 1, \SureCart\Licensing\Client::$pages );
+
+		$page = \SureCart\Licensing\Client::$pages[0];
+
+		$this->assertSame( 'menu', $page['type'] );
+		$this->assertSame( 'MAC Core License', $page['page_title'] );
+		$this->assertSame( 'MAC Core', $page['menu_title'] );
+		$this->assertSame( 'manage_options', $page['capability'] );
+		$this->assertSame( 'mac-core-license', $page['menu_slug'] );
+		$this->assertSame( null, $page['position'] );
+		$this->assertIsString( $page['icon_url'] );
+		$this->assertStringStartsWith( 'data:image/svg+xml;base64,', $page['icon_url'] );
 		$this->assertArrayNotHasKey( 'admin_notices', $GLOBALS['mac_core_test_actions'] );
 	}
 
