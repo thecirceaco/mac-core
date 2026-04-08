@@ -1,7 +1,13 @@
 <?php
+/**
+ * Taxonomy label helpers.
+ *
+ * @package mac-core
+ */
+
 declare(strict_types=1);
 
-namespace MacCore\Utils;
+namespace MacCore\Utils {
 
 use WP_Taxonomy;
 use WP_Term;
@@ -11,104 +17,110 @@ use WP_Term;
  */
 final class GetTaxonomyLabels
 {
-    /** @var array<string,string> */
-    private static array $cacheSingular = [];
-
-    /** @var array<string,string> */
-    private static array $cachePlural = [];
-
     /**
-     * Get singular label for a taxonomy.
+     * Get a singular or plural label for a taxonomy.
      *
-     * @param int|string|WP_Term|null $termOrTax
+     * @param int|string|WP_Term|null $termOrTax Taxonomy slug, term ID, term object, or null for category.
      */
-    public static function singular($termOrTax = null): string
-    {
-        $slug = self::resolveTaxonomySlug($termOrTax);
+    public static function get(
+        int|string|WP_Term|null $termOrTax = 'category',
+        string $type = 'singular',
+        string $fallback = ''
+    ): string {
+        $type = \strtolower( \trim( $type ) );
+        $type = $type === 'plural' ? 'plural' : 'singular';
 
-        if ($slug === null) {
-            return 'Term';
+        $taxonomy = self::resolveTaxonomySlug( $termOrTax );
+
+        if ( $taxonomy === null ) {
+            return $fallback !== '' ? $fallback : ( $type === 'plural' ? 'Terms' : 'Term' );
         }
 
-        if (isset(self::$cacheSingular[$slug])) {
-            return self::$cacheSingular[$slug];
+        $object = \get_taxonomy( $taxonomy );
+
+        if ( ! $object instanceof WP_Taxonomy ) {
+            return $fallback !== '' ? $fallback : ( $type === 'plural' ? 'Terms' : 'Term' );
         }
 
-        $tx = get_taxonomy($slug);
+        if ( $type === 'plural' ) {
+            $label = (string) ( $object->labels->name ?? '' );
+            return $label !== '' ? $label : ( $fallback !== '' ? $fallback : 'Terms' );
+        }
 
-        $label = $tx instanceof WP_Taxonomy
-            ? (string) ($tx->labels->singular_name ?? $tx->label ?? ucfirst($slug))
-            : ucfirst($slug);
-
-        return self::$cacheSingular[$slug] = $label;
+        $label = (string) ( $object->labels->singular_name ?? '' );
+        return $label !== '' ? $label : ( $fallback !== '' ? $fallback : 'Term' );
     }
 
     /**
-     * Get plural label for a taxonomy.
-     *
      * @param int|string|WP_Term|null $termOrTax
      */
-    public static function plural($termOrTax = null): string
+    public static function singular( int|string|WP_Term|null $termOrTax = 'category', string $fallback = '' ): string
     {
-        $slug = self::resolveTaxonomySlug($termOrTax);
-
-        if ($slug === null) {
-            return 'Terms';
-        }
-
-        if (isset(self::$cachePlural[$slug])) {
-            return self::$cachePlural[$slug];
-        }
-
-        $tx = get_taxonomy($slug);
-
-        $label = $tx instanceof WP_Taxonomy
-            ? (string) ($tx->labels->name ?? $tx->label ?? ucfirst($slug))
-            : ucfirst($slug);
-
-        return self::$cachePlural[$slug] = $label;
+        return self::get( $termOrTax, 'singular', $fallback );
     }
 
     /**
-     * Resolve taxonomy slug from mixed input.
-     *
      * @param int|string|WP_Term|null $termOrTax
      */
-    private static function resolveTaxonomySlug($termOrTax): ?string
+    public static function plural( int|string|WP_Term|null $termOrTax = 'category', string $fallback = '' ): string
     {
-        if ($termOrTax instanceof WP_Term) {
-            return sanitize_key((string) $termOrTax->taxonomy);
+        return self::get( $termOrTax, 'plural', $fallback );
+    }
+
+    /**
+     * @param int|string|WP_Term|null $termOrTax
+     */
+    private static function resolveTaxonomySlug( int|string|WP_Term|null $termOrTax = 'category' ): ?string
+    {
+        if ( $termOrTax instanceof WP_Term ) {
+            $taxonomy = \sanitize_key( (string) $termOrTax->taxonomy );
+            return $taxonomy !== '' && \taxonomy_exists( $taxonomy ) ? $taxonomy : null;
         }
 
-        if (is_numeric($termOrTax)) {
-            $term = get_term((int) $termOrTax);
-            return $term instanceof WP_Term
-                ? sanitize_key((string) $term->taxonomy)
-                : null;
+        if ( \is_int( $termOrTax ) || ( \is_string( $termOrTax ) && \is_numeric( $termOrTax ) ) ) {
+            $term = \get_term( (int) $termOrTax );
+
+            if ( $term instanceof WP_Term ) {
+                $taxonomy = \sanitize_key( (string) $term->taxonomy );
+                return $taxonomy !== '' && \taxonomy_exists( $taxonomy ) ? $taxonomy : null;
+            }
+
+            return null;
         }
 
-        if (is_string($termOrTax) && $termOrTax !== '') {
-            $slug = sanitize_key($termOrTax);
-            return taxonomy_exists($slug) ? $slug : null;
+        if ( $termOrTax === null || $termOrTax === '' ) {
+            $termOrTax = 'category';
         }
 
-        // Fallback: use category if it exists
-        return taxonomy_exists('category') ? 'category' : null;
+        $taxonomy = \sanitize_key( (string) $termOrTax );
+
+        return $taxonomy !== '' && \taxonomy_exists( $taxonomy ) ? $taxonomy : null;
     }
 }
 
-namespace {
-    if (! function_exists('mac_get_taxonomy_singular')) {
-        function mac_get_taxonomy_singular($termOrTax = null): string
-        {
-            return \MacCore\Utils\TaxonomyLabels::singular($termOrTax);
-        }
-    }
+}
 
-    if (! function_exists('mac_get_taxonomy_plural')) {
-        function mac_get_taxonomy_plural($termOrTax = null): string
-        {
-            return \MacCore\Utils\TaxonomyLabels::plural($termOrTax);
-        }
+namespace {
+
+if ( ! function_exists( 'mac_get_taxonomy_label' ) ) {
+    function mac_get_taxonomy_label( string $taxonomy = 'category', string $type = 'singular', string $fallback = '' ): string
+    {
+        return \MacCore\Utils\GetTaxonomyLabels::get( $taxonomy, $type, $fallback );
     }
+}
+
+if ( ! function_exists( 'mac_get_taxonomy_singular' ) ) {
+    function mac_get_taxonomy_singular( int|string|\WP_Term|null $term_or_tax = 'category', string $fallback = '' ): string
+    {
+        return \MacCore\Utils\GetTaxonomyLabels::singular( $term_or_tax, $fallback );
+    }
+}
+
+if ( ! function_exists( 'mac_get_taxonomy_plural' ) ) {
+    function mac_get_taxonomy_plural( int|string|\WP_Term|null $term_or_tax = 'category', string $fallback = '' ): string
+    {
+        return \MacCore\Utils\GetTaxonomyLabels::plural( $term_or_tax, $fallback );
+    }
+}
+
 }

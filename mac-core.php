@@ -10,14 +10,14 @@
  * Plugin Name:       MAC Core
  * Plugin URI:        https://circea.co
  * Description:       Company standard core functionality plugin for WordPress projects.
- * Version:           0.4.3
+ * Version:           0.5.0
  * Author:            Circea
  * Author URI:        https://circea.co
  * Update URI:        https://github.com/thecirceaco/mac-core
  * Requires PHP:      8.0
  * Requires at least: 6.0
- * License:           GNU General Public License v2 or later
- * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * License:           GPL v3 or later
+ * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
 declare(strict_types=1);

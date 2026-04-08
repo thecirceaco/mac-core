@@ -1,7 +1,13 @@
 <?php
+/**
+ * Post terms helpers.
+ *
+ * @package mac-core
+ */
+
 declare(strict_types=1);
 
-namespace MacCore\Utils;
+namespace MacCore\Utils {
 
 use WP_Term;
 
@@ -11,70 +17,46 @@ use WP_Term;
 final class GetPostTerms
 {
     /**
-     * Linked term list (HTML).
+     * Unified post terms output.
      *
-     * Example output:
-     *   <a href="...">Category</a>, <a href="...">News</a>
+     * @param int|string|null $postId   Post ID. Defaults to the current post.
+     * @param string          $taxonomy Taxonomy slug.
+     * @param string          $format   Output format: plain, links, or spans.
+     * @param string          $attr     Term attribute: name, slug, or term_id.
+     * @param string          $class    Optional list item class for HTML formats.
+     * @param string          $sep      Separator for plain output.
      */
-    public static function html(int $postId, string $taxonomy, string $sep = ', '): string
-    {
-        $postId = $postId > 0 ? $postId : (int) get_the_ID();
-        if ($postId <= 0 || $taxonomy === '') {
-            return '';
-        }
-
-        $terms = get_the_terms($postId, $taxonomy);
-        if (empty($terms) || is_wp_error($terms)) {
-            return '';
-        }
-
-        $items = [];
-
-        foreach ($terms as $term) {
-            if (! $term instanceof WP_Term) {
-                continue;
-            }
-
-            $url = get_term_link($term);
-            if (is_wp_error($url) || ! is_string($url) || $url === '') {
-                continue;
-            }
-
-            $label = $term->name ?? $term->slug ?? (string) $term->term_id;
-
-            $items[] = sprintf(
-                '<a href="%s" rel="tag">%s</a>',
-                esc_url($url),
-                esc_html($label)
-            );
-        }
-
-        return implode($sep, $items);
-    }
-
-    /**
-     * Plain-text term list.
-     *
-     * $attr can be: name | slug | term_id
-     */
-    public static function plain(
-        int $postId,
-        string $taxonomy,
-        string $sep = ', ',
-        string $attr = 'name'
+    public static function get(
+        int|string|null $postId = null,
+        string $taxonomy = 'category',
+        string $format = 'plain',
+        string $attr = 'name',
+        string $class = '',
+        string $sep = ', '
     ): string {
-        $postId = $postId > 0 ? $postId : (int) get_the_ID();
-        if ($postId <= 0 || $taxonomy === '') {
+        $postId = $postId !== null && $postId !== '' ? $postId : \get_the_ID();
+
+        if (\is_numeric($postId)) {
+            $postId = (int) $postId;
+        }
+
+        if (! \is_int($postId) || $postId <= 0 || $taxonomy === '') {
             return '';
         }
 
-        $terms = get_the_terms($postId, $taxonomy);
-        if (empty($terms) || is_wp_error($terms)) {
+        $terms = \get_the_terms($postId, $taxonomy);
+        if (empty($terms) || \is_wp_error($terms)) {
             return '';
         }
 
-        $attr = strtolower($attr);
-        if (! in_array($attr, ['name', 'slug', 'term_id'], true)) {
+        $format = \strtolower(\trim($format));
+        $attr   = \strtolower(\trim($attr));
+
+        if (! \in_array($format, ['plain', 'links', 'spans'], true)) {
+            $format = 'plain';
+        }
+
+        if (! \in_array($attr, ['name', 'slug', 'term_id'], true)) {
             $attr = 'name';
         }
 
@@ -89,34 +71,106 @@ final class GetPostTerms
                 ? (string) (int) $term->term_id
                 : (string) ($term->{$attr} ?? '');
 
-            if ($value !== '') {
-                $items[] = $value;
+            if ($value === '') {
+                continue;
             }
+
+            if ($format === 'plain') {
+                $items[] = $value;
+                continue;
+            }
+
+            $liClass = $class !== '' ? ' class="' . \esc_attr($class) . '"' : '';
+
+            if ($format === 'links') {
+                $url = \get_term_link($term);
+
+                if (\is_wp_error($url) || ! \is_string($url) || $url === '') {
+                    continue;
+                }
+
+                $items[] = \sprintf(
+                    '<li%s><a href="%s" rel="tag">%s</a></li>',
+                    $liClass,
+                    \esc_url($url),
+                    \esc_html($value)
+                );
+
+                continue;
+            }
+
+            $items[] = \sprintf(
+                '<li%s><span>%s</span></li>',
+                $liClass,
+                \esc_html($value)
+            );
         }
 
-        return implode($sep, $items);
+        if ($format === 'plain') {
+            return \implode($sep, $items);
+        }
+
+        if ($items === []) {
+            return '';
+        }
+
+        return '<ul>' . \implode('', $items) . '</ul>';
+    }
+
+    public static function html(
+        int|string|null $postId = null,
+        string $taxonomy = 'category',
+        string $class = ''
+    ): string {
+        return self::get($postId, $taxonomy, 'links', 'name', $class);
+    }
+
+    public static function plain(
+        int|string|null $postId = null,
+        string $taxonomy = 'category',
+        string $sep = ', ',
+        string $attr = 'name'
+    ): string {
+        return self::get($postId, $taxonomy, 'plain', $attr, '', $sep);
     }
 }
 
-namespace {
-    if (! function_exists('mac_get_post_terms_html')) {
-        function mac_get_post_terms_html(
-            int $post_id,
-            string $taxonomy,
-            string $sep = ', '
-        ): string {
-            return \MacCore\Utils\Terms::html($post_id, $taxonomy, $sep);
-        }
-    }
+}
 
-    if (! function_exists('mac_get_post_terms_plain')) {
-        function mac_get_post_terms_plain(
-            int $post_id,
-            string $taxonomy,
-            string $sep = ', ',
-            string $attr = 'name'
-        ): string {
-            return \MacCore\Utils\Terms::plain($post_id, $taxonomy, $sep, $attr);
-        }
+namespace {
+
+if (! function_exists('mac_get_post_terms')) {
+    function mac_get_post_terms(
+        int|string|null $post_id = null,
+        string $taxonomy = 'category',
+        string $format = 'plain',
+        string $attr = 'name',
+        string $class = '',
+        string $sep = ', '
+    ): string {
+        return \MacCore\Utils\GetPostTerms::get($post_id, $taxonomy, $format, $attr, $class, $sep);
     }
+}
+
+if (! function_exists('mac_get_post_terms_html')) {
+    function mac_get_post_terms_html(
+        int|string|null $post_id = null,
+        string $taxonomy = 'category',
+        string $class = ''
+    ): string {
+        return \MacCore\Utils\GetPostTerms::html($post_id, $taxonomy, $class);
+    }
+}
+
+if (! function_exists('mac_get_post_terms_plain')) {
+    function mac_get_post_terms_plain(
+        int|string|null $post_id = null,
+        string $taxonomy = 'category',
+        string $sep = ', ',
+        string $attr = 'name'
+    ): string {
+        return \MacCore\Utils\GetPostTerms::plain($post_id, $taxonomy, $sep, $attr);
+    }
+}
+
 }

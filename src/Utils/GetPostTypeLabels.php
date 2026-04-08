@@ -1,7 +1,13 @@
 <?php
+/**
+ * Post type label helpers.
+ *
+ * @package mac-core
+ */
+
 declare(strict_types=1);
 
-namespace MacCore\Utils;
+namespace MacCore\Utils {
 
 use WP_Post_Type;
 
@@ -10,86 +16,78 @@ use WP_Post_Type;
  */
 final class GetPostTypeLabels
 {
-    /** @var array<string,string> */
-    private static array $cacheSingular = [];
-
-    /** @var array<string,string> */
-    private static array $cachePlural = [];
-
-    /**
-     * Get singular label for a post type.
-     */
-    public static function singular(?string $postType = null): string
+    public static function get( ?string $postType = null, string $type = 'singular', string $fallback = '' ): string
     {
-        $postType = self::resolvePostType($postType);
+        $type = \strtolower( \trim( $type ) );
+        $type = $type === 'plural' ? 'plural' : 'singular';
 
-        if ($postType === null) {
-            return 'Post';
+        $postType = self::resolvePostType( $postType );
+
+        if ( $postType === null ) {
+            return $fallback !== '' ? $fallback : ( $type === 'plural' ? 'Posts' : 'Post' );
         }
 
-        if (isset(self::$cacheSingular[$postType])) {
-            return self::$cacheSingular[$postType];
+        $object = \get_post_type_object( $postType );
+
+        if ( ! $object instanceof WP_Post_Type ) {
+            return $fallback !== '' ? $fallback : ( $type === 'plural' ? 'Posts' : 'Post' );
         }
 
-        $obj = get_post_type_object($postType);
+        if ( $type === 'plural' ) {
+            $label = (string) ( $object->labels->name ?? '' );
+            return $label !== '' ? $label : ( $fallback !== '' ? $fallback : 'Posts' );
+        }
 
-        $label = $obj instanceof WP_Post_Type
-            ? (string) ($obj->labels->singular_name ?? $obj->label ?? ucfirst($postType))
-            : ucfirst($postType);
-
-        return self::$cacheSingular[$postType] = $label;
+        $label = (string) ( $object->labels->singular_name ?? '' );
+        return $label !== '' ? $label : ( $fallback !== '' ? $fallback : 'Post' );
     }
 
-    /**
-     * Get plural label for a post type.
-     */
-    public static function plural(?string $postType = null): string
+    public static function singular( ?string $postType = null, string $fallback = '' ): string
     {
-        $postType = self::resolvePostType($postType);
-
-        if ($postType === null) {
-            return 'Posts';
-        }
-
-        if (isset(self::$cachePlural[$postType])) {
-            return self::$cachePlural[$postType];
-        }
-
-        $obj = get_post_type_object($postType);
-
-        $label = $obj instanceof WP_Post_Type
-            ? (string) ($obj->labels->name ?? $obj->label ?? ucfirst($postType))
-            : ucfirst($postType);
-
-        return self::$cachePlural[$postType] = $label;
+        return self::get( $postType, 'singular', $fallback );
     }
 
-    private static function resolvePostType(?string $postType): ?string
+    public static function plural( ?string $postType = null, string $fallback = '' ): string
     {
-        if (is_string($postType) && $postType !== '') {
-            return sanitize_key($postType);
+        return self::get( $postType, 'plural', $fallback );
+    }
+
+    private static function resolvePostType( ?string $postType = null ): ?string
+    {
+        if ( $postType === null || $postType === '' ) {
+            $current = \get_post_type();
+            $postType = \is_string( $current ) ? $current : '';
         }
 
-        $current = get_post_type();
+        $postType = \sanitize_key( $postType );
 
-        return is_string($current) && $current !== ''
-            ? sanitize_key($current)
-            : null;
+        return $postType !== '' ? $postType : null;
     }
 }
 
-namespace {
-    if (! function_exists('mac_get_post_type_singular')) {
-        function mac_get_post_type_singular(?string $postType = null): string
-        {
-            return \MacCore\Utils\PostTypeLabels::singular($postType);
-        }
-    }
+}
 
-    if (! function_exists('mac_get_post_type_plural')) {
-        function mac_get_post_type_plural(?string $postType = null): string
-        {
-            return \MacCore\Utils\PostTypeLabels::plural($postType);
-        }
+namespace {
+
+if ( ! function_exists( 'mac_get_post_type_label' ) ) {
+    function mac_get_post_type_label( ?string $post_type = null, string $type = 'singular', string $fallback = '' ): string
+    {
+        return \MacCore\Utils\GetPostTypeLabels::get( $post_type, $type, $fallback );
     }
+}
+
+if ( ! function_exists( 'mac_get_post_type_singular' ) ) {
+    function mac_get_post_type_singular( ?string $post_type = null, string $fallback = '' ): string
+    {
+        return \MacCore\Utils\GetPostTypeLabels::singular( $post_type, $fallback );
+    }
+}
+
+if ( ! function_exists( 'mac_get_post_type_plural' ) ) {
+    function mac_get_post_type_plural( ?string $post_type = null, string $fallback = '' ): string
+    {
+        return \MacCore\Utils\GetPostTypeLabels::plural( $post_type, $fallback );
+    }
+}
+
 }

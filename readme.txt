@@ -5,8 +5,8 @@ Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
 Stable tag: 0.5.0
-License: GPLv2
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+License: GPL v3 or later
+License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
 Company standard core functionality plugin for WordPress projects built by Circea.
 

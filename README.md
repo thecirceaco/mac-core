@@ -10,4 +10,4 @@ Company standard WordPress functionality plugin.
 
 ## License
 
-GPL v2. See the `LICENSE` file for details.
+GPL v3. See the `LICENSE` file for details.

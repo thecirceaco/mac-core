@@ -1,4 +1,10 @@
 <?php
+/**
+ * Theme status helpers.
+ *
+ * @package mac-core
+ */
+
 declare(strict_types=1);
 
 namespace MacCore\Utils;

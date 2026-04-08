@@ -1,4 +1,10 @@
 <?php
+/**
+ * Plugin status helpers.
+ *
+ * @package mac-core
+ */
+
 declare(strict_types=1);
 
 namespace MacCore\Utils;
@@ -55,10 +61,11 @@ final class GetPluginStatus
 
     public static function isAcfActive(): bool
     {
-        return self::isPluginActive('advanced-custom-fields-pro/acf.php');
+        return self::isPluginActive('advanced-custom-fields/acf.php')
+            || self::isPluginActive('advanced-custom-fields-pro/acf.php');
     }
 
-    public static function isAiowpMigrationActive(): bool
+    public static function isAllInOneWpMigrationActive(): bool
     {
         return self::isPluginActive('all-in-one-wp-migration/all-in-one-wp-migration.php')
             || self::isPluginActive('all-in-one-wp-migration-unlimited-extension/all-in-one-wp-migration-unlimited-extension.php');
