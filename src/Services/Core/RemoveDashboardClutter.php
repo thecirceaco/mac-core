@@ -14,9 +14,23 @@ use MacCore\Contracts\Service;
 final class RemoveDashboardClutter implements Service
 {
     /**
-     * Register WordPress hooks.
+     * Dashboard widget IDs and contexts.
      *
-     * @return void
+     * @var array<string,string>
+     */
+    private const DASHBOARD_WIDGETS = [
+        'dashboard_activity'       => 'normal',
+        'dashboard_right_now'      => 'normal',
+        'dashboard_incoming_links' => 'normal',
+        'dashboard_plugins'        => 'normal',
+        'dashboard_quick_press'    => 'side',
+        'dashboard_recent_drafts'  => 'side',
+        'dashboard_primary'        => 'side',
+        'dashboard_secondary'      => 'side',
+    ];
+
+    /**
+     * Register WordPress hooks.
      */
     public function register(): void
     {
@@ -38,32 +52,23 @@ final class RemoveDashboardClutter implements Service
         );
 
         \add_action(
-            'admin_head',
+            'admin_head-index.php',
             [$this, 'hide_empty_dashboard_containers']
         );
     }
 
     /**
      * Remove common non-comment dashboard widgets.
-     *
-     * @return void
      */
     public function remove_dashboard_widgets(): void
     {
-        \remove_meta_box( 'dashboard_activity', 'dashboard', 'normal' );
-        \remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
-        \remove_meta_box( 'dashboard_incoming_links', 'dashboard', 'normal' );
-        \remove_meta_box( 'dashboard_plugins', 'dashboard', 'normal' );
-        \remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
-        \remove_meta_box( 'dashboard_recent_drafts', 'dashboard', 'side' );
-        \remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );
-        \remove_meta_box( 'dashboard_secondary', 'dashboard', 'side' );
+        foreach ( self::DASHBOARD_WIDGETS as $widget_id => $context ) {
+            \remove_meta_box( $widget_id, 'dashboard', $context );
+        }
     }
 
     /**
      * Remove the Welcome panel.
-     *
-     * @return void
      */
     public function remove_welcome_panel(): void
     {
@@ -72,8 +77,6 @@ final class RemoveDashboardClutter implements Service
 
     /**
      * Hide empty dashboard containers for a cleaner UI.
-     *
-     * @return void
      */
     public function hide_empty_dashboard_containers(): void
     {
