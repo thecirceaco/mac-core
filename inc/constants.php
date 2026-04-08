@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin version.
-define( 'MAC_CORE_VERSION', '0.2.0' );
+define( 'MAC_CORE_VERSION', '0.5.0' );
 
 // Plugin root path.
 define( 'MAC_CORE_PATH', dirname( __DIR__ ) . '/' );

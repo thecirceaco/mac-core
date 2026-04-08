@@ -34,42 +34,42 @@ final class ControlComments implements Service
     public function register(): void
     {
         // Enforce open/closed state.
-        \add_filter('comments_open', [$this, 'filter_comments_open'], 10, 2);
-        \add_filter('pings_open',    [$this, 'filter_comments_open'], 10, 2);
+        \add_filter( 'comments_open', [$this, 'filter_comments_open'], 10, 2 );
+        \add_filter( 'pings_open', [$this, 'filter_comments_open'], 10, 2 );
 
         // Hide existing comments output when disallowed.
-        \add_filter('comments_array', [$this, 'filter_comments_array'], 10, 2);
+        \add_filter( 'comments_array', [$this, 'filter_comments_array'], 10, 2 );
 
         // Remove comment support from post types.
-        \add_action('init', [$this, 'enforce_post_type_support'], 20);
+        \add_action( 'init', [$this, 'enforce_post_type_support'], 20 );
 
         // Admin UI cleanup.
-        \add_action('admin_menu', [$this, 'cleanup_admin_menu'], 99);
-        \add_action('network_admin_menu', [$this, 'cleanup_admin_menu'], 99);
-        \add_action('wp_dashboard_setup', [$this, 'cleanup_dashboard'], 20);
-        \add_action('admin_bar_menu', [$this, 'cleanup_admin_bar'], 100);
+        \add_action( 'admin_menu', [$this, 'cleanup_admin_menu'], 99 );
+        \add_action( 'network_admin_menu', [$this, 'cleanup_admin_menu'], 99 );
+        \add_action( 'wp_dashboard_setup', [$this, 'cleanup_dashboard'], 20 );
+        \add_action( 'admin_bar_menu', [$this, 'cleanup_admin_bar'], 100 );
 
         // Block direct access to comments screens when disabled.
-        \add_action('load-edit-comments.php', [$this, 'block_comments_screen']);
+        \add_action( 'load-edit-comments.php', [$this, 'block_comments_screen'] );
     }
 
-    public function filter_comments_open(bool $open, int|WP_Post|null $post): bool
+    public function filter_comments_open( bool $open, int|WP_Post|null $post ): bool
     {
-        if (! self::ENABLED) {
+        if ( ! self::ENABLED ) {
             return false;
         }
 
-        $post_id = \is_object($post) ? (int) $post->ID : (int) $post;
-        if ($post_id <= 0) {
+        $post_id = \is_object( $post ) ? (int) $post->ID : (int) $post;
+        if ( $post_id <= 0 ) {
             return false;
         }
 
-        return $this->is_allowed_for_post($post_id);
+        return $this->is_allowed_for_post( $post_id );
     }
 
-    public function filter_comments_array(array $comments, int $post_id): array
+    public function filter_comments_array( array $comments, int $post_id ): array
     {
-        if (! self::ENABLED || ! $this->is_allowed_for_post($post_id)) {
+        if ( ! self::ENABLED || ! $this->is_allowed_for_post( $post_id ) ) {
             return [];
         }
 
@@ -78,77 +78,77 @@ final class ControlComments implements Service
 
     public function enforce_post_type_support(): void
     {
-        foreach (\get_post_types(['public' => true], 'names') as $post_type) {
-            $allow = match ($post_type) {
+        foreach ( \get_post_types( ['public' => true], 'names' ) as $post_type ) {
+            $allow = match ( $post_type ) {
                 'post' => self::ENABLED && self::ENABLE_POSTS,
                 'page' => self::ENABLED && self::ENABLE_PAGES,
-                default => self::ENABLED && \post_type_supports($post_type, 'comments'),
+                default => self::ENABLED && \post_type_supports( $post_type, 'comments' ),
             };
 
-            if (! $allow) {
-                \remove_post_type_support($post_type, 'comments');
-                \remove_post_type_support($post_type, 'trackbacks');
+            if ( ! $allow ) {
+                \remove_post_type_support( $post_type, 'comments' );
+                \remove_post_type_support( $post_type, 'trackbacks' );
             }
         }
     }
 
     public function cleanup_admin_menu(): void
     {
-        if (! self::ENABLED || ! $this->any_comments_supported()) {
-            \remove_menu_page('edit-comments.php');
+        if ( ! self::ENABLED || ! $this->any_comments_supported() ) {
+            \remove_menu_page( 'edit-comments.php' );
         }
     }
 
     public function cleanup_dashboard(): void
     {
-        if (! self::ENABLED || ! $this->any_comments_supported()) {
-            \remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
+        if ( ! self::ENABLED || ! $this->any_comments_supported() ) {
+            \remove_meta_box( 'dashboard_recent_comments', 'dashboard', 'normal' );
         }
     }
 
-    public function cleanup_admin_bar(WP_Admin_Bar $bar): void
+    public function cleanup_admin_bar( WP_Admin_Bar $bar ): void
     {
-        if (! \is_admin_bar_showing()) {
+        if ( ! \is_admin_bar_showing() ) {
             return;
         }
 
-        if (! self::ENABLED || ! $this->any_comments_supported()) {
-            $bar->remove_node('comments');
+        if ( ! self::ENABLED || ! $this->any_comments_supported() ) {
+            $bar->remove_node( 'comments' );
         }
     }
 
     public function block_comments_screen(): void
     {
-        if (! self::ENABLED || ! $this->any_comments_supported()) {
-            \wp_safe_redirect(\admin_url('index.php'));
+        if ( ! self::ENABLED || ! $this->any_comments_supported() ) {
+            \wp_safe_redirect( \admin_url( 'index.php' ) );
             exit;
         }
     }
 
-    private function is_allowed_for_post(int $post_id): bool
+    private function is_allowed_for_post( int $post_id ): bool
     {
-        if (! self::ENABLED) {
+        if ( ! self::ENABLED ) {
             return false;
         }
 
-        $post_type = (string) \get_post_type($post_id);
+        $post_type = (string) \get_post_type( $post_id );
 
-        return match ($post_type) {
+        return match ( $post_type ) {
             'post' => self::ENABLE_POSTS,
             'page' => self::ENABLE_PAGES,
-            default => \post_type_supports($post_type, 'comments'),
+            default => \post_type_supports( $post_type, 'comments' ),
         };
     }
 
     private function any_comments_supported(): bool
     {
-        if (self::ENABLED && (self::ENABLE_POSTS || self::ENABLE_PAGES)) {
+        if ( self::ENABLED && ( self::ENABLE_POSTS || self::ENABLE_PAGES ) ) {
             return true;
         }
 
-        foreach (\get_post_types(['public' => true], 'names') as $post_type) {
-            if (! \in_array($post_type, ['post', 'page'], true)
-                && \post_type_supports($post_type, 'comments')
+        foreach ( \get_post_types( ['public' => true], 'names' ) as $post_type ) {
+            if ( ! \in_array( $post_type, ['post', 'page'], true )
+                && \post_type_supports( $post_type, 'comments' )
             ) {
                 return true;
             }

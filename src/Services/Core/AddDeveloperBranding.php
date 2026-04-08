@@ -11,7 +11,7 @@ namespace MacCore\Services\Core;
 
 use MacCore\Contracts\Service;
 
-final class ApplyBranding implements Service
+final class AddDeveloperBranding implements Service
 {
     private const AUTHOR  = 'Mihai Circea';
     private const COMPANY = 'All Phase Media';
@@ -20,7 +20,7 @@ final class ApplyBranding implements Service
     public function register(): void
     {
         \add_action(
-            'get_header',
+            'wp_head',
             [$this, 'output_frontend_comment'],
             0
         );
@@ -28,7 +28,14 @@ final class ApplyBranding implements Service
         \add_filter(
             'admin_footer_text',
             [$this, 'filter_admin_footer_text'],
-            10,
+            999,
+            1
+        );
+
+        \add_filter(
+            'update_footer',
+            [$this, 'remove_update_footer_text'],
+            999,
             1
         );
     }
@@ -59,5 +66,10 @@ final class ApplyBranding implements Service
             $author,
             $company
         );
+    }
+
+    public function remove_update_footer_text( ?string $text ): string
+    {
+        return '';
     }
 }

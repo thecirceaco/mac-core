@@ -12,14 +12,14 @@ declare(strict_types=1);
 namespace MacCore;
 
 use MacCore\Contracts\Service;
-use MacCore\Services\Core\AddLastLoginAdminColumn;
-use MacCore\Services\Core\ApplyBranding;
+use MacCore\Services\Core\AddLastLoginColumn;
+use MacCore\Services\Core\AddDeveloperBranding;
 use MacCore\Services\Core\ControlComments;
 use MacCore\Services\Core\DisableAdminBar;
 use MacCore\Services\Core\DisableAutoUpdates;
 use MacCore\Services\Core\DisableSiteHealth;
 use MacCore\Services\Core\RemoveDashboardClutter;
-use MacCore\Services\Core\TruncateExcerpts;
+use MacCore\Services\Core\SetExcerptLength;
 use MacCore\Services\Media\AddCustomImageSizes;
 use MacCore\Services\Media\AllowFontMimeTypes;
 use MacCore\Services\Media\DisableImageCompression;
@@ -72,14 +72,14 @@ final class Kernel
     {
         return [
             // Core
-            new ApplyBranding(),
+            new AddDeveloperBranding(),
             new ControlComments(),
             new DisableAdminBar(),
             new DisableAutoUpdates(),
             new DisableSiteHealth(),
-            new TruncateExcerpts(),
+            new SetExcerptLength(),
             new RemoveDashboardClutter(),
-            new AddLastLoginAdminColumn(),
+            new AddLastLoginColumn(),
 
             // Media
             new AddCustomImageSizes(),

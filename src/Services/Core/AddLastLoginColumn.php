@@ -12,7 +12,7 @@ namespace MacCore\Services\Core;
 use MacCore\Contracts\Service;
 use WP_User_Query;
 
-final class AddLastLoginAdminColumn implements Service
+final class AddLastLoginColumn implements Service
 {
     private const META_KEY = 'mac_core_last_login';
 
@@ -64,13 +64,13 @@ final class AddLastLoginAdminColumn implements Service
 
     public function add_column( array $columns ): array
     {
-        $columns['mac_core_last_login'] = 'Last login';
+        $columns[self::META_KEY] = 'Last login';
         return $columns;
     }
 
-    public function render_column( $output, string $column_name, int $user_id )
+    public function render_column( string $output, string $column_name, int $user_id ): string
     {
-        if ( $column_name !== 'mac_core_last_login' ) {
+        if ( $column_name !== self::META_KEY ) {
             return $output;
         }
 
@@ -90,7 +90,7 @@ final class AddLastLoginAdminColumn implements Service
 
     public function make_sortable( array $columns ): array
     {
-        $columns['mac_core_last_login'] = 'mac_core_last_login';
+        $columns[self::META_KEY] = self::META_KEY;
         return $columns;
     }
 
@@ -100,7 +100,7 @@ final class AddLastLoginAdminColumn implements Service
             return;
         }
 
-        if ( $query->get( 'orderby' ) !== 'mac_core_last_login' ) {
+        if ( $query->get( 'orderby' ) !== self::META_KEY ) {
             return;
         }
 

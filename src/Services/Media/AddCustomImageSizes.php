@@ -45,7 +45,7 @@ final class AddCustomImageSizes implements Service
             \add_image_size(
                 'mac_image_' . $width,
                 $width,
-                0,
+                9999,
                 false
             );
         }

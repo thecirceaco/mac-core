@@ -11,7 +11,7 @@ namespace MacCore\Services\Core;
 
 use MacCore\Contracts\Service;
 
-final class TruncateExcerpts implements Service
+final class SetExcerptLength implements Service
 {
     /**
      * Register WordPress hooks.
@@ -22,7 +22,7 @@ final class TruncateExcerpts implements Service
     {
         \add_filter(
             'excerpt_length',
-            [$this, 'truncate_excerpt_length'],
+            [$this, 'set_excerpt_length'],
             10,
             1
         );
@@ -34,7 +34,7 @@ final class TruncateExcerpts implements Service
      * @param int $length Default excerpt length.
      * @return int
      */
-    public function truncate_excerpt_length( int $length ): int
+    public function set_excerpt_length( int $length ): int
     {
         return 40;
     }
