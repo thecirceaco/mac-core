@@ -10,6 +10,13 @@ Thumbs.db
 .env
 .env.local
 
+dist/
+coverage/
+
+.phpcs-cache
+.phpunit.cache/
+.phpunit.result.cache
+
 node_modules/
 vendor/
 

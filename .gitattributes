@@ -1,14 +1,40 @@
 # Export Ignore (exclude from releases)
 
 /.github            export-ignore
+/.github/**         export-ignore
+/.codex             export-ignore
+/.codex/**          export-ignore
+/.vscode            export-ignore
+/.vscode/**         export-ignore
+/.ddev              export-ignore
+/.ddev/**           export-ignore
 /.gitignore         export-ignore
 /.gitattributes     export-ignore
 
 README.md           export-ignore
+AGENTS.md           export-ignore
 readme.txt          export-ignore
+composer.json       export-ignore
+composer.lock       export-ignore
+phpcs.xml.dist      export-ignore
+phpunit.xml.dist    export-ignore
+
+/tests              export-ignore
+/tests/**           export-ignore
+/bin/install-wp-tests.sh export-ignore
 
 node_modules        export-ignore
+node_modules/**     export-ignore
 vendor              export-ignore
+vendor/**           export-ignore
+dist                export-ignore
+dist/**             export-ignore
+coverage            export-ignore
+coverage/**         export-ignore
+.phpunit.cache      export-ignore
+.phpunit.cache/**   export-ignore
+.phpunit.result.cache export-ignore
+.phpcs-cache        export-ignore
 
 .env                export-ignore
 .env.local          export-ignore
