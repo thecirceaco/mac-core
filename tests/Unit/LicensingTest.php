@@ -88,7 +88,7 @@ final class LicensingTest extends TestCase
 		$this->assertSame( 'MAC Core License', $page['page_title'] );
 		$this->assertSame( 'MAC Core', $page['menu_title'] );
 		$this->assertSame( 'manage_options', $page['capability'] );
-		$this->assertSame( 'mac-core-license', $page['menu_slug'] );
+		$this->assertSame( 'mac-core', $page['menu_slug'] );
 		$this->assertSame( null, $page['position'] );
 		$this->assertIsString( $page['icon_url'] );
 		$this->assertStringStartsWith( 'data:image/svg+xml;base64,', $page['icon_url'] );

@@ -59,7 +59,7 @@ final class Licensing implements Service
                 'page_title' => 'MAC Core License',
                 'menu_title' => 'MAC Core',
                 'capability' => 'manage_options',
-                'menu_slug'  => 'mac-core-license',
+                'menu_slug'  => 'mac-core',
                 'icon_url'   => $this->menu_icon_url(),
                 'position'   => null,
             ]
@@ -109,7 +109,7 @@ final class Licensing implements Service
     }
 
     /**
-     * Build the MAC Core admin menu icon URL from the outline logomark SVG.
+     * Build the MAC Core admin menu icon URL from the fill logomark SVG.
      *
      * @return string
      */
@@ -121,7 +121,7 @@ final class Licensing implements Service
             return $icon_url;
         }
 
-        $icon_file = \MAC_CORE_PATH . 'assets/img/mac-logomark-outline.svg';
+        $icon_file = \MAC_CORE_PATH . 'assets/img/mac-logomark-fill.svg';
 
         if ( ! \is_readable( $icon_file ) ) {
             $icon_url = '';
@@ -135,8 +135,6 @@ final class Licensing implements Service
             $icon_url = '';
             return $icon_url;
         }
-
-        $svg = \str_replace( '#000000', '#a7aaad', $svg );
 
         $minified_svg = \preg_replace( '/>\s+</', '><', $svg );
         if ( \is_string( $minified_svg ) && $minified_svg !== '' ) {
