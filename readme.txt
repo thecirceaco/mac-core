@@ -25,7 +25,12 @@ Features may evolve over time and are tailored to the agency’s development sta
 == Changelog ==
 
 = 0.5.0 =
-*
+* Added SureCart licensing support for licensed manual updates.
+* Added MAC Core license management page in WordPress admin.
+* Added release metadata for SureCart-powered plugin distribution.
+* Added shared date/time formatting utility.
+* Updated service and utility organization for the MAC Core OOP plugin architecture.
+* Updated release packaging rules for dev-only files and bundled licensing assets.
 
 = 0.4.3 =
 * Updated .gitattributes and normalized.

@@ -19,10 +19,28 @@ jobs:
         run: |
           mkdir -p dist/mac-core
           rsync -av \
+            --exclude='/composer.lock' \
+            --exclude='vendor' \
+            --exclude='node_modules' \
+            --exclude='/.env' \
+            --exclude='/.env.local' \
             --exclude='.git*' \
             --exclude='.github' \
-            --exclude='README.md' \
-            --exclude='readme.txt' \
+            --exclude='.codex' \
+            --exclude='.vscode' \
+            --exclude='.ddev' \
+            --exclude='/AGENTS.md' \
+            --exclude='/README.md' \
+            --exclude='/readme.txt' \
+            --exclude='/composer.json' \
+            --exclude='/phpcs.xml.dist' \
+            --exclude='/phpunit.xml.dist' \
+            --exclude='/tests' \
+            --exclude='/bin/install-wp-tests.sh' \
+            --exclude='coverage' \
+            --exclude='.phpunit.cache' \
+            --exclude='.phpunit.result.cache' \
+            --exclude='.phpcs-cache' \
             --exclude='dist' \
             ./ dist/mac-core/
 

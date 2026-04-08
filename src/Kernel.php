@@ -20,6 +20,7 @@ use MacCore\Services\Core\DisableAutoUpdates;
 use MacCore\Services\Core\DisableSiteHealth;
 use MacCore\Services\Core\RemoveDashboardClutter;
 use MacCore\Services\Core\SetExcerptLength;
+use MacCore\Services\Licensing;
 use MacCore\Services\Media\AddCustomImageSizes;
 use MacCore\Services\Media\AllowFontMimeTypes;
 use MacCore\Services\Media\DisableImageCompression;
@@ -80,6 +81,7 @@ final class Kernel
             new SetExcerptLength(),
             new RemoveDashboardClutter(),
             new AddLastLoginColumn(),
+            new Licensing(),
 
             // Media
             new AddCustomImageSizes(),
