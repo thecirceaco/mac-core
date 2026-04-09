@@ -85,6 +85,6 @@ final class RemoveDefaultImageSizes implements Service
 
 	private function enabled(): bool
 	{
-		return (bool) $this->settings->get( 'media', 'remove_default_image_sizes' );
+		return (bool) $this->settings->get( 'media', 'remove_image_sizes_enabled' );
 	}
 }

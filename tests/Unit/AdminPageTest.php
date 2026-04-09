@@ -84,10 +84,17 @@ final class AdminPageTest extends TestCase
 		$this->assertStringContainsString( 'Core Policies', $output );
 		$this->assertStringContainsString( 'Media Policies', $output );
 		$this->assertStringContainsString( '<h3>Comments</h3>', $output );
+		$this->assertStringContainsString( '<h3>Maintenance</h3>', $output );
 		$this->assertStringContainsString( '<h3>Image Sizes</h3>', $output );
+		$this->assertStringContainsString( '<h3>Uploads</h3>', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][excerpt_length]"', $output );
+		$this->assertStringContainsString( 'name="mac_core_settings[core][frontend_admin_bar_exempt_target]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[media][custom_image_widths]"', $output );
+		$this->assertStringContainsString( '<textarea class="large-text code" id="mac-core-media-custom_image_widths"', $output );
 		$this->assertStringContainsString( '<textarea class="large-text code" id="mac-core-media-removed_image_sizes"', $output );
+		$this->assertStringContainsString( 'Height is automatic and aspect ratio is preserved.', $output );
+		$this->assertStringContainsString( 'Applies to both intermediate and advanced image sizes.', $output );
+		$this->assertStringContainsString( 'Disables WordPress image compression for JPEG, WebP, and AVIF uploads.', $output );
 	}
 
 	public function test_render_license_view_outputs_license_content(): void
@@ -172,7 +179,7 @@ final class AdminPageTest extends TestCase
 	private function define_constants(): void
 	{
 		if ( ! \defined( 'MAC_CORE_VERSION' ) ) {
-			\define( 'MAC_CORE_VERSION', '0.5.4' );
+			\define( 'MAC_CORE_VERSION', '0.6.2' );
 		}
 
 		if ( ! \defined( 'MAC_CORE_PATH' ) ) {

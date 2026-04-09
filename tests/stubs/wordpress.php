@@ -75,6 +75,25 @@ if ( ! class_exists( 'WP_User' ) ) {
 	class WP_User
 	{
 		public int $ID = 0;
+		/** @var array<int,string> */
+		public array $roles = [];
+
+		/**
+		 * @param array<string,mixed> $data User data.
+		 */
+		public function __construct( array $data = [] )
+		{
+			foreach ( $data as $key => $value ) {
+				if ( $key === 'roles' ) {
+					$this->roles = is_array( $value ) ? array_values( array_map( 'strval', $value ) ) : [];
+					continue;
+				}
+
+				if ( property_exists( $this, (string) $key ) ) {
+					$this->{$key} = $key === 'ID' ? (int) $value : $value;
+				}
+			}
+		}
 	}
 }
 
@@ -137,9 +156,11 @@ function mac_core_tests_reset_wp_state(): void
 	$GLOBALS['mac_core_test_current_time']    = strtotime( '2026-04-08 12:00:00 UTC' );
 	$GLOBALS['mac_core_test_user_caps']       = [];
 	$GLOBALS['mac_core_test_user_meta']       = [];
+	$GLOBALS['mac_core_test_current_user']    = new WP_User();
 	$GLOBALS['mac_core_test_theme_support']   = [];
 	$GLOBALS['mac_core_test_image_sizes']     = [];
 	$GLOBALS['mac_core_test_removed_image_sizes'] = [];
+	$GLOBALS['mac_core_test_transients']      = [];
 	$GLOBALS['mac_core_test_redirect_to']     = null;
 	$GLOBALS['mac_core_test_is_admin']        = true;
 	$GLOBALS['mac_core_test_is_admin_bar_showing'] = true;
@@ -265,6 +286,15 @@ if ( ! function_exists( 'current_user_can' ) ) {
 	function current_user_can( string $capability ): bool
 	{
 		return (bool) ( $GLOBALS['mac_core_test_user_caps'][ $capability ] ?? false );
+	}
+}
+
+if ( ! function_exists( 'wp_get_current_user' ) ) {
+	function wp_get_current_user(): WP_User
+	{
+		$user = $GLOBALS['mac_core_test_current_user'] ?? null;
+
+		return $user instanceof WP_User ? $user : new WP_User();
 	}
 }
 
@@ -405,6 +435,29 @@ if ( ! function_exists( 'delete_option' ) ) {
 	}
 }
 
+if ( ! function_exists( 'get_transient' ) ) {
+	function get_transient( string $transient ): mixed
+	{
+		return $GLOBALS['mac_core_test_transients'][ $transient ] ?? false;
+	}
+}
+
+if ( ! function_exists( 'set_transient' ) ) {
+	function set_transient( string $transient, mixed $value, int $expiration = 0 ): bool
+	{
+		$GLOBALS['mac_core_test_transients'][ $transient ] = $value;
+		return true;
+	}
+}
+
+if ( ! function_exists( 'delete_transient' ) ) {
+	function delete_transient( string $transient ): bool
+	{
+		unset( $GLOBALS['mac_core_test_transients'][ $transient ] );
+		return true;
+	}
+}
+
 if ( ! function_exists( 'get_field' ) ) {
 	function get_field( string $selector, mixed $post_id = false ): mixed
 	{
@@ -434,6 +487,27 @@ if ( ! function_exists( 'update_user_meta' ) ) {
 	}
 }
 
+if ( ! function_exists( 'delete_metadata' ) ) {
+	function delete_metadata( string $meta_type, int $object_id, string $meta_key, mixed $meta_value = '', bool $delete_all = false ): bool
+	{
+		if ( $meta_type !== 'user' ) {
+			return false;
+		}
+
+		if ( $delete_all ) {
+			foreach ( array_keys( $GLOBALS['mac_core_test_user_meta'] ) as $user_id ) {
+				unset( $GLOBALS['mac_core_test_user_meta'][ $user_id ][ $meta_key ] );
+			}
+
+			return true;
+		}
+
+		unset( $GLOBALS['mac_core_test_user_meta'][ $object_id ][ $meta_key ] );
+
+		return true;
+	}
+}
+
 if ( ! function_exists( '__' ) ) {
 	function __( string $text, string $domain = 'default' ): string
 	{
@@ -458,7 +532,9 @@ if ( ! function_exists( 'sanitize_text_field' ) ) {
 if ( ! function_exists( 'sanitize_key' ) ) {
 	function sanitize_key( string $key ): string
 	{
-		return strtolower( preg_replace( '/[^a-z0-9_\-]/', '', $key ) );
+		$key = strtolower( $key );
+
+		return preg_replace( '/[^a-z0-9_\-]/', '', $key );
 	}
 }
 

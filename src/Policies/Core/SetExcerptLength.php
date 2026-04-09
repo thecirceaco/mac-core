@@ -26,8 +26,17 @@ final class SetExcerptLength implements Service
 
 	public function set_excerpt_length( int $length ): int
 	{
+		if ( ! $this->enabled() ) {
+			return $length;
+		}
+
 		$configured = (int) $this->settings->get( 'core', 'excerpt_length' );
 
 		return $configured > 0 ? $configured : $length;
+	}
+
+	private function enabled(): bool
+	{
+		return (bool) $this->settings->get( 'core', 'excerpt_length_enabled' );
 	}
 }

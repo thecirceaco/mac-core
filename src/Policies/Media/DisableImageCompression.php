@@ -33,13 +33,11 @@ final class DisableImageCompression implements Service
 			return $quality;
 		}
 
-		$configured = (int) $this->settings->get( 'media', 'image_quality' );
-
-		return \max( 0, \min( 100, $configured ) );
+		return 100;
 	}
 
 	private function enabled(): bool
 	{
-		return (bool) $this->settings->get( 'media', 'force_image_quality_enabled' );
+		return (bool) $this->settings->get( 'media', 'disable_image_compression' );
 	}
 }

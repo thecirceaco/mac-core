@@ -30,10 +30,16 @@ final class SettingsRepositoryTest extends TestCase
 		$schema     = new SettingsSchema();
 
 		$this->assertTrue( $settings['core']['disable_auto_updates'] );
+		$this->assertSame( 'administrator', $settings['core']['frontend_admin_bar_exempt_target'] );
+		$this->assertTrue( $settings['core']['excerpt_length_enabled'] );
+		$this->assertFalse( $settings['core']['delete_data_on_uninstall'] );
 		$this->assertSame( 40, $settings['core']['excerpt_length'] );
 		$this->assertSame( [480, 768, 960, 1440], $settings['media']['custom_image_widths'] );
-		$this->assertSame( ['mp4', 'mov', 'webm', 'avi', 'mkv', 'wmv', 'm4v'], $settings['media']['blocked_video_extensions'] );
+		$this->assertTrue( $settings['media']['disable_image_compression'] );
 		$this->assertSame( 'textarea', $schema->get_field( 'media', 'removed_image_sizes' )['control'] );
+		$this->assertSame( 'textarea', $schema->get_field( 'media', 'custom_image_widths' )['control'] );
+		$this->assertArrayNotHasKey( 'blocked_video_extensions', $settings['media'] );
+		$this->assertArrayNotHasKey( 'image_quality', $settings['media'] );
 	}
 
 	public function test_save_sanitizes_nested_module_values(): void
@@ -44,27 +50,35 @@ final class SettingsRepositoryTest extends TestCase
 				'core'  => [
 					'developer_branding_enabled' => '1',
 					'developer_branding_author'  => '  Mihai   Circea ',
+					'disable_frontend_admin_bar' => '1',
+					'frontend_admin_bar_exempt_target' => ' Administrator ',
+					'excerpt_length_enabled'     => '1',
 					'excerpt_length'             => '-30',
+					'delete_data_on_uninstall'   => '',
 				],
 				'media' => [
 					'custom_image_sizes_enabled' => '1',
 					'custom_image_widths'        => "320,\n640, invalid,\n640",
-					'force_image_quality_enabled' => '1',
-					'image_quality'              => '250',
+					'disable_image_compression'  => '1',
 					'block_video_uploads'        => '1',
-					'blocked_video_extensions'   => "mp4,\n mov,\nWEBM,\n!!bad!!",
-					'remove_default_image_sizes' => '1',
+					'remove_image_sizes_enabled' => '1',
 					'removed_image_sizes'        => "thumbnail\nmedium_large,\nLarge",
 				],
 			]
 		);
 
 		$this->assertSame( 'Mihai Circea', $settings['core']['developer_branding_author'] );
+		$this->assertTrue( $settings['core']['disable_frontend_admin_bar'] );
+		$this->assertSame( 'administrator', $settings['core']['frontend_admin_bar_exempt_target'] );
+		$this->assertTrue( $settings['core']['excerpt_length_enabled'] );
 		$this->assertSame( 1, $settings['core']['excerpt_length'] );
+		$this->assertFalse( $settings['core']['delete_data_on_uninstall'] );
 		$this->assertSame( [320, 640], $settings['media']['custom_image_widths'] );
-		$this->assertSame( 100, $settings['media']['image_quality'] );
-		$this->assertSame( ['mp4', 'mov', 'webm', 'bad'], $settings['media']['blocked_video_extensions'] );
+		$this->assertTrue( $settings['media']['disable_image_compression'] );
+		$this->assertTrue( $settings['media']['remove_image_sizes_enabled'] );
 		$this->assertSame( ['thumbnail', 'medium_large', 'large'], $settings['media']['removed_image_sizes'] );
+		$this->assertArrayNotHasKey( 'image_quality', $settings['media'] );
+		$this->assertArrayNotHasKey( 'blocked_video_extensions', $settings['media'] );
 		$this->assertSame( $settings, $GLOBALS['mac_core_test_options']['mac_core_settings'] );
 	}
 

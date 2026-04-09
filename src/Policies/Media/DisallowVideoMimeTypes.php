@@ -14,6 +14,11 @@ use MacCore\Settings\SettingsRepositoryInterface;
 
 final class DisallowVideoMimeTypes implements Service
 {
+	/**
+	 * @var array<int,string>
+	 */
+	private const BLOCKED_EXTENSIONS = ['mp4', 'mov', 'webm', 'avi', 'mkv', 'wmv', 'm4v'];
+
 	public function __construct(
 		private readonly SettingsRepositoryInterface $settings
 	) {
@@ -46,9 +51,7 @@ final class DisallowVideoMimeTypes implements Service
 	 */
 	private function blocked_extensions(): array
 	{
-		$extensions = $this->settings->get( 'media', 'blocked_video_extensions' );
-
-		return \is_array( $extensions ) ? $extensions : [];
+		return self::BLOCKED_EXTENSIONS;
 	}
 
 	private function enabled(): bool

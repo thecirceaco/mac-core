@@ -144,6 +144,7 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	{
 		return match ( $config['type'] ) {
 			'checkbox'   => (bool) $value,
+			'key'        => $this->sanitize_key_value( $value, (string) $config['default'] ),
 			'url'        => $this->sanitize_url( $value, (string) $config['default'] ),
 			'integer'    => $this->sanitize_integer( $value, $config ),
 			'csv_int'    => $this->sanitize_csv_int( $value ),
@@ -162,6 +163,18 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 		}
 
 		return \sanitize_text_field( (string) $value );
+	}
+
+	/**
+	 * Sanitize key-like values such as role or capability slugs.
+	 */
+	private function sanitize_key_value( mixed $value, string $default ): string
+	{
+		if ( ! \is_scalar( $value ) ) {
+			return \sanitize_key( $default );
+		}
+
+		return \sanitize_key( (string) $value );
 	}
 
 	/**
