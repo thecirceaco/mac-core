@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 8.3
-Stable tag: 0.6.0
+Stable tag: 0.6.1
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,11 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 0.6.1 =
+* Grouped related settings more clearly on the Settings page, including the comments controls.
+* Switched removed image sizes to a textarea for easier editing of long lists.
+* Improved CSV-style settings parsing so comma-separated and line-separated values both work.
 
 = 0.6.0 =
 * Added the modular MAC Core admin experience with Settings, License, and Support views.
