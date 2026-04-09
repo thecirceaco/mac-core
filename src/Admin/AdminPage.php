@@ -135,14 +135,20 @@ final class AdminPage implements Service
 				echo '<p>' . \esc_html( $section['description'] ) . '</p>';
 			}
 
-			echo '<table class="form-table" role="presentation"><tbody>';
+			foreach ( $this->group_fields( $section['fields'] ) as $group ) {
+				if ( $group['title'] !== '' ) {
+					echo '<h3>' . \esc_html( $group['title'] ) . '</h3>';
+				}
 
-			foreach ( $section['fields'] as $field => $config ) {
-				$current = $values[ $module ][ $field ] ?? $config['default'];
-				$this->render_field_row( $module, $field, $config, $current );
+				echo '<table class="form-table" role="presentation"><tbody>';
+
+				foreach ( $group['fields'] as $field => $config ) {
+					$current = $values[ $module ][ $field ] ?? $config['default'];
+					$this->render_field_row( $module, $field, $config, $current );
+				}
+
+				echo '</tbody></table>';
 			}
-
-			echo '</tbody></table>';
 		}
 
 		\submit_button( 'Save Settings' );
@@ -259,7 +265,11 @@ final class AdminPage implements Service
 
 			case 'csv_int':
 			case 'csv_string':
-				echo '<input class="regular-text" type="text" id="' . \esc_attr( $field_id ) . '" name="' . \esc_attr( $field_name ) . '" value="' . \esc_attr( \implode( ', ', \is_array( $current ) ? $current : [] ) ) . '">';
+				if ( ( $config['control'] ?? '' ) === 'textarea' ) {
+					echo '<textarea class="large-text code" id="' . \esc_attr( $field_id ) . '" name="' . \esc_attr( $field_name ) . '" rows="' . \esc_attr( (string) ( $config['rows'] ?? 5 ) ) . '">' . \esc_html( $this->format_list_value( $current, true ) ) . '</textarea>';
+				} else {
+					echo '<input class="regular-text" type="text" id="' . \esc_attr( $field_id ) . '" name="' . \esc_attr( $field_name ) . '" value="' . \esc_attr( $this->format_list_value( $current ) ) . '">';
+				}
 				if ( $config['description'] !== '' ) {
 					echo '<p class="description">' . \esc_html( $config['description'] ) . '</p>';
 				}
@@ -283,5 +293,45 @@ final class AdminPage implements Service
 
 		echo '</td>';
 		echo '</tr>';
+	}
+
+	/**
+	 * Group section fields by optional subgroup label.
+	 *
+	 * @param array<string,array<string,mixed>> $fields Section fields.
+	 * @return array<int,array{title:string,fields:array<string,array<string,mixed>>}>
+	 */
+	private function group_fields( array $fields ): array
+	{
+		$groups = [];
+
+		foreach ( $fields as $field => $config ) {
+			$title = \is_string( $config['group'] ?? null ) ? $config['group'] : '';
+
+			if ( ! isset( $groups[ $title ] ) ) {
+				$groups[ $title ] = [
+					'title'  => $title,
+					'fields' => [],
+				];
+			}
+
+			$groups[ $title ]['fields'][ $field ] = $config;
+		}
+
+		return \array_values( $groups );
+	}
+
+	/**
+	 * Format list values for text or textarea controls.
+	 */
+	private function format_list_value( mixed $current, bool $multiline = false ): string
+	{
+		if ( ! \is_array( $current ) ) {
+			return '';
+		}
+
+		$separator = $multiline ? "\n" : ', ';
+
+		return \implode( $separator, \array_map( 'strval', $current ) );
 	}
 }

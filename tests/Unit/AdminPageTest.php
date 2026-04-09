@@ -83,8 +83,11 @@ final class AdminPageTest extends TestCase
 
 		$this->assertStringContainsString( 'Core Policies', $output );
 		$this->assertStringContainsString( 'Media Policies', $output );
+		$this->assertStringContainsString( '<h3>Comments</h3>', $output );
+		$this->assertStringContainsString( '<h3>Image Sizes</h3>', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][excerpt_length]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[media][custom_image_widths]"', $output );
+		$this->assertStringContainsString( '<textarea class="large-text code" id="mac-core-media-removed_image_sizes"', $output );
 	}
 
 	public function test_render_license_view_outputs_license_content(): void

@@ -213,7 +213,7 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	 */
 	private function sanitize_csv_int( mixed $value ): array
 	{
-		$items = \is_array( $value ) ? $value : \explode( ',', (string) $value );
+		$items = $this->split_list_input( $value );
 		$ints  = [];
 
 		foreach ( $items as $item ) {
@@ -244,7 +244,7 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	 */
 	private function sanitize_csv_string( mixed $value ): array
 	{
-		$items  = \is_array( $value ) ? $value : \explode( ',', (string) $value );
+		$items  = $this->split_list_input( $value );
 		$tokens = [];
 
 		foreach ( $items as $item ) {
@@ -261,5 +261,21 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 		}
 
 		return \array_values( \array_unique( $tokens ) );
+	}
+
+	/**
+	 * Split list input that may use commas or line breaks.
+	 *
+	 * @return array<int,mixed>
+	 */
+	private function split_list_input( mixed $value ): array
+	{
+		if ( \is_array( $value ) ) {
+			return $value;
+		}
+
+		$items = \preg_split( '/[\r\n,]+/', (string) $value );
+
+		return \is_array( $items ) ? $items : [];
 	}
 }

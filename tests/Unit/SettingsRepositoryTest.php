@@ -27,11 +27,13 @@ final class SettingsRepositoryTest extends TestCase
 	{
 		$repository = new WordPressSettingsRepository( new SettingsSchema() );
 		$settings   = $repository->all();
+		$schema     = new SettingsSchema();
 
 		$this->assertTrue( $settings['core']['disable_auto_updates'] );
 		$this->assertSame( 40, $settings['core']['excerpt_length'] );
 		$this->assertSame( [480, 768, 960, 1440], $settings['media']['custom_image_widths'] );
 		$this->assertSame( ['mp4', 'mov', 'webm', 'avi', 'mkv', 'wmv', 'm4v'], $settings['media']['blocked_video_extensions'] );
+		$this->assertSame( 'textarea', $schema->get_field( 'media', 'removed_image_sizes' )['control'] );
 	}
 
 	public function test_save_sanitizes_nested_module_values(): void
@@ -46,11 +48,13 @@ final class SettingsRepositoryTest extends TestCase
 				],
 				'media' => [
 					'custom_image_sizes_enabled' => '1',
-					'custom_image_widths'        => '320, 640, invalid, 640',
+					'custom_image_widths'        => "320,\n640, invalid,\n640",
 					'force_image_quality_enabled' => '1',
 					'image_quality'              => '250',
 					'block_video_uploads'        => '1',
-					'blocked_video_extensions'   => 'mp4, mov, WEBM, !!bad!!',
+					'blocked_video_extensions'   => "mp4,\n mov,\nWEBM,\n!!bad!!",
+					'remove_default_image_sizes' => '1',
+					'removed_image_sizes'        => "thumbnail\nmedium_large,\nLarge",
 				],
 			]
 		);
@@ -60,6 +64,7 @@ final class SettingsRepositoryTest extends TestCase
 		$this->assertSame( [320, 640], $settings['media']['custom_image_widths'] );
 		$this->assertSame( 100, $settings['media']['image_quality'] );
 		$this->assertSame( ['mp4', 'mov', 'webm', 'bad'], $settings['media']['blocked_video_extensions'] );
+		$this->assertSame( ['thumbnail', 'medium_large', 'large'], $settings['media']['removed_image_sizes'] );
 		$this->assertSame( $settings, $GLOBALS['mac_core_test_options']['mac_core_settings'] );
 	}
 
