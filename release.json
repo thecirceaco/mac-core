@@ -3,13 +3,13 @@
   "slug": "mac-core",
   "author": "<a href='https://circea.co'>Circea</a>",
   "author_profile": "https://circea.co",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "requires": "6.9",
   "tested": "6.9",
   "requires_php": "8.3",
   "sections": {
     "description": "Company standard core functionality plugin for WordPress projects built by Circea.",
-    "changelog": "<h4>0.6.2</h4><ul><li>Cleaned up the settings model by removing unused media inputs and keeping fixed upload policy defaults where customization was unnecessary.</li><li>Added explicit excerpt, admin bar target, and uninstall cleanup settings for clearer behavior and easier site maintenance.</li><li>Improved settings copy and textareas for image width and removed-size inputs, and added uninstall cleanup coverage in the test suite.</li></ul>",
+    "changelog": "<h4>0.6.3</h4><ul><li>Pinned the GitHub Actions release and quality workflows to immutable action SHAs.</li><li>Moved the bundled SureCart runtime into <code>inc/Vendor/SureCart/Licensing</code> and removed unused upstream package metadata files.</li><li>Updated release packaging rules so vendored runtime files stay in the ZIP while root Composer <code>vendor/</code> stays excluded.</li></ul>",
     "frequently asked questions": "<h4>How do I manage my license?</h4><p>Open the MAC Core admin menu in WordPress and enter the license key provided through SureCart.</p>"
   }
 }

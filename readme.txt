@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 8.3
-Stable tag: 0.6.2
+Stable tag: 0.6.3
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,11 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 0.6.3 =
+* Pinned the GitHub Actions release and quality workflows to immutable action SHAs.
+* Moved the bundled SureCart runtime into `inc/Vendor/SureCart/Licensing` and removed unused upstream package metadata files.
+* Updated release packaging rules so vendored runtime files stay in the ZIP while root Composer `vendor/` stays excluded.
 
 = 0.6.2 =
 * Cleaned up the settings model by removing unused media inputs and keeping fixed upload policy defaults where customization was unnecessary.
