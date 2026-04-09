@@ -36,7 +36,7 @@ Single-maintainer ownership is accepted for now and should be treated as such in
 
 While this remains a one-maintainer repo, the most useful controls are procedural:
 
-1. Keep the release runbook accurate in `.codex/skills/release.md`.
+1. Keep the release runbook accurate in `.codex/skills/release/SKILL.md`.
 2. Keep licensing and release assumptions documented in `.codex/`.
 3. Treat GitHub Actions-built ZIPs as the authoritative release artifacts.
 4. Keep release provenance and checksum files with each tagged release.

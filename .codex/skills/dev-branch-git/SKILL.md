@@ -37,4 +37,4 @@ Use this skill before staging, committing, pushing, or releasing MAC Core work.
 
 ## Release Exception
 
-For releases, use `.codex/skills/release.md`. The release flow may fast-forward `main` and push a tag, but the repo must end back on `dev`.
+For releases, use `.codex/skills/release/SKILL.md`. The release flow may fast-forward `main` and push a tag, but the repo must end back on `dev`.
