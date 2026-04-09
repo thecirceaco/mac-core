@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 0.6.4
+Stable tag: 0.6.5
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,11 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 0.6.5 =
+* Removed the duplicate custom `View details` plugin row link and let WordPress keep the built-in details modal link.
+* Reordered the plugin row links to `View details | Support | Documentation` and renamed `Docs` to `Documentation`.
+* Marked the plugin as tested up to WordPress `7.0`.
 
 = 0.6.4 =
 * Added installed-plugin screen links for `Settings`, `License`, and right-side `View details`, `Docs`, and `Support`.
