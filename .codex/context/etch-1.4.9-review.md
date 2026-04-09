@@ -54,11 +54,9 @@ Etch groups implementation into module folders such as:
 
 MAC Core adaptation:
 
-- Keep `src/Services` for hook-registering services.
+- Keep hook-registering services in module folders such as `src/Admin`, `src/Licensing`, and `src/Policies/...`.
 - Keep `src/Utils` for pure/static helpers that do not register hooks.
-- Add module folders only when a real boundary appears:
-  - `src/Admin` for custom admin pages/forms.
-  - `src/Licensing` if the SureCart integration grows beyond one service.
+- Add future module folders only when a real boundary appears:
   - `src/Rest` for REST route classes if MAC Core ever exposes REST endpoints.
   - `src/Assets` when the plugin owns frontend/admin asset registration.
   - `src/Lifecycle` and `src/Migrations` before storing structured options or running DB migrations.

@@ -86,7 +86,7 @@ Recommended fix: pin both third-party actions to verified full-length commit SHA
 Severity: Informational to Medium, depending on patch process
 Status: Accepted behavior, document process
 
-`src/Services/Core/DisableAutoUpdates.php:24` disables the automatic updater subsystem, and lines `30-32` disable automatic core, plugin, and theme updates.
+`src/Policies/Core/DisableAutoUpdates.php` disables the automatic updater subsystem and automatic core, plugin, and theme updates when the policy is enabled.
 
 This means WordPress background auto-updates are off. It does not prevent manual updates in the admin dashboard, nor does it prevent ZIP uploads. For MAC Core specifically:
 
@@ -111,7 +111,7 @@ There is no Composer/PHPUnit harness yet. Add tests for:
 
 - `mac-core.php` has an `ABSPATH` guard and remains a minimal bootstrap.
 - No custom REST routes, AJAX actions, direct SQL, arbitrary file writes, or direct `eval`/`unserialize`/`base64_decode` paths were found.
-- Plugin-owned admin notice output in `src/Services/Licensing.php` checks `manage_options` and escapes the message.
+- Plugin-owned admin notice output in `src/Licensing/LicensingService.php` checks `manage_options` and escapes the message.
 - HTML-format helper output uses `esc_html`, `esc_attr`, and `esc_url` in the reviewed paths.
 - The SureCart public token is a public token, not a secret API token.
 - `release.json` and `licensing/` are included in release ZIPs while dev-only files are excluded.

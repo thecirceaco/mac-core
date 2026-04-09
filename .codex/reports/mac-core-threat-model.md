@@ -89,9 +89,9 @@ Relevant attackers:
 ## Entry Points
 
 - WordPress plugin bootstrap in `mac-core.php`.
-- WordPress hooks registered through `src/Kernel.php` and `src/Services/**`.
+- WordPress hooks registered through `src/Kernel.php` and the module services under `src/Admin`, `src/Licensing`, and `src/Policies/**`.
 - Global helper functions in `src/Utils/**`, especially helpers callable from templates or builders.
-- SureCart license admin page created by `src/Services/Licensing.php` and implemented by `licensing/src/Settings.php`.
+- SureCart license view created by `src/Admin/AdminPage.php`, orchestrated by `src/Licensing/LicensingService.php`, and implemented by `licensing/src/Settings.php`.
 - SureCart remote requests from `licensing/src/Client.php`.
 - WordPress update transient filters in `licensing/src/Updater.php`.
 - Release workflow in `.github/workflows/release.yml`.

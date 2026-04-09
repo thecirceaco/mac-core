@@ -9,13 +9,9 @@ declare(strict_types=1);
 
 namespace MacCore\Tests\Unit;
 
-use MacCore\Services\Licensing;
-use PHPUnit\Framework\Attributes\PreserveGlobalState;
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use MacCore\Licensing\LicensingService;
 use PHPUnit\Framework\TestCase;
 
-#[RunTestsInSeparateProcesses]
-#[PreserveGlobalState(false)]
 final class LicensingTest extends TestCase
 {
 	protected function setUp(): void
@@ -30,20 +26,29 @@ final class LicensingTest extends TestCase
 		if ( ! defined( 'MAC_CORE_PATH' ) ) {
 			define( 'MAC_CORE_PATH', dirname( __DIR__, 2 ) . '/' );
 		}
+
+		if ( ! defined( 'MAC_CORE_ADMIN_SLUG' ) ) {
+			define( 'MAC_CORE_ADMIN_SLUG', 'mac-core' );
+		}
 	}
 
 	public function test_register_adds_initialize_hook(): void
 	{
-		$service = new Licensing();
+		$service = new LicensingService();
 
 		$service->register();
 
-		$this->assertTrue( $this->has_action_callback( 'init', Licensing::class, 'initialize', 20 ) );
+		$this->assertTrue( $this->has_action_callback( 'init', LicensingService::class, 'initialize', 20 ) );
 	}
 
 	public function test_initialize_adds_admin_notice_when_token_missing(): void
 	{
-		$service = new Licensing();
+		\add_filter(
+			'mac_core_surecart_public_token',
+			static fn ( string $token ): string => ''
+		);
+
+		$service = new LicensingService();
 
 		$service->initialize();
 
@@ -65,7 +70,7 @@ final class LicensingTest extends TestCase
 			static fn ( string $token ): string => 'pt_test_token'
 		);
 
-		$service = new Licensing();
+		$service = new LicensingService();
 
 		$service->initialize();
 
@@ -88,11 +93,42 @@ final class LicensingTest extends TestCase
 		$this->assertSame( 'MAC Core License', $page['page_title'] );
 		$this->assertSame( 'MAC Core', $page['menu_title'] );
 		$this->assertSame( 'manage_options', $page['capability'] );
-		$this->assertSame( 'mac-core', $page['menu_slug'] );
+		$this->assertSame( \MAC_CORE_ADMIN_SLUG, $page['menu_slug'] );
 		$this->assertSame( null, $page['position'] );
-		$this->assertIsString( $page['icon_url'] );
-		$this->assertStringStartsWith( 'data:image/svg+xml;base64,', $page['icon_url'] );
+		$this->assertSame( '', $page['icon_url'] );
+		$this->assertFalse( $page['register_menu'] );
+		$this->assertStringContainsString( 'page=mac-core&tab=licensing', $page['activated_redirect'] );
+		$this->assertStringContainsString( 'page=mac-core&tab=licensing', $page['deactivated_redirect'] );
 		$this->assertArrayNotHasKey( 'admin_notices', $GLOBALS['mac_core_test_actions'] );
+	}
+
+	public function test_render_view_outputs_surecart_settings_page_when_initialized(): void
+	{
+		\add_filter(
+			'mac_core_surecart_public_token',
+			static fn ( string $token ): string => 'pt_test_token'
+		);
+
+		$service = new LicensingService();
+		$service->initialize();
+
+		ob_start();
+		$service->render_view();
+		$output = (string) ob_get_clean();
+
+		$this->assertSame( 1, \MacCore\Vendor\SureCart\Licensing\Client::$settings_output_calls );
+		$this->assertStringContainsString( 'SureCart License', $output );
+	}
+
+	public function test_render_view_outputs_inline_notice_when_unavailable(): void
+	{
+		$service = new LicensingService();
+
+		ob_start();
+		$service->render_view();
+		$output = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'MAC Core licensing is not available yet.', $output );
 	}
 
 	private function has_action_callback( string $hook, string $class, string $method, int $priority ): bool

@@ -65,10 +65,14 @@ class Settings {
 				'icon_url'           => '',
 				'position'           => null,
 				'activated_redirect' => null,
+				'deactivated_redirect' => null,
 				'parent_slug'        => '',
+				'register_menu'      => true,
 			)
 		);
-		add_action( 'admin_menu', array( $this, 'admin_menu' ), 99 );
+		if ( ! empty( $this->menu_args['register_menu'] ) ) {
+			add_action( 'admin_menu', array( $this, 'admin_menu' ), 99 );
+		}
 	}
 
 	/**

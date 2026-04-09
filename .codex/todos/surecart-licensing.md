@@ -16,7 +16,7 @@
 
 ## Integration
 
-- [x] Add `MacCore\Services\Licensing`.
+- [x] Add `MacCore\Licensing\LicensingService`.
 - [x] Register the licensing service in `Kernel`.
 - [x] Initialize on `init`.
 - [x] Load the SDK only if `SureCart\Licensing\Client` is absent.

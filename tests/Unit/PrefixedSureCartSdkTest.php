@@ -15,9 +15,10 @@ final class PrefixedSureCartSdkTest extends TestCase
 {
 	public function test_bundled_surecart_sdk_uses_mac_core_vendor_namespace(): void
 	{
-		require_once dirname( __DIR__, 2 ) . '/licensing/src/Client.php';
+		$client_file = dirname( __DIR__, 2 ) . '/licensing/src/Client.php';
+		$contents    = (string) file_get_contents( $client_file );
 
-		$this->assertTrue( class_exists( \MacCore\Vendor\SureCart\Licensing\Client::class ) );
-		$this->assertFalse( class_exists( \SureCart\Licensing\Client::class ) );
+		$this->assertStringContainsString( 'namespace MacCore\\Vendor\\SureCart\\Licensing;', $contents );
+		$this->assertStringNotContainsString( 'namespace SureCart\\Licensing;', $contents );
 	}
 }

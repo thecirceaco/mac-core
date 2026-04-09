@@ -7,9 +7,13 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 - `plans/mac-core-alignment.md`: Full alignment plan for bringing MAC Core in line with the `mac-bricks` and `mac-etch` baseline while preserving the plugin OOP architecture.
 - `plans/surecart-licensing.md`: SureCart licensing implementation plan for activation and licensed manual updates.
 - `plans/scalable-plugin-tooling.md`: Composer, PHPUnit, CI, and future module-boundary plan inspired by the Etch review.
+- `plans/deferred-architecture-roadmap.md`: Deferred architecture notes for lifecycle, migrations, feature flags, runtime Composer dependencies, and future modules.
+- `plans/addons-architecture.md`: Lightweight extension model for future MAC add-ons.
+- `plans/mac-core-settings-policy-modules.md`: Admin/settings/policy module plan for the config-backed MAC Core product surface.
 - `context/surecart-licensing-research.md`: Research notes from the SureCart licensing docs and `surecart/wordpress-sdk`.
 - `context/surecart-sdk-provenance.md`: Source, tag, and maintenance notes for the vendored SureCart WordPress SDK.
 - `context/etch-1.4.9-review.md`: Detailed notes from reviewing the Etch 1.4.9 plugin ZIP and how to adapt the useful patterns.
+- `context/acss-4.0.0-rc-1-review.md`: Automatic.css review notes for admin routing, settings storage, lifecycle timing, and extension seams.
 - `todos/mac-core-alignment.md`: Actionable implementation checklist and verification steps for the alignment pass.
 - `todos/surecart-licensing.md`: SureCart licensing implementation and verification checklist.
 - `skills/wordpress-plugin-oop.md`: MAC Core-specific implementation discipline for adding WordPress behavior through the plugin service architecture.

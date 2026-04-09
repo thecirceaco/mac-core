@@ -15,18 +15,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin version.
-define( 'MAC_CORE_VERSION', '0.5.4' );
+if ( ! defined( 'MAC_CORE_VERSION' ) ) {
+	define( 'MAC_CORE_VERSION', '0.5.4' );
+}
 
 // SureCart licensing public token.
-define( 'MAC_CORE_SURECART_PUBLIC_TOKEN', 'pt_gkYCpfc8FGWpJ1dFTfnNxC9D' );
+if ( ! defined( 'MAC_CORE_SURECART_PUBLIC_TOKEN' ) ) {
+	define( 'MAC_CORE_SURECART_PUBLIC_TOKEN', 'pt_gkYCpfc8FGWpJ1dFTfnNxC9D' );
+}
+
+// Core option and admin slugs.
+if ( ! defined( 'MAC_CORE_ADMIN_SLUG' ) ) {
+	define( 'MAC_CORE_ADMIN_SLUG', 'mac-core' );
+}
+
+if ( ! defined( 'MAC_CORE_SETTINGS_OPTION' ) ) {
+	define( 'MAC_CORE_SETTINGS_OPTION', 'mac_core_settings' );
+}
 
 // Plugin root path.
-define( 'MAC_CORE_PATH', dirname( __DIR__ ) . '/' );
+if ( ! defined( 'MAC_CORE_PATH' ) ) {
+	define( 'MAC_CORE_PATH', dirname( __DIR__ ) . '/' );
+}
 
 // Source & assets paths.
-define( 'MAC_CORE_SRC_PATH', MAC_CORE_PATH . 'src/' );
-define( 'MAC_CORE_ASSETS_PATH', MAC_CORE_PATH . 'assets/' );
+if ( ! defined( 'MAC_CORE_SRC_PATH' ) ) {
+	define( 'MAC_CORE_SRC_PATH', MAC_CORE_PATH . 'src/' );
+}
+
+if ( ! defined( 'MAC_CORE_ASSETS_PATH' ) ) {
+	define( 'MAC_CORE_ASSETS_PATH', MAC_CORE_PATH . 'assets/' );
+}
 
 // URLs.
-define( 'MAC_CORE_URL', plugin_dir_url( MAC_CORE_PATH . 'mac-core.php' ) );
-define( 'MAC_CORE_ASSETS_URL', MAC_CORE_URL . 'assets/' );
+if ( ! defined( 'MAC_CORE_URL' ) ) {
+	define( 'MAC_CORE_URL', plugin_dir_url( MAC_CORE_PATH . 'mac-core.php' ) );
+}
+
+if ( ! defined( 'MAC_CORE_ASSETS_URL' ) ) {
+	define( 'MAC_CORE_ASSETS_URL', MAC_CORE_URL . 'assets/' );
+}

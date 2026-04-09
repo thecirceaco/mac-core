@@ -20,6 +20,10 @@ final class Client
 	/** @var array<int,array<string,mixed>> */
 	public static array $pages = [];
 
+	public static int $settings_output_calls = 0;
+
+	private ?Settings $settings = null;
+
 	public function __construct(
 		public string $name,
 		public string $public_token,
@@ -37,6 +41,7 @@ final class Client
 		self::$instances   = [];
 		self::$textdomains = [];
 		self::$pages       = [];
+		self::$settings_output_calls = 0;
 	}
 
 	public function set_textdomain( string $textdomain ): void
@@ -46,7 +51,9 @@ final class Client
 
 	public function settings(): Settings
 	{
-		return new Settings();
+		$this->settings ??= new Settings();
+
+		return $this->settings;
 	}
 }
 
@@ -61,5 +68,11 @@ final class Settings
 	public function add_page( array $args ): void
 	{
 		Client::$pages[] = $args;
+	}
+
+	public function settings_output(): void
+	{
+		Client::$settings_output_calls++;
+		echo '<div class="surecart-license-view">SureCart License</div>';
 	}
 }

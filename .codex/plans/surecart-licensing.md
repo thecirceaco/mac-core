@@ -7,7 +7,7 @@ Implement SureCart-backed license activation and licensed manual update availabi
 ## Implementation
 
 - Bundle `surecart/wordpress-sdk` tag `v1.1.2` under `licensing/`, including `src/`, `README.md`, `composer.json`, and `PROVENANCE.md`.
-- Add `MacCore\Services\Licensing` as a service class and register it in `src/Kernel.php`.
+- Add `MacCore\Licensing\LicensingService` as a service class and register it in `src/Kernel.php`.
 - On `init`, load `licensing/src/Client.php` only if `MacCore\Vendor\SureCart\Licensing\Client` is absent.
 - Read the public token from `MAC_CORE_SURECART_PUBLIC_TOKEN`, then pass it through `mac_core_surecart_public_token`.
 - If the token is blank, skip SDK initialization and register a `manage_options` admin notice.
@@ -27,7 +27,7 @@ Implement SureCart-backed license activation and licensed manual update availabi
 ## Verification
 
 - Validate `release.json` as JSON and confirm slug `mac-core`.
-- Run `php -l` on `src/Services/Licensing.php` and the bundled SDK runtime files.
+- Run `php -l` on `src/Licensing/LicensingService.php` and the bundled SDK runtime files.
 - Confirm `git check-attr export-ignore` does not mark `release.json` or `licensing/src/Client.php` as excluded.
 - Confirm release workflow excludes dev-only files but does not exclude `release.json` or `licensing/`.
 - During the future full tooling pass, run `composer install`, `composer lint`, `composer test`, and a release ZIP contents check.

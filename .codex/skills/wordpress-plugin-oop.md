@@ -12,7 +12,10 @@ Use this skill when adding or changing MAC Core WordPress behavior.
 
 ## Adding WordPress Behavior
 
-- Create a service class under `src/Services/...`.
+- Create a service class inside the right module folder under `src/`:
+  - `src/Admin` for admin page/menu behavior
+  - `src/Licensing` for licensing/update integration
+  - `src/Policies/...` for config-backed WordPress policy behavior
 - Make the service implement `MacCore\Contracts\Service`.
 - Register all WordPress hooks inside the service's `register()` method.
 - Put callback methods on the service class.

@@ -11,21 +11,25 @@ declare(strict_types=1);
 
 namespace MacCore;
 
+use MacCore\Admin\AdminPage;
 use MacCore\Contracts\Service;
-use MacCore\Services\Core\AddLastLoginColumn;
-use MacCore\Services\Core\AddDeveloperBranding;
-use MacCore\Services\Core\ControlComments;
-use MacCore\Services\Core\DisableAdminBar;
-use MacCore\Services\Core\DisableAutoUpdates;
-use MacCore\Services\Core\DisableSiteHealth;
-use MacCore\Services\Core\RemoveDashboardClutter;
-use MacCore\Services\Core\SetExcerptLength;
-use MacCore\Services\Licensing;
-use MacCore\Services\Media\AddCustomImageSizes;
-use MacCore\Services\Media\AllowFontMimeTypes;
-use MacCore\Services\Media\DisableImageCompression;
-use MacCore\Services\Media\DisallowVideoMimeTypes;
-use MacCore\Services\Media\RemoveDefaultImageSizes;
+use MacCore\Licensing\LicensingService;
+use MacCore\Policies\Core\AddDeveloperBranding;
+use MacCore\Policies\Core\AddLastLoginColumn;
+use MacCore\Policies\Core\ControlComments;
+use MacCore\Policies\Core\DisableAdminBar;
+use MacCore\Policies\Core\DisableAutoUpdates;
+use MacCore\Policies\Core\DisableSiteHealth;
+use MacCore\Policies\Core\RemoveDashboardClutter;
+use MacCore\Policies\Core\SetExcerptLength;
+use MacCore\Policies\Media\AddCustomImageSizes;
+use MacCore\Policies\Media\AllowFontMimeTypes;
+use MacCore\Policies\Media\DisableImageCompression;
+use MacCore\Policies\Media\DisallowVideoMimeTypes;
+use MacCore\Policies\Media\RemoveDefaultImageSizes;
+use MacCore\Settings\SettingsController;
+use MacCore\Settings\SettingsSchema;
+use MacCore\Settings\WordPressSettingsRepository;
 
 final class Kernel
 {
@@ -71,24 +75,42 @@ final class Kernel
      */
     private function get_services(): array
     {
-        return [
-            // Core
-            new AddDeveloperBranding(),
-            new ControlComments(),
-            new DisableAdminBar(),
-            new DisableAutoUpdates(),
-            new DisableSiteHealth(),
-            new SetExcerptLength(),
-            new RemoveDashboardClutter(),
-            new AddLastLoginColumn(),
-            new Licensing(),
+        $schema   = new SettingsSchema();
+        $settings = new WordPressSettingsRepository( $schema );
+        $licensing = new LicensingService();
 
-            // Media
-            new AddCustomImageSizes(),
-            new AllowFontMimeTypes(),
-            new DisableImageCompression(),
-            new DisallowVideoMimeTypes(),
-            new RemoveDefaultImageSizes(),
+        $services = [
+            new SettingsController( $settings ),
+            new AdminPage( $settings, $schema, $licensing ),
+            $licensing,
+
+            // Core.
+            new AddDeveloperBranding( $settings ),
+            new ControlComments( $settings ),
+            new DisableAdminBar( $settings ),
+            new DisableAutoUpdates( $settings ),
+            new DisableSiteHealth( $settings ),
+            new SetExcerptLength( $settings ),
+            new RemoveDashboardClutter( $settings ),
+            new AddLastLoginColumn( $settings ),
+
+            // Media.
+            new AddCustomImageSizes( $settings ),
+            new AllowFontMimeTypes( $settings ),
+            new DisableImageCompression( $settings ),
+            new DisallowVideoMimeTypes( $settings ),
+            new RemoveDefaultImageSizes( $settings ),
         ];
+
+        /**
+         * Filter the runtime service list for MAC Core.
+         *
+         * Future add-ons should append instantiated service objects here.
+         *
+         * @param array<int,Service> $services Service instances.
+         */
+        $services = \apply_filters( 'mac_core_services', $services );
+
+        return \is_array( $services ) ? $services : [];
     }
 }

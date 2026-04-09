@@ -110,12 +110,40 @@ function mac_core_tests_reset_wp_state(): void
 	$GLOBALS['mac_core_test_actions']         = [];
 	$GLOBALS['mac_core_test_filters']         = [];
 	$GLOBALS['mac_core_test_filter_returns']  = [];
+	$GLOBALS['mac_core_test_menu_pages']      = [];
+	$GLOBALS['mac_core_test_submenu_pages']   = [];
+	$GLOBALS['mac_core_test_removed_menu_pages'] = [];
+	$GLOBALS['mac_core_test_removed_submenu_pages'] = [];
+	$GLOBALS['mac_core_test_removed_meta_boxes'] = [];
+	$GLOBALS['mac_core_test_removed_actions'] = [];
+	$GLOBALS['mac_core_test_settings_errors'] = [];
+	$GLOBALS['mac_core_test_options']         = [
+		'date_format' => 'M j, Y',
+		'time_format' => 'g:i a',
+	];
 	$GLOBALS['mac_core_test_terms']           = [];
 	$GLOBALS['mac_core_test_term_links']      = [];
 	$GLOBALS['mac_core_test_post_meta']       = [];
+	$GLOBALS['mac_core_test_post_types']      = [
+		'post',
+		'page',
+	];
+	$GLOBALS['mac_core_test_post_type_map']   = [];
+	$GLOBALS['mac_core_test_post_type_support'] = [
+		'post' => ['comments' => true, 'trackbacks' => true],
+		'page' => ['comments' => true, 'trackbacks' => true],
+	];
 	$GLOBALS['mac_core_test_current_post_id'] = 0;
 	$GLOBALS['mac_core_test_current_time']    = strtotime( '2026-04-08 12:00:00 UTC' );
 	$GLOBALS['mac_core_test_user_caps']       = [];
+	$GLOBALS['mac_core_test_user_meta']       = [];
+	$GLOBALS['mac_core_test_theme_support']   = [];
+	$GLOBALS['mac_core_test_image_sizes']     = [];
+	$GLOBALS['mac_core_test_removed_image_sizes'] = [];
+	$GLOBALS['mac_core_test_redirect_to']     = null;
+	$GLOBALS['mac_core_test_is_admin']        = true;
+	$GLOBALS['mac_core_test_is_admin_bar_showing'] = true;
+	$GLOBALS['mac_core_test_admin_bar_state'] = true;
 }
 
 mac_core_tests_reset_wp_state();
@@ -165,6 +193,67 @@ if ( ! function_exists( 'apply_filters' ) ) {
 	}
 }
 
+if ( ! function_exists( 'add_menu_page' ) ) {
+	function add_menu_page(
+		string $page_title,
+		string $menu_title,
+		string $capability,
+		string $menu_slug,
+		callable $callback,
+		string $icon_url = '',
+		int|string|null $position = null
+	): string {
+		$GLOBALS['mac_core_test_menu_pages'][ $menu_slug ] = [
+			'page_title' => $page_title,
+			'menu_title' => $menu_title,
+			'capability' => $capability,
+			'menu_slug'  => $menu_slug,
+			'callback'   => $callback,
+			'icon_url'   => $icon_url,
+			'position'   => $position,
+		];
+
+		return 'toplevel_page_' . $menu_slug;
+	}
+}
+
+if ( ! function_exists( 'add_submenu_page' ) ) {
+	function add_submenu_page(
+		string $parent_slug,
+		string $page_title,
+		string $menu_title,
+		string $capability,
+		string $menu_slug,
+		callable $callback,
+		int|string|null $position = null
+	): string {
+		$GLOBALS['mac_core_test_submenu_pages'][ $menu_slug ] = [
+			'parent_slug' => $parent_slug,
+			'page_title'  => $page_title,
+			'menu_title'  => $menu_title,
+			'capability'  => $capability,
+			'menu_slug'   => $menu_slug,
+			'callback'    => $callback,
+			'position'    => $position,
+		];
+
+		return $parent_slug . '_page_' . $menu_slug;
+	}
+}
+
+if ( ! function_exists( 'add_options_page' ) ) {
+	function add_options_page(
+		string $page_title,
+		string $menu_title,
+		string $capability,
+		string $menu_slug,
+		callable $callback,
+		int|string|null $position = null
+	): string {
+		return add_submenu_page( 'options-general.php', $page_title, $menu_title, $capability, $menu_slug, $callback, $position );
+	}
+}
+
 if ( ! function_exists( 'plugin_dir_url' ) ) {
 	function plugin_dir_url( string $file ): string
 	{
@@ -176,6 +265,27 @@ if ( ! function_exists( 'current_user_can' ) ) {
 	function current_user_can( string $capability ): bool
 	{
 		return (bool) ( $GLOBALS['mac_core_test_user_caps'][ $capability ] ?? false );
+	}
+}
+
+if ( ! function_exists( 'is_admin' ) ) {
+	function is_admin(): bool
+	{
+		return (bool) ( $GLOBALS['mac_core_test_is_admin'] ?? true );
+	}
+}
+
+if ( ! function_exists( 'show_admin_bar' ) ) {
+	function show_admin_bar( bool $show ): void
+	{
+		$GLOBALS['mac_core_test_admin_bar_state'] = $show;
+	}
+}
+
+if ( ! function_exists( 'is_admin_bar_showing' ) ) {
+	function is_admin_bar_showing(): bool
+	{
+		return (bool) ( $GLOBALS['mac_core_test_is_admin_bar_showing'] ?? true );
 	}
 }
 
@@ -275,11 +385,23 @@ if ( ! function_exists( 'current_time' ) ) {
 if ( ! function_exists( 'get_option' ) ) {
 	function get_option( string $option, mixed $default = false ): mixed
 	{
-		return match ( $option ) {
-			'date_format' => 'M j, Y',
-			'time_format' => 'g:i a',
-			default       => $default,
-		};
+		return $GLOBALS['mac_core_test_options'][ $option ] ?? $default;
+	}
+}
+
+if ( ! function_exists( 'update_option' ) ) {
+	function update_option( string $option, mixed $value ): bool
+	{
+		$GLOBALS['mac_core_test_options'][ $option ] = $value;
+		return true;
+	}
+}
+
+if ( ! function_exists( 'delete_option' ) ) {
+	function delete_option( string $option ): bool
+	{
+		unset( $GLOBALS['mac_core_test_options'][ $option ] );
+		return true;
 	}
 }
 
@@ -297,9 +419,222 @@ if ( ! function_exists( 'get_post_meta' ) ) {
 	}
 }
 
+if ( ! function_exists( 'get_user_meta' ) ) {
+	function get_user_meta( int $user_id, string $key = '', bool $single = false ): mixed
+	{
+		return $GLOBALS['mac_core_test_user_meta'][ $user_id ][ $key ] ?? '';
+	}
+}
+
+if ( ! function_exists( 'update_user_meta' ) ) {
+	function update_user_meta( int $user_id, string $key, mixed $value ): bool
+	{
+		$GLOBALS['mac_core_test_user_meta'][ $user_id ][ $key ] = $value;
+		return true;
+	}
+}
+
 if ( ! function_exists( '__' ) ) {
 	function __( string $text, string $domain = 'default' ): string
 	{
 		return $text;
+	}
+}
+
+if ( ! function_exists( 'esc_html__' ) ) {
+	function esc_html__( string $text, string $domain = 'default' ): string
+	{
+		return esc_html( __( $text, $domain ) );
+	}
+}
+
+if ( ! function_exists( 'sanitize_text_field' ) ) {
+	function sanitize_text_field( mixed $text ): string
+	{
+		return trim( preg_replace( '/\s+/', ' ', strip_tags( (string) $text ) ) );
+	}
+}
+
+if ( ! function_exists( 'sanitize_key' ) ) {
+	function sanitize_key( string $key ): string
+	{
+		return strtolower( preg_replace( '/[^a-z0-9_\-]/', '', $key ) );
+	}
+}
+
+if ( ! function_exists( 'wp_unslash' ) ) {
+	function wp_unslash( mixed $value ): mixed
+	{
+		if ( is_array( $value ) ) {
+			return array_map( 'wp_unslash', $value );
+		}
+
+		return $value;
+	}
+}
+
+if ( ! function_exists( 'wp_create_nonce' ) ) {
+	function wp_create_nonce( string $action ): string
+	{
+		return 'nonce:' . $action;
+	}
+}
+
+if ( ! function_exists( 'wp_verify_nonce' ) ) {
+	function wp_verify_nonce( string $nonce, string $action ): bool
+	{
+		return $nonce === wp_create_nonce( $action );
+	}
+}
+
+if ( ! function_exists( 'wp_nonce_field' ) ) {
+	function wp_nonce_field( string $action, string $name ): void
+	{
+		echo '<input type="hidden" name="' . esc_attr( $name ) . '" value="' . esc_attr( wp_create_nonce( $action ) ) . '">';
+	}
+}
+
+if ( ! function_exists( 'submit_button' ) ) {
+	function submit_button( string $text = 'Save Changes' ): void
+	{
+		echo '<p class="submit"><button type="submit">' . esc_html( $text ) . '</button></p>';
+	}
+}
+
+if ( ! function_exists( 'add_settings_error' ) ) {
+	function add_settings_error( string $setting, string $code, string $message, string $type = 'error' ): void
+	{
+		$GLOBALS['mac_core_test_settings_errors'][] = [
+			'setting' => $setting,
+			'code'    => $code,
+			'message' => $message,
+			'type'    => $type,
+		];
+	}
+}
+
+if ( ! function_exists( 'settings_errors' ) ) {
+	function settings_errors( ?string $setting = null ): void
+	{
+		foreach ( $GLOBALS['mac_core_test_settings_errors'] as $error ) {
+			if ( $setting !== null && $error['setting'] !== $setting ) {
+				continue;
+			}
+
+			echo '<div class="notice notice-' . esc_attr( $error['type'] ) . '"><p>' . esc_html( $error['message'] ) . '</p></div>';
+		}
+	}
+}
+
+if ( ! function_exists( 'admin_url' ) ) {
+	function admin_url( string $path = '' ): string
+	{
+		return 'https://example.test/wp-admin/' . ltrim( $path, '/' );
+	}
+}
+
+if ( ! function_exists( 'wp_safe_redirect' ) ) {
+	function wp_safe_redirect( string $location ): bool
+	{
+		$GLOBALS['mac_core_test_redirect_to'] = $location;
+		return true;
+	}
+}
+
+if ( ! function_exists( 'remove_menu_page' ) ) {
+	function remove_menu_page( string $menu_slug ): void
+	{
+		$GLOBALS['mac_core_test_removed_menu_pages'][] = $menu_slug;
+	}
+}
+
+if ( ! function_exists( 'remove_submenu_page' ) ) {
+	function remove_submenu_page( string $parent_slug, string $menu_slug ): void
+	{
+		$GLOBALS['mac_core_test_removed_submenu_pages'][] = [
+			'parent_slug' => $parent_slug,
+			'menu_slug'   => $menu_slug,
+		];
+	}
+}
+
+if ( ! function_exists( 'remove_meta_box' ) ) {
+	function remove_meta_box( string $id, string $screen, string $context ): void
+	{
+		$GLOBALS['mac_core_test_removed_meta_boxes'][] = [
+			'id'      => $id,
+			'screen'  => $screen,
+			'context' => $context,
+		];
+	}
+}
+
+if ( ! function_exists( 'remove_action' ) ) {
+	function remove_action( string $hook_name, mixed $callback ): void
+	{
+		$GLOBALS['mac_core_test_removed_actions'][] = [
+			'hook'     => $hook_name,
+			'callback' => $callback,
+		];
+	}
+}
+
+if ( ! function_exists( 'add_theme_support' ) ) {
+	function add_theme_support( string $feature ): void
+	{
+		$GLOBALS['mac_core_test_theme_support'][] = $feature;
+	}
+}
+
+if ( ! function_exists( 'add_image_size' ) ) {
+	function add_image_size( string $name, int $width, int $height, bool $crop ): void
+	{
+		$GLOBALS['mac_core_test_image_sizes'][ $name ] = [
+			'width'  => $width,
+			'height' => $height,
+			'crop'   => $crop,
+		];
+	}
+}
+
+if ( ! function_exists( 'remove_image_size' ) ) {
+	function remove_image_size( string $name ): void
+	{
+		$GLOBALS['mac_core_test_removed_image_sizes'][] = $name;
+	}
+}
+
+if ( ! function_exists( 'get_post_types' ) ) {
+	function get_post_types( array $args = [], string $output = 'names' ): array
+	{
+		return $GLOBALS['mac_core_test_post_types'] ?? [];
+	}
+}
+
+if ( ! function_exists( 'get_post_type' ) ) {
+	function get_post_type( int $post_id ): string
+	{
+		return $GLOBALS['mac_core_test_post_type_map'][ $post_id ] ?? 'post';
+	}
+}
+
+if ( ! function_exists( 'post_type_supports' ) ) {
+	function post_type_supports( string $post_type, string $feature ): bool
+	{
+		return (bool) ( $GLOBALS['mac_core_test_post_type_support'][ $post_type ][ $feature ] ?? false );
+	}
+}
+
+if ( ! function_exists( 'remove_post_type_support' ) ) {
+	function remove_post_type_support( string $post_type, string $feature ): void
+	{
+		$GLOBALS['mac_core_test_post_type_support'][ $post_type ][ $feature ] = false;
+	}
+}
+
+if ( ! function_exists( 'date_i18n' ) ) {
+	function date_i18n( string $format, int $timestamp ): string
+	{
+		return gmdate( $format, $timestamp );
 	}
 }

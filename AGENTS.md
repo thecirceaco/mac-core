@@ -12,7 +12,7 @@ MAC Core must remain OOP. Do not port the procedural organization from the `mac-
 - Keep `mac-core.php` as a minimal bootstrap: plugin metadata, `declare(strict_types=1)`, the `ABSPATH` guard, includes for `inc/constants.php` and `inc/autoload.php`, and `\MacCore\Kernel::boot()`.
 - Keep `src/Kernel.php` responsible for service loading.
 - Keep `MacCore\Contracts\Service` as the service contract for hook-registering services.
-- Add WordPress behavior as service classes under `src/Services/...`; each service must implement `MacCore\Contracts\Service`, register hooks inside `register()`, and be added to the Kernel service list.
+- Add WordPress behavior as service classes inside the module folders under `src/` such as `src/Admin`, `src/Licensing`, and `src/Policies/...`; each service must implement `MacCore\Contracts\Service`, register hooks inside `register()`, and be added to the Kernel service list.
 - Add shared pure helpers under `src/Utils/...` when they do not need to register hooks.
 
 ## Agent Context
