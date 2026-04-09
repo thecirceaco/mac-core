@@ -97,8 +97,8 @@ final class LicensingTest extends TestCase
 		$this->assertSame( null, $page['position'] );
 		$this->assertSame( '', $page['icon_url'] );
 		$this->assertFalse( $page['register_menu'] );
-		$this->assertStringContainsString( 'page=mac-core&tab=licensing', $page['activated_redirect'] );
-		$this->assertStringContainsString( 'page=mac-core&tab=licensing', $page['deactivated_redirect'] );
+		$this->assertStringContainsString( 'page=mac-core&tab=license', $page['activated_redirect'] );
+		$this->assertStringContainsString( 'page=mac-core&tab=license', $page['deactivated_redirect'] );
 		$this->assertArrayNotHasKey( 'admin_notices', $GLOBALS['mac_core_test_actions'] );
 	}
 

@@ -7,10 +7,11 @@ Turn the current hardcoded Core and Media behavior into a real product surface w
 ## Admin Structure
 
 - Top-level page: `page=mac-core`
-- Default base page: Welcome
-- Secondary views:
-  - `tab=licensing`
+- Base route redirects to `tab=settings` until a real Welcome screen is needed.
+- Explicit views:
   - `tab=settings`
+  - `tab=license`
+  - `tab=support`
 
 Settings stay inside one `Settings` view with module sections, not many top-level tabs.
 

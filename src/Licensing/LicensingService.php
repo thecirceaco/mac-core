@@ -62,8 +62,8 @@ final class LicensingService implements Service
 				'menu_slug'            => \MAC_CORE_ADMIN_SLUG,
 				'icon_url'             => '',
 				'position'             => null,
-				'activated_redirect'   => \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=licensing' ),
-				'deactivated_redirect' => \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=licensing' ),
+				'activated_redirect'   => \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=license' ),
+				'deactivated_redirect' => \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=license' ),
 				'register_menu'        => false,
 			]
 		);

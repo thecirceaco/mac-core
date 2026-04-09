@@ -12,8 +12,8 @@ Automatic.css is a larger product plugin than MAC Core, but it has several matur
 
 - ACSS uses one top-level page and then routes to specific screens.
 - MAC Core should keep one top-level page at `page=mac-core`.
-- Welcome is the default base page.
-- Secondary views use `tab=licensing`, `tab=settings`, and later add-on views.
+- The base route should redirect to `tab=settings` until a real Welcome screen exists.
+- Secondary views use `tab=settings`, `tab=license`, `tab=support`, and later add-on views.
 
 ### Settings repository over one option
 

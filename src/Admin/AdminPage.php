@@ -26,6 +26,7 @@ final class AdminPage implements Service
 	public function register(): void
 	{
 		\add_action( 'admin_menu', [ $this, 'add_menu_page' ], 20 );
+		\add_action( 'admin_init', [ $this, 'redirect_default_view' ], 20 );
 	}
 
 	/**
@@ -49,9 +50,13 @@ final class AdminPage implements Service
 	 */
 	public function render(): void
 	{
-		$current_view = $this->current_view();
 		$tabs         = $this->tabs();
-		$current_tab  = $tabs[ $current_view ] ?? $tabs['welcome'];
+		$current_view = $this->current_view( $tabs );
+		$current_tab  = $tabs[ $current_view ] ?? \reset( $tabs );
+
+		if ( ! \is_array( $current_tab ) ) {
+			return;
+		}
 
 		echo '<div class="wrap">';
 		echo '<h1>MAC Core</h1>';
@@ -64,25 +69,51 @@ final class AdminPage implements Service
 	}
 
 	/**
-	 * Render the default welcome view.
+	 * Redirect the base MAC Core route to the settings tab.
 	 */
-	public function render_welcome(): void
+	public function redirect_default_view(): void
 	{
-		echo '<p>MAC Core manages site policies, licensed updates, and future add-on integration points for company-standard WordPress builds.</p>';
-		echo '<p>Use the <a href="' . \esc_url( \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=settings' ) ) . '">Settings</a> view to configure Core and Media policies, and the <a href="' . \esc_url( \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=licensing' ) ) . '">Licensing</a> view to manage protected updates.</p>';
-		echo '<ul>';
-		echo '<li><strong>Version:</strong> ' . \esc_html( \MAC_CORE_VERSION ) . '</li>';
-		echo '<li><strong>Settings option:</strong> <code>' . \esc_html( \MAC_CORE_SETTINGS_OPTION ) . '</code></li>';
-		echo '<li><strong>Extension filters:</strong> <code>mac_core_services</code>, <code>mac_core_admin_tabs</code>, <code>mac_core_settings_sections</code></li>';
-		echo '</ul>';
+		$page = isset( $_GET['page'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin routing.
+			? \sanitize_key( (string) \wp_unslash( $_GET['page'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin routing.
+			: '';
+
+		if ( $page !== \MAC_CORE_ADMIN_SLUG ) {
+			return;
+		}
+
+		$tab = isset( $_GET['tab'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin routing.
+			? \sanitize_key( (string) \wp_unslash( $_GET['tab'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin routing.
+			: '';
+
+		if ( $tab !== '' ) {
+			return;
+		}
+
+		$method = isset( $_SERVER['REQUEST_METHOD'] )
+			? \sanitize_text_field( (string) \wp_unslash( $_SERVER['REQUEST_METHOD'] ) )
+			: 'GET';
+
+		if ( $method !== 'GET' ) {
+			return;
+		}
+
+		\wp_safe_redirect( \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=settings' ) );
 	}
 
 	/**
-	 * Render the licensing view.
+	 * Render the license view.
 	 */
-	public function render_licensing(): void
+	public function render_license(): void
 	{
 		$this->licensing->render_view();
+	}
+
+	/**
+	 * Render the support view.
+	 */
+	public function render_support(): void
+	{
+		echo '<p>You can get support by sending an email to <a href="mailto:mihai@circea.co">mihai@circea.co</a>. Before you do, make sure to check out our <a href="https://docs.circea.co/" target="_blank" rel="noopener noreferrer">documentation</a>.</p>';
 	}
 
 	/**
@@ -121,18 +152,18 @@ final class AdminPage implements Service
 	/**
 	 * Return the current tab identifier.
 	 */
-	private function current_view(): string
+	private function current_view( array $tabs ): string
 	{
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only admin view routing.
 		$tab = isset( $_GET['tab'] )
 			? \sanitize_key( (string) \wp_unslash( $_GET['tab'] ) )
 			: '';
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		$tab = $tab === '' ? 'welcome' : $tab;
+		$fallback = isset( $tabs['settings'] )
+			? 'settings'
+			: ( \array_key_first( $tabs ) ?? 'settings' );
 
-		$tabs = $this->tabs();
-
-		return isset( $tabs[ $tab ] ) ? $tab : 'welcome';
+		return isset( $tabs[ $tab ] ) ? $tab : $fallback;
 	}
 
 	/**
@@ -142,18 +173,18 @@ final class AdminPage implements Service
 	 */
 	private function tabs(): array
 	{
-		$tabs = [
-			'welcome'   => [
-				'label'    => 'Welcome',
-				'callback' => [ $this, 'render_welcome' ],
-			],
-			'licensing' => [
-				'label'    => 'Licensing',
-				'callback' => [ $this, 'render_licensing' ],
-			],
-			'settings'  => [
+		$default_tabs = [
+			'settings' => [
 				'label'    => 'Settings',
 				'callback' => [ $this, 'render_settings' ],
+			],
+			'license'  => [
+				'label'    => 'License',
+				'callback' => [ $this, 'render_license' ],
+			],
+			'support'  => [
+				'label'    => 'Support',
+				'callback' => [ $this, 'render_support' ],
 			],
 		];
 
@@ -164,13 +195,11 @@ final class AdminPage implements Service
 		 * - `label`: string
 		 * - `callback`: callable
 		 *
-		 * The `welcome` view remains the default route and does not use `tab=welcome`.
-		 *
 		 * @param array<string,array{label:string,callback:callable}> $tabs Admin tabs.
 		 */
-		$tabs = \apply_filters( 'mac_core_admin_tabs', $tabs );
+		$tabs = \apply_filters( 'mac_core_admin_tabs', $default_tabs );
 
-		return \is_array( $tabs ) ? $tabs : [];
+		return \is_array( $tabs ) ? $tabs : $default_tabs;
 	}
 
 	/**
@@ -183,9 +212,7 @@ final class AdminPage implements Service
 		echo '<nav class="nav-tab-wrapper">';
 
 		foreach ( $tabs as $slug => $tab ) {
-			$url   = $slug === 'welcome'
-				? \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG )
-				: \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=' . $slug );
+			$url   = \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=' . $slug );
 			$class = $slug === $current_view ? ' nav-tab-active' : '';
 
 			echo '<a href="' . \esc_url( $url ) . '" class="nav-tab' . \esc_attr( $class ) . '">' . \esc_html( $tab['label'] ) . '</a>';

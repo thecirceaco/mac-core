@@ -30,6 +30,7 @@ final class BootstrapTest extends TestCase
 
 		$this->assertTrue( $this->has_action_callback( 'init', LicensingService::class, 'initialize' ) );
 		$this->assertTrue( $this->has_action_callback( 'admin_menu', AdminPage::class, 'add_menu_page' ) );
+		$this->assertTrue( $this->has_action_callback( 'admin_init', AdminPage::class, 'redirect_default_view' ) );
 		$this->assertTrue( $this->has_action_callback( 'init', BootstrapTestService::class, 'handle' ) );
 		$this->assertArrayHasKey( 'automatic_updater_disabled', $GLOBALS['mac_core_test_filters'] );
 		$this->assertArrayHasKey( 'upload_mimes', $GLOBALS['mac_core_test_filters'] );

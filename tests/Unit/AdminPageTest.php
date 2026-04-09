@@ -22,6 +22,9 @@ final class AdminPageTest extends TestCase
 		parent::setUp();
 
 		\mac_core_tests_reset_wp_state();
+		$_GET    = [];
+		$_POST   = [];
+		$_SERVER = [];
 		$this->define_constants();
 	}
 
@@ -36,7 +39,29 @@ final class AdminPageTest extends TestCase
 		$this->assertStringStartsWith( 'data:image/svg+xml;base64,', $GLOBALS['mac_core_test_menu_pages']['mac-core']['icon_url'] );
 	}
 
-	public function test_render_defaults_to_welcome_view_without_tab_query(): void
+	public function test_register_adds_default_view_redirect_hook(): void
+	{
+		$page = $this->make_page();
+
+		$page->register();
+
+		$this->assertTrue( $this->has_action_callback( 'admin_init', AdminPage::class, 'redirect_default_view', 20 ) );
+	}
+
+	public function test_redirect_default_view_redirects_base_route_to_settings(): void
+	{
+		$_GET['page']              = 'mac-core';
+		$_SERVER['REQUEST_METHOD'] = 'GET';
+
+		$this->make_page()->redirect_default_view();
+
+		$this->assertSame(
+			'https://example.test/wp-admin/admin.php?page=mac-core&tab=settings',
+			$GLOBALS['mac_core_test_redirect_to']
+		);
+	}
+
+	public function test_render_defaults_to_settings_view_without_tab_query(): void
 	{
 		$_GET = ['page' => 'mac-core'];
 
@@ -44,9 +69,8 @@ final class AdminPageTest extends TestCase
 		$this->make_page()->render();
 		$output = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'MAC Core manages site policies', $output );
-		$this->assertStringContainsString( 'page=mac-core&tab=settings', $output );
-		$this->assertStringContainsString( 'class="nav-tab nav-tab-active">Welcome</a>', $output );
+		$this->assertStringContainsString( 'Core Policies', $output );
+		$this->assertStringContainsString( 'class="nav-tab nav-tab-active">Settings</a>', $output );
 	}
 
 	public function test_render_settings_view_outputs_core_and_media_fields(): void
@@ -61,6 +85,33 @@ final class AdminPageTest extends TestCase
 		$this->assertStringContainsString( 'Media Policies', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][excerpt_length]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[media][custom_image_widths]"', $output );
+	}
+
+	public function test_render_license_view_outputs_license_content(): void
+	{
+		$_GET = ['page' => 'mac-core', 'tab' => 'license'];
+
+		ob_start();
+		$this->make_page()->render();
+		$output = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'MAC Core licensing is not available yet.', $output );
+		$this->assertStringContainsString( 'class="nav-tab nav-tab-active">License</a>', $output );
+	}
+
+	public function test_render_support_view_outputs_contact_links(): void
+	{
+		$_GET = ['page' => 'mac-core', 'tab' => 'support'];
+
+		ob_start();
+		$this->make_page()->render();
+		$output = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'mailto:mihai@circea.co', $output );
+		$this->assertStringContainsString( 'https://docs.circea.co/', $output );
+		$this->assertStringContainsString( 'target="_blank"', $output );
+		$this->assertStringContainsString( 'rel="noopener noreferrer"', $output );
+		$this->assertStringContainsString( 'class="nav-tab nav-tab-active">Support</a>', $output );
 	}
 
 	public function test_render_supports_filtered_extra_tabs(): void
@@ -96,6 +147,23 @@ final class AdminPageTest extends TestCase
 		$settings = new WordPressSettingsRepository( $schema );
 
 		return new AdminPage( $settings, $schema, new LicensingService() );
+	}
+
+	private function has_action_callback( string $hook, string $class, string $method, int $priority ): bool
+	{
+		foreach ( $GLOBALS['mac_core_test_actions'][ $hook ] ?? [] as $registration ) {
+			$callback = $registration['callback'] ?? null;
+
+			if ( ! \is_array( $callback ) ) {
+				continue;
+			}
+
+			if ( $callback[0] instanceof $class && $callback[1] === $method && $registration['priority'] === $priority ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private function define_constants(): void
