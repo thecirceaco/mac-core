@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 8.3
-Stable tag: 0.6.1
+Stable tag: 0.6.2
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,11 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 0.6.2 =
+* Cleaned up the settings model by removing unused media inputs and keeping fixed upload policy defaults where customization was unnecessary.
+* Added explicit excerpt, admin bar target, and uninstall cleanup settings for clearer behavior and easier site maintenance.
+* Improved settings copy and textareas for image width and removed-size inputs, and added uninstall cleanup coverage in the test suite.
 
 = 0.6.1 =
 * Grouped related settings more clearly on the Settings page, including the comments controls.
