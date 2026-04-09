@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 8.3
-Stable tag: 0.6.3
+Stable tag: 0.6.4
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,11 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 0.6.4 =
+* Added installed-plugin screen links for `Settings`, `License`, and right-side `View details`, `Docs`, and `Support`.
+* Wired the plugin row `View details` link to the standard WordPress plugin information modal.
+* Added unit coverage for the new plugin listing links and bootstrap registration.
 
 = 0.6.3 =
 * Pinned the GitHub Actions release and quality workflows to immutable action SHAs.
