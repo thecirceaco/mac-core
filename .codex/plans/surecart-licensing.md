@@ -6,9 +6,9 @@ Implement SureCart-backed license activation and licensed manual update availabi
 
 ## Implementation
 
-- Bundle `surecart/wordpress-sdk` tag `v1.1.2` under `licensing/`, including `src/`, `README.md`, `composer.json`, and `PROVENANCE.md`.
+- Bundle the `surecart/wordpress-sdk` runtime from tag `v1.1.2` under `inc/Vendor/SureCart/Licensing/`.
 - Add `MacCore\Licensing\LicensingService` as a service class and register it in `src/Kernel.php`.
-- On `init`, load `licensing/src/Client.php` only if `MacCore\Vendor\SureCart\Licensing\Client` is absent.
+- On `init`, load `inc/Vendor/SureCart/Licensing/Client.php` only if `MacCore\Vendor\SureCart\Licensing\Client` is absent.
 - Read the public token from `MAC_CORE_SURECART_PUBLIC_TOKEN`, then pass it through `mac_core_surecart_public_token`.
 - If the token is blank, skip SDK initialization and register a `manage_options` admin notice.
 - If the SDK file is missing or the SDK class is still unavailable after loading, skip initialization and register a `manage_options` admin notice.
@@ -21,13 +21,13 @@ Implement SureCart-backed license activation and licensed manual update availabi
 
 - Add root `release.json` with slug `mac-core`, synchronized plugin version metadata, WordPress requirement `6.9`, tested up to `6.9`, PHP requirement `8.3`, Circea author metadata, description, changelog, and FAQ sections.
 - Keep `release.json` synchronized whenever `mac-core.php`, `inc/constants.php`, or `readme.txt` version/platform metadata changes.
-- Ensure release ZIPs include `licensing/` and `release.json`, while excluding agent/dev/test files.
+- Ensure release ZIPs include `inc/Vendor/SureCart/Licensing/` and `release.json`, while excluding agent/dev/test files.
 - Publish a matching SHA-256 checksum file and provenance JSON for each GitHub release ZIP.
 
 ## Verification
 
 - Validate `release.json` as JSON and confirm slug `mac-core`.
 - Run `php -l` on `src/Licensing/LicensingService.php` and the bundled SDK runtime files.
-- Confirm `git check-attr export-ignore` does not mark `release.json` or `licensing/src/Client.php` as excluded.
-- Confirm release workflow excludes dev-only files but does not exclude `release.json` or `licensing/`.
+- Confirm `git check-attr export-ignore` does not mark `release.json` or `inc/Vendor/SureCart/Licensing/Client.php` as excluded.
+- Confirm release workflow excludes dev-only files but does not exclude `release.json` or `inc/Vendor/SureCart/Licensing/`.
 - During the future full tooling pass, run `composer install`, `composer lint`, `composer test`, and a release ZIP contents check.

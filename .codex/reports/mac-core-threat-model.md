@@ -12,7 +12,7 @@ In-scope paths:
 - `uninstall.php`
 - `.github/workflows/`
 - `release.json`
-- `licensing/src/` as inherited dependency surface only
+- `inc/Vendor/SureCart/Licensing/` as inherited dependency surface only
 
 Out-of-scope items:
 
@@ -28,7 +28,7 @@ Assumptions:
 - The authoritative release artifact is the GitHub Actions-built ZIP, not a locally hand-zipped copy.
 - The GitHub-built ZIP is manually uploaded to SureCart and set as the current release.
 - Single-maintainer ownership is an accepted operational constraint.
-- `licensing/src/` is accepted as upstream-owned vendored code and will not be locally patched unless the integration itself requires it.
+- `inc/Vendor/SureCart/Licensing/` is accepted as upstream-owned vendored code and will not be locally patched unless the integration itself requires it.
 
 Open questions that would materially change the risk ranking:
 
@@ -43,7 +43,7 @@ Open questions that would materially change the risk ranking:
 - Policy services under `src/Policies/` change WordPress behavior based on stored settings.
 - Helper functions under `src/Utils/` produce frontend/template-facing output.
 - [LicensingService.php](D:/business/projects/mac-core/src/Licensing/LicensingService.php) loads the vendored SureCart SDK and exposes the license view.
-- The vendored updater in [Updater.php](D:/business/projects/mac-core/licensing/src/Updater.php) injects licensed plugin update data into WordPress.
+- The vendored updater in [Updater.php](D:/business/projects/mac-core/inc/Vendor/SureCart/Licensing/Updater.php) injects licensed plugin update data into WordPress.
 - GitHub Actions builds release artifacts, and SureCart serves the current release package to licensed sites.
 
 ### Data flows and trust boundaries
@@ -62,7 +62,7 @@ Open questions that would materially change the risk ranking:
 
 - WordPress site -> SureCart API via vendored SDK
   Data: public token, license state, release metadata, package URL.
-  Channel: HTTPS requests from `licensing/src/Client.php`.
+  Channel: HTTPS requests from `inc/Vendor/SureCart/Licensing/Client.php`.
   Guarantees: remote HTTPS transport; license and update logic live partly in inherited SDK code.
   Validation: limited locally; this is a trust boundary into a third-party system and vendored dependency.
 
@@ -124,7 +124,7 @@ flowchart TD
 | Admin page routing | `wp-admin/admin.php?page=mac-core` | Admin browser -> plugin admin | Top-level UI, tab routing, support link rendering | `src/Admin/AdminPage.php::render`, `::redirect_default_view` |
 | Settings save | POST on settings tab | Admin browser -> option mutation | Protected by `manage_options` and nonce | `src/Settings/SettingsController.php::handle_save` |
 | Template helpers | Theme/builder/plugin calls | Content/template inputs -> browser output | Important for XSS resistance | `src/Utils/FormatDatetime.php`, `src/Utils/GetPostTerms.php` |
-| Licensing integration | Admin license tab + remote API | Admin browser / site -> vendored SDK -> SureCart | Inherited dependency surface | `src/Licensing/LicensingService.php`, `licensing/src/Client.php`, `licensing/src/Updater.php` |
+| Licensing integration | Admin license tab + remote API | Admin browser / site -> vendored SDK -> SureCart | Inherited dependency surface | `src/Licensing/LicensingService.php`, `inc/Vendor/SureCart/Licensing/Client.php`, `inc/Vendor/SureCart/Licensing/Updater.php` |
 | Uninstall cleanup | Plugin deletion in WordPress | Admin action -> local data deletion | Controlled by explicit setting | `uninstall.php` |
 | Release workflow | Tag push in GitHub | Repo -> GitHub Actions -> release artifact | Authoritative build path for SureCart upload | `.github/workflows/release.yml` |
 
@@ -141,7 +141,7 @@ flowchart TD
 | Threat ID | Threat source | Prerequisites | Threat action | Impact | Impacted assets | Existing controls (evidence) | Gaps | Recommended mitigations | Detection ideas | Likelihood | Impact severity | Priority |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | TM-001 | Compromised GitHub action maintainer or GitHub operator | Attacker must gain control of the release workflow dependency or release pipeline | Alter release build behavior or output ZIP before SureCart upload | Licensed sites can install attacker-controlled plugin code | Release ZIP, customer site integrity | Immutable SHA pins in `.github/workflows/release.yml` and `.github/workflows/quality.yml`; checksum/provenance assets in `release.yml` | Manual SureCart upload is still a human-controlled step | Keep action SHAs current, verify checksum/provenance before SureCart upload, consider artifact attestations if release volume grows | Review workflow diff in PRs; verify release assets and provenance before upload | Low | High | medium |
-| TM-002 | Compromised SureCart store operator account | Attacker must access the SureCart store managing the MAC Core product | Replace the current release or manipulate update metadata | Licensed sites receive a malicious or incorrect update offer | SureCart current-release state, release ZIP, customer site integrity | Manual upload discipline, GitHub-built authoritative ZIP, local updater cache in `licensing/src/Updater.php` | SureCart remains a single external control plane | Keep SureCart access minimal, enable 2FA, upload only the GitHub-built asset, verify current release before announcing updates | Audit SureCart release changes and compare uploaded ZIP hash to GitHub artifact | Low | High | medium |
+| TM-002 | Compromised SureCart store operator account | Attacker must access the SureCart store managing the MAC Core product | Replace the current release or manipulate update metadata | Licensed sites receive a malicious or incorrect update offer | SureCart current-release state, release ZIP, customer site integrity | Manual upload discipline, GitHub-built authoritative ZIP, local updater cache in `inc/Vendor/SureCart/Licensing/Updater.php` | SureCart remains a single external control plane | Keep SureCart access minimal, enable 2FA, upload only the GitHub-built asset, verify current release before announcing updates | Audit SureCart release changes and compare uploaded ZIP hash to GitHub artifact | Low | High | medium |
 | TM-003 | Lower-privilege builder/editor or compromised content path | Attacker must influence template inputs, taxonomy values, or helper arguments used in rendered output | Drive unsafe helper output into frontend or privileged browser contexts | XSS, session theft, admin action abuse | Template output, admin/browser sessions | Escaped plain helper output in `src/Utils/FormatDatetime.php` and `src/Utils/GetPostTerms.php` | Future helpers could regress if raw output contracts are unclear | Keep helper outputs escaped by default, add regression tests when new helpers land, document any intentional raw helper clearly | Add helper-focused unit tests and review new `mac_*` helpers during PRs | Low | Medium | low |
 | TM-004 | Compromised admin-capable account | Attacker must already control an admin-capable WordPress account | Change policy settings, disable useful controls, or enable uninstall cleanup before deleting the plugin | Site behavior changes or plugin-owned data is removed | `mac_core_settings`, user meta, local license state | `manage_options` gate and nonce verification in `src/Settings/SettingsController.php`; uninstall requires explicit opt-in in `uninstall.php` | Admin compromise is already high leverage in WordPress | Keep admin-only findings lower priority, require strong admin auth and least privilege in real deployments | Monitor admin account activity and settings changes where available | Medium | Medium | medium |
 | TM-005 | Inherited vendor flaw in SureCart SDK | Attacker must exploit a bug in the vendored SDK or abusive remote state handled by it | Influence license or update behavior through inherited SDK internals | Wrong activation state, wrong update metadata, or admin-flow instability | License state, update metadata | MAC Core isolates SDK loading in `src/Licensing/LicensingService.php`; vendored SDK is namespaced locally | SDK internals are accepted upstream-owned code and not locally hardened in this audit | Track upstream SDK releases and review changes before bumping vendor code | Watch for upstream advisories and regression-test licensing/update flow when bumping SDK | Low | Medium | low |
@@ -171,7 +171,7 @@ Examples for this repo:
 | `D:/business/projects/mac-core/src/Settings/SettingsController.php` | Admin-side option mutation boundary with authz and nonce checks | TM-004 |
 | `D:/business/projects/mac-core/src/Admin/AdminPage.php` | Main admin routing and rendering surface | TM-004 |
 | `D:/business/projects/mac-core/src/Licensing/LicensingService.php` | MAC Core-owned bridge into the vendored SDK | TM-002, TM-005 |
-| `D:/business/projects/mac-core/licensing/src/Updater.php` | Inherited update metadata injection path | TM-002, TM-005 |
+| `D:/business/projects/mac-core/inc/Vendor/SureCart/Licensing/Updater.php` | Inherited update metadata injection path | TM-002, TM-005 |
 | `D:/business/projects/mac-core/src/Utils/FormatDatetime.php` | Frontend/template-facing helper output | TM-003 |
 | `D:/business/projects/mac-core/src/Utils/GetPostTerms.php` | Frontend/template-facing helper output | TM-003 |
 | `D:/business/projects/mac-core/uninstall.php` | Plugin-owned data deletion boundary | TM-004 |
@@ -179,6 +179,6 @@ Examples for this repo:
 
 ## Notes on use
 
-- This threat model is intentionally repo-centric and treats `licensing/src/` as accepted upstream-owned vendored surface rather than a local patch target.
+- This threat model is intentionally repo-centric and treats `inc/Vendor/SureCart/Licensing/` as accepted upstream-owned vendored surface rather than a local patch target.
 - Re-run the model when MAC Core adds public endpoints, add-on loading, migrations, or new runtime dependencies.
 - Revisit the risk ranking if the release workflow changes, the SureCart trust model changes, or customer sites begin to use MAC Core in multi-operator environments.

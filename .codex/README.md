@@ -11,7 +11,7 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 - `plans/addons-architecture.md`: Lightweight extension model for future MAC add-ons.
 - `plans/mac-core-settings-policy-modules.md`: Admin/settings/policy module plan for the config-backed MAC Core product surface.
 - `context/surecart-licensing-research.md`: Research notes from the SureCart licensing docs and `surecart/wordpress-sdk`.
-- `context/surecart-sdk-provenance.md`: Source, tag, and maintenance notes for the vendored SureCart WordPress SDK.
+- `context/surecart-sdk-provenance.md`: Source, tag, runtime-file path, and maintenance notes for the vendored SureCart WordPress SDK.
 - `context/etch-1.4.9-review.md`: Detailed notes from reviewing the Etch 1.4.9 plugin ZIP and how to adapt the useful patterns.
 - `context/acss-4.0.0-rc-1-review.md`: Automatic.css review notes for admin routing, settings storage, lifecycle timing, and extension seams.
 - `todos/mac-core-alignment.md`: Actionable implementation checklist and verification steps for the alignment pass.

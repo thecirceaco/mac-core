@@ -28,12 +28,12 @@ Keep MAC Core small now, but set up professional plugin tooling so future featur
 - Exclude:
   - `.codex`
   - `.github`
-  - `vendor`
-  - `licensing`
+  - root `vendor`
+  - `inc/Vendor`
   - `tests`
   - generated caches/output.
 
-`licensing` is vendored third-party SDK code; do not lint it as first-party code unless applying a deliberate vendor patch.
+`inc/Vendor` is vendored third-party runtime code; do not lint it as first-party code unless applying a deliberate vendor patch.
 
 ## PHPUnit
 
@@ -72,4 +72,4 @@ Avoid empty folders and abstract base classes that do not yet remove real comple
 - Work on `dev`.
 - Use `main` only for the release/tag workflow.
 - Keep dev tooling, `.codex`, test harness, and generated caches out of the release ZIP.
-- Include runtime code, release metadata, and runtime licensing SDK files.
+- Include runtime code, release metadata, and runtime vendored SDK files.

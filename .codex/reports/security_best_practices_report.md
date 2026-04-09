@@ -5,7 +5,7 @@ Branch reviewed: `dev`
 
 ## Scope
 
-This pass reviewed MAC Core-owned runtime code, admin/settings flows, uninstall behavior, release workflows, and release-integrity controls. The vendored SureCart SDK under `licensing/src/` was reviewed only as inherited dependency surface. Its internals are accepted as upstream-owned and are not part of the local remediation scope unless the integration itself breaks.
+This pass reviewed MAC Core-owned runtime code, admin/settings flows, uninstall behavior, release workflows, and release-integrity controls. The vendored SureCart SDK under `inc/Vendor/SureCart/Licensing/` was reviewed only as inherited dependency surface. Its internals are accepted as upstream-owned and are not part of the local remediation scope unless the integration itself breaks.
 
 ## Executive Summary
 
@@ -13,7 +13,7 @@ No obvious critical issue was found in MAC Core-owned code. The main actionable 
 
 I did not find plugin-owned unauthenticated endpoints, custom AJAX/REST handlers, arbitrary file-write paths, dynamic code execution, or known unsafe plain-output regressions in the reviewed code. The remaining meaningful risks are accepted or inherited:
 
-- `licensing/src/` remains an inherited third-party trust boundary from SureCart.
+- `inc/Vendor/SureCart/Licensing/` remains an inherited third-party trust boundary from SureCart.
 - The project currently has one maintainer, which is an accepted operational constraint.
 
 ## Findings
@@ -43,7 +43,7 @@ Residual note: pinning is not a one-time action. These SHAs still need deliberat
 Severity: Informational
 Status: Accepted
 
-The vendored SureCart SDK in `licensing/src/` remains part of the runtime trust boundary because it handles license state and update metadata. It is not treated as a local remediation target in this audit because those files are upstream SDK internals and you explicitly do not want to carry local forks there.
+The vendored SureCart SDK in `inc/Vendor/SureCart/Licensing/` remains part of the runtime trust boundary because it handles license state and update metadata. It is not treated as a local remediation target in this audit because those files are upstream SDK internals and you explicitly do not want to carry local forks there.
 
 This means:
 

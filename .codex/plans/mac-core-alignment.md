@@ -36,7 +36,7 @@ Align MAC Core with the current `mac-bricks` and `mac-etch` baseline while prese
   - `uninstall.php`
   - `inc`
   - `src`
-- Exclude `vendor/*` and `.codex/*` from PHPCS.
+- Exclude root `vendor/*`, `inc/Vendor/*`, and `.codex/*` from PHPCS.
 
 ## CI And Release Archives
 

@@ -15,7 +15,7 @@ final class PrefixedSureCartSdkTest extends TestCase
 {
 	public function test_bundled_surecart_sdk_uses_mac_core_vendor_namespace(): void
 	{
-		$client_file = dirname( __DIR__, 2 ) . '/licensing/src/Client.php';
+		$client_file = dirname( __DIR__, 2 ) . '/inc/Vendor/SureCart/Licensing/Client.php';
 		$contents    = (string) file_get_contents( $client_file );
 
 		$this->assertStringContainsString( 'namespace MacCore\\Vendor\\SureCart\\Licensing;', $contents );

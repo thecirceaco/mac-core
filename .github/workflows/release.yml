@@ -20,7 +20,7 @@ jobs:
           mkdir -p dist/mac-core
           rsync -av \
             --exclude='/composer.lock' \
-            --exclude='vendor' \
+            --exclude='/vendor' \
             --exclude='node_modules' \
             --exclude='/.env' \
             --exclude='/.env.local' \
@@ -35,7 +35,6 @@ jobs:
             --exclude='/composer.json' \
             --exclude='/phpcs.xml.dist' \
             --exclude='/phpunit.xml.dist' \
-            --exclude='/licensing/README.md' \
             --exclude='/tests' \
             --exclude='/bin/install-wp-tests.sh' \
             --exclude='/bin/build-dev-zip.ps1' \

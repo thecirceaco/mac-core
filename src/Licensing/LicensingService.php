@@ -112,7 +112,7 @@ final class LicensingService implements Service
 			return true;
 		}
 
-		$sdk_file = \MAC_CORE_PATH . 'licensing/src/Client.php';
+		$sdk_file = \MAC_CORE_PATH . 'inc/Vendor/SureCart/Licensing/Client.php';
 
 		if ( ! \is_readable( $sdk_file ) ) {
 			return false;

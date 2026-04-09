@@ -9,10 +9,9 @@
 
 ## SDK
 
-- [x] Bundle `surecart/wordpress-sdk` tag `v1.1.2` under `licensing/`.
-- [x] Include SDK runtime files from `src/`.
-- [x] Include SDK README and composer metadata.
-- [x] Add local SDK provenance notes.
+- [x] Bundle the `surecart/wordpress-sdk` runtime under `inc/Vendor/SureCart/Licensing/`.
+- [x] Include the five SDK runtime PHP files.
+- [x] Keep local SDK provenance notes in `.codex`.
 
 ## Integration
 
@@ -30,7 +29,7 @@
 
 - [x] Add root `release.json`.
 - [x] Ensure `release.json` slug is `mac-core`.
-- [x] Ensure release workflow keeps `licensing/` and `release.json`.
+- [x] Ensure release workflow keeps `inc/Vendor/SureCart/Licensing/` and `release.json`.
 - [x] Ensure release workflow excludes dev-only files.
 
 ## Tests
@@ -44,6 +43,6 @@
 
 - [x] Validate `release.json` as JSON.
 - [x] Run PHP syntax checks on MAC Core licensing service and SDK runtime files.
-- [x] Confirm `release.json` and `licensing/` are not `export-ignore`.
-- [x] Confirm release workflow packaging rules keep licensing artifacts.
+- [x] Confirm `release.json` and `inc/Vendor/SureCart/Licensing/` are not `export-ignore`.
+- [x] Confirm release workflow packaging rules keep vendored licensing artifacts.
 - [x] Run `composer install`, `composer lint`, and `composer test` after Composer/PHPUnit tooling exists.

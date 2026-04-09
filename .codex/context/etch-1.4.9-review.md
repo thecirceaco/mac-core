@@ -31,9 +31,9 @@ Etch prefixes the SureCart SDK under `Etch\Includes\SureCart\Licensing`, avoidin
 
 MAC Core adaptation:
 
-- Current MAC Core uses the official SDK namespace as shipped: `SureCart\Licensing`.
-- This is acceptable for the first licensing release, but a future hardening pass should consider prefixing the SDK namespace, either with a documented vendor patch or a build-time tool such as PHP-Scoper.
-- If prefixing is adopted, keep the SDK provenance note and make the patch/build step repeatable.
+- MAC Core already vendors the SDK under `MacCore\Vendor\SureCart\Licensing`.
+- Keep that namespace isolation in place to avoid collisions with other plugins shipping the SureCart SDK.
+- Keep the SDK provenance note and make any future vendor refreshes repeatable.
 
 ### Clear Product Modules
 

@@ -8,7 +8,7 @@ Use this skill when maintaining MAC Core's SureCart licensing integration.
 - Do not initialize SureCart licensing from `mac-core.php`; use a service registered by `Kernel`.
 - Keep existing MAC Core services available even when no license is active.
 - Keep `DisableAutoUpdates` unchanged unless the user explicitly asks to revisit update policy.
-- Treat the SureCart SDK under `licensing/` as vendored third-party code.
+- Treat the SureCart SDK under `inc/Vendor/SureCart/Licensing/` as vendored third-party code.
 - MAC Core ships the SDK under the vendor-prefixed runtime namespace `MacCore\Vendor\SureCart\Licensing`.
 - Do not edit SDK files unless intentionally applying a documented vendor patch.
 - Keep SDK provenance in `.codex/context/surecart-sdk-provenance.md`.
@@ -25,6 +25,6 @@ Use this skill when maintaining MAC Core's SureCart licensing integration.
 
 - Keep `release.json` slug set to `mac-core`.
 - Keep `release.json` version and compatibility metadata synchronized with `mac-core.php`, `inc/constants.php`, and `readme.txt`.
-- Release ZIPs must include `release.json` and `licensing/`.
+- Release ZIPs must include `release.json` and `inc/Vendor/SureCart/Licensing/`.
 - Release ZIPs must publish a `.sha256` checksum file and a provenance JSON alongside the ZIP artifact.
 - Release ZIPs must exclude `.codex/`, `AGENTS.md`, Composer/PHPCS/PHPUnit dev files, tests, caches, and local editor/dev-environment folders.

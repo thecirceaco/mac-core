@@ -11,7 +11,7 @@
 
 - SureCart licensing requires the WordPress SDK inside the plugin or theme being licensed.
 - The current SDK README says to load and initialize the SDK on the WordPress `init` hook. The pinned `v1.1.2` README has older example wording that shows direct initialization in the main plugin file; MAC Core follows the current README plus the repo architecture guardrail by initializing from a service on `init`.
-- The plugin release ZIP should contain the plugin files, the SDK folder, and a root `release.json`.
+- The plugin release ZIP should contain the plugin files, the vendored SDK runtime files, and a root `release.json`.
 - In SureCart, create or edit the product, add the plugin ZIP as a secure storage download, enable license creation, choose the allowed activation count, and set the uploaded ZIP as the current release.
 - Customers download the ZIP and copy the license key from their SureCart customer dashboard.
 - On the client WordPress site, the customer uploads and activates the plugin, opens the plugin's license settings page, enters the license key, and activates the site.
@@ -38,11 +38,11 @@
 
 ## MAC Core Decisions
 
-- Bundle the SDK from GitHub tag `v1.1.2` under `licensing/`.
+- Bundle the SDK runtime from GitHub tag `v1.1.2` under `inc/Vendor/SureCart/Licensing/`.
 - Use the SDK's built-in license page as a top-level admin menu.
 - Menu label: `MAC Core`.
 - Page title: `MAC Core License`.
-- Menu slug: `mac-core-license`.
+- Menu slug: `mac-core`.
 - Capability: `manage_options`.
 - Textdomain: `mac-core`.
 - Public token source: `MAC_CORE_SURECART_PUBLIC_TOKEN`, passed through the `mac_core_surecart_public_token` filter.
@@ -52,6 +52,6 @@
 
 ## SDK Provenance
 
-- The bundled SDK is from `surecart/wordpress-sdk` tag `v1.1.2`.
+- The bundled SDK runtime is from `surecart/wordpress-sdk` tag `v1.1.2`.
 - The tag's `composer.json` declares license `MIT`.
-- The GitHub contents API did not expose a separate `LICENSE` file at tag `v1.1.2` during research, so MAC Core keeps provenance details in `licensing/PROVENANCE.md` and includes the SDK `README.md` plus `composer.json`.
+- MAC Core keeps provenance details in `.codex/context/surecart-sdk-provenance.md` and only ships the five runtime PHP files, not upstream package metadata files.
