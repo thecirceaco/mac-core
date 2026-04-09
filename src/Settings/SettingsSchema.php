@@ -23,6 +23,13 @@ final class SettingsSchema
 				'title'       => 'Core Policies',
 				'description' => 'Site-wide WordPress behavior for admin, editorial, and branding defaults.',
 				'fields'      => [
+					'delete_data_on_uninstall'         => [
+						'type'        => 'checkbox',
+						'group'       => 'Uninstall',
+						'label'       => 'Delete plugin data on uninstall',
+						'description' => 'Removes MAC Core settings, local license data, and MAC Core user metadata when the plugin is deleted from the site.',
+						'default'     => false,
+					],
 					'developer_branding_enabled'       => [
 						'type'        => 'checkbox',
 						'group'       => 'Branding',
@@ -129,13 +136,6 @@ final class SettingsSchema
 						'label'       => 'Show last login column',
 						'description' => 'Adds and maintains the user list table last login column.',
 						'default'     => true,
-					],
-					'delete_data_on_uninstall'         => [
-						'type'        => 'checkbox',
-						'group'       => 'Maintenance',
-						'label'       => 'Delete plugin data on uninstall',
-						'description' => 'Removes MAC Core settings, local license data, and MAC Core user metadata when the plugin is deleted from the site.',
-						'default'     => false,
 					],
 				],
 			],

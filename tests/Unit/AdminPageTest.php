@@ -83,8 +83,8 @@ final class AdminPageTest extends TestCase
 
 		$this->assertStringContainsString( 'Core Policies', $output );
 		$this->assertStringContainsString( 'Media Policies', $output );
+		$this->assertStringContainsString( '<h3>Uninstall</h3>', $output );
 		$this->assertStringContainsString( '<h3>Comments</h3>', $output );
-		$this->assertStringContainsString( '<h3>Maintenance</h3>', $output );
 		$this->assertStringContainsString( '<h3>Image Sizes</h3>', $output );
 		$this->assertStringContainsString( '<h3>Uploads</h3>', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][excerpt_length]"', $output );
@@ -95,6 +95,10 @@ final class AdminPageTest extends TestCase
 		$this->assertStringContainsString( 'Height is automatic and aspect ratio is preserved.', $output );
 		$this->assertStringContainsString( 'Applies to both intermediate and advanced image sizes.', $output );
 		$this->assertStringContainsString( 'Disables WordPress image compression for JPEG, WebP, and AVIF uploads.', $output );
+		$this->assertLessThan(
+			strpos( $output, '<h3>Branding</h3>' ),
+			strpos( $output, '<h3>Uninstall</h3>' )
+		);
 	}
 
 	public function test_render_license_view_outputs_license_content(): void
