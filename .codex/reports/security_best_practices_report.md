@@ -1,135 +1,111 @@
 # MAC Core Security Best Practices Report
 
-Date: 2026-04-08
+Date: 2026-04-09
 Branch reviewed: `dev`
 
 ## Scope
 
-Reviewed MAC Core plugin source, bundled SureCart WordPress SDK runtime files, release packaging, GitHub release workflow, and repo-local agent context. This pass focused on WordPress security controls: authentication and authorization, CSRF, XSS, update supply chain, file/database mutation, remote requests, and operational patching.
-
-The `security-best-practices` skill did not include PHP or WordPress-specific reference material, so this report uses repo-grounded review plus official WordPress and GitHub security documentation.
+This pass reviewed MAC Core-owned runtime code, admin/settings flows, uninstall behavior, release workflows, and release-integrity controls. The vendored SureCart SDK under `licensing/src/` was reviewed only as inherited dependency surface. Its internals are accepted as upstream-owned and are not part of the local remediation scope unless the integration itself breaks.
 
 ## Executive Summary
 
-No obvious unauthenticated public endpoint, SQL injection, arbitrary file write, arbitrary file include, or direct RCE path was found in MAC Core-owned code.
+No obvious critical issue was found in MAC Core-owned code. The main actionable finding from this audit was supply-chain hardening in GitHub Actions, and that has been fixed by pinning third-party actions to immutable commit SHAs.
 
-One concrete XSS hardening change was made during the review because clients may have accounts that can call MAC Core helper functions from templates:
+I did not find plugin-owned unauthenticated endpoints, custom AJAX/REST handlers, arbitrary file-write paths, dynamic code execution, or known unsafe plain-output regressions in the reviewed code. The remaining meaningful risks are accepted or inherited:
 
-- `src/Utils/GetPostTerms.php` now escapes plain-format term values and separators before returning them.
-- `src/Utils/FormatDatetime.php` now escapes plain diff output and all plain date/time output parts before returning them.
-
-Remaining items are mostly defense-in-depth and supply-chain controls around licensed updates, the vendored SDK admin form handler, and the release workflow.
+- `licensing/src/` remains an inherited third-party trust boundary from SureCart.
+- The project currently has one maintainer, which is an accepted operational constraint.
 
 ## Findings
 
-### 1. Fixed: Plain helper output could be unsafe in template contexts
+### 1. Fixed: GitHub Actions were pinned to floating tags instead of immutable SHAs
 
 Severity before fix: Medium
-Status: Fixed in working tree
+Status: Fixed in this audit
 
-Client or compromised builder/template access can call global helpers such as `mac_get_post_terms_plain()` and `mac_format_datetime()`. Before this pass, plain-format helpers returned raw term values, custom separators, date labels, and timezone-like values. Those values can be influenced by content/admin inputs and then rendered by builder templates.
+Before this pass, the release and quality workflows used floating tags such as `actions/checkout@v4`, `shivammathur/setup-php@v2`, and `softprops/action-gh-release@v2`. For this repo, that matters because the GitHub workflow produces the ZIP later uploaded to SureCart and distributed to licensed sites.
 
-Changes made:
+Fixed in:
 
-- `src/Utils/GetPostTerms.php:79` escapes plain term values.
-- `src/Utils/GetPostTerms.php:110` escapes the plain separator.
-- `src/Utils/FormatDatetime.php:295` escapes plain lifecycle/diff text.
-- `src/Utils/FormatDatetime.php:969` escapes all plain output parts before joining.
+- [release.yml](D:/business/projects/mac-core/.github/workflows/release.yml)
+- [quality.yml](D:/business/projects/mac-core/.github/workflows/quality.yml)
 
-This follows WordPress' guidance to escape output late and use context-appropriate escaping.
+Pinned actions:
 
-### 2. Vendored SDK license form should explicitly check capability on submit
+- `actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd` (`v5.0.1`)
+- `shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f` (`2.37.0`)
+- `softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe` (`v2.6.1`)
 
-Severity: Low to Medium
-Status: Open, recommended vendor patch or upstream issue
+Residual note: pinning is not a one-time action. These SHAs still need deliberate refreshes during normal maintenance.
 
-The SureCart SDK registers the settings page with `manage_options` capability in `licensing/src/Settings.php:55` and passes that capability to the WordPress menu APIs at `licensing/src/Settings.php:120`, `137`, and `152`. The form handler runs from the page callback at `licensing/src/Settings.php:209`.
+### 2. Accepted inherited dependency surface: SureCart SDK internals
 
-The handler verifies a nonce at `licensing/src/Settings.php:326` and sanitizes activation/deactivation inputs at `licensing/src/Settings.php:333` and `349`, but `license_form_submit()` does not perform its own explicit `current_user_can( $this->menu_args['capability'] )` check. WordPress states that nonces should not be used for authorization or access control.
+Severity: Informational
+Status: Accepted
 
-Practical exploitability looks limited because the page callback itself is behind `manage_options`, and the nonce is generated on that page. Still, this is a sensitive form because it activates/deactivates the license and stores license material in options. Recommended fix: keep vendored files unchanged unless applying a deliberate vendor patch, but either submit an upstream issue/PR or document a local vendor patch that adds a capability guard before processing `$_POST`.
+The vendored SureCart SDK in `licensing/src/` remains part of the runtime trust boundary because it handles license state and update metadata. It is not treated as a local remediation target in this audit because those files are upstream SDK internals and you explicitly do not want to carry local forks there.
 
-### 3. Licensed updates make SureCart and release ZIP integrity part of the trust boundary
+This means:
 
-Severity: Medium
-Status: Open operational control
+- the integration points in [LicensingService.php](D:/business/projects/mac-core/src/Licensing/LicensingService.php) remain in scope
+- the vendored SDK internals are documented as inherited surface
+- any issue there should normally be handled by upstream monitoring, version bumps, or a deliberate vendor override only if necessary
 
-The licensing flow uses the public token in `inc/constants.php:21`, sends requests to SureCart in `licensing/src/Client.php:286`, asks SureCart for the current release in `licensing/src/License.php:120`, and passes the returned package URL to WordPress update data in `licensing/src/Updater.php:152`.
+### 3. Accepted operational constraint: single maintainer / bus factor 1
 
-This is expected behavior for licensed updates. The security implication is that a compromised SureCart store account, compromised GitHub release asset, or wrong ZIP upload could distribute malicious plugin code to licensed sites when an admin runs the update.
+Severity: Informational
+Status: Accepted
 
-Recommended controls:
+The ownership map shows one contributor across the full repo:
 
-- Enable 2FA on both the SureCart web app account and the `circea.co` WordPress admin account if that account can manage products/releases.
-- Keep SureCart store admins minimal.
-- Only upload the GitHub Actions ZIP generated from the intended release tag.
-- Verify the tag, workflow run, and release asset before uploading to SureCart.
-- Add a checksum or release provenance note for each SureCart-uploaded ZIP.
-- Prefer signed tags or GitHub artifact attestations if this distribution path grows.
+- `people: 1`
+- `files: 124`
+- `commits: 85`
 
-### 4. Release workflow uses tag-pinned third-party actions, not immutable SHAs
+Source: [summary.json](D:/business/projects/mac-core/.codex/reports/ownership-map-out/summary.json)
 
-Severity: Low to Medium
-Status: Open hardening
+This is a real release and continuity risk, but not a code defect. It is documented as an accepted constraint for now.
 
-`.github/workflows/release.yml` uses:
+## Positive Security Posture
 
-- `actions/checkout@v4` at line 16
-- `softprops/action-gh-release@v2` at line 53
-
-GitHub's secure-use guidance says pinning actions to a full-length commit SHA is the only way to use an action as an immutable release. Tags are common, but they can move if an action maintainer account or repository is compromised.
-
-Recommended fix: pin both third-party actions to verified full-length commit SHAs and periodically update them intentionally.
-
-### 5. Automatic updates are intentionally disabled
-
-Severity: Informational to Medium, depending on patch process
-Status: Accepted behavior, document process
-
-`src/Policies/Core/DisableAutoUpdates.php` disables the automatic updater subsystem and automatic core, plugin, and theme updates when the policy is enabled.
-
-This means WordPress background auto-updates are off. It does not prevent manual updates in the admin dashboard, nor does it prevent ZIP uploads. For MAC Core specifically:
-
-- With an active SureCart license, the SDK can expose update availability in the WordPress dashboard. An admin still has to manually click update because plugin auto-updates are disabled.
-- Without an active license, the SureCart-powered dashboard update path should not provide the protected package. The site can still be updated by manually uploading a ZIP through WordPress.
-
-Recommended control: keep this behavior only if there is a clear manual patching process and release notification path for security fixes.
-
-### 6. Security regression tests are missing
-
-Severity: Low
-Status: Already planned in `.codex/todos/mac-core-alignment.md`
-
-There is no Composer/PHPUnit harness yet. Add tests for:
-
-- Plain helper escaping in `GetPostTerms` and `FormatDatetime`.
-- Licensing service behavior with missing token and configured token.
-- Capability/nonce behavior if a local SDK patch is applied.
-- Release metadata/version consistency for `release.json`, `readme.txt`, `mac-core.php`, and `inc/constants.php`.
-
-## Positive Observations
-
-- `mac-core.php` has an `ABSPATH` guard and remains a minimal bootstrap.
-- No custom REST routes, AJAX actions, direct SQL, arbitrary file writes, or direct `eval`/`unserialize`/`base64_decode` paths were found.
-- Plugin-owned admin notice output in `src/Licensing/LicensingService.php` checks `manage_options` and escapes the message.
-- HTML-format helper output uses `esc_html`, `esc_attr`, and `esc_url` in the reviewed paths.
-- The SureCart public token is a public token, not a secret API token.
-- `release.json` and `licensing/` are included in release ZIPs while dev-only files are excluded.
+- [SettingsController.php](D:/business/projects/mac-core/src/Settings/SettingsController.php) enforces both `manage_options` and a nonce before saving settings.
+- [AdminPage.php](D:/business/projects/mac-core/src/Admin/AdminPage.php) registers the top-level admin UI behind `manage_options`.
+- [FormatDatetime.php](D:/business/projects/mac-core/src/Utils/FormatDatetime.php) escapes plain output parts before returning them.
+- [GetPostTerms.php](D:/business/projects/mac-core/src/Utils/GetPostTerms.php) escapes plain output values and separators.
+- [uninstall.php](D:/business/projects/mac-core/uninstall.php) only deletes local data when the explicit opt-in setting is enabled.
+- Repo-wide grep did not find plugin-owned `register_rest_route`, `wp_ajax_`, `admin_post_`, `eval`, `unserialize`, shell execution, or upload-file handlers in MAC Core-owned code.
 
 ## Verification Performed
 
-- Confirmed current branch is `dev`.
-- Confirmed the initial working tree was clean.
-- Searched for superglobals, remote requests, update option calls, transients, nonce usage, capability checks, REST/AJAX hooks, and dangerous PHP primitives.
-- Reviewed MAC Core services, utilities, bootstrap/autoload, bundled SureCart SDK runtime files, release workflow, `.gitattributes`, and `.gitignore`.
-- Ran `php -l` across all PHP files before code changes.
-- Ran `php -l` for the two modified helper files after the XSS hardening change.
+- Reviewed:
+  - [AdminPage.php](D:/business/projects/mac-core/src/Admin/AdminPage.php)
+  - [SettingsController.php](D:/business/projects/mac-core/src/Settings/SettingsController.php)
+  - [LicensingService.php](D:/business/projects/mac-core/src/Licensing/LicensingService.php)
+  - [DisableAdminBar.php](D:/business/projects/mac-core/src/Policies/Core/DisableAdminBar.php)
+  - [uninstall.php](D:/business/projects/mac-core/uninstall.php)
+  - [release.yml](D:/business/projects/mac-core/.github/workflows/release.yml)
+  - [quality.yml](D:/business/projects/mac-core/.github/workflows/quality.yml)
+- Ran repo-wide searches for:
+  - public entry points
+  - dangerous PHP primitives
+  - remote requests
+  - option/transient mutation
+  - update hooks
+- Generated ownership artifacts under [ownership-map-out](D:/business/projects/mac-core/.codex/reports/ownership-map-out)
+
+## Recommended Follow-Up
+
+1. Keep workflow SHA pins current during normal release maintenance.
+2. Re-run this audit when MAC Core adds:
+   - public REST/AJAX endpoints
+   - add-on loading
+   - custom tables or migrations
+   - new third-party runtime dependencies
+3. Track SureCart SDK updates deliberately and review upstream changelogs before bumping the vendored copy.
 
 ## Sources
 
-- [WordPress Nonces](https://developer.wordpress.org/apis/security/nonces/)
-- [WordPress current_user_can()](https://developer.wordpress.org/reference/functions/current_user_can/)
-- [WordPress Escaping Data](https://developer.wordpress.org/apis/security/escaping/)
-- [WordPress Sanitizing Data](https://developer.wordpress.org/apis/security/sanitizing/)
-- [GitHub Actions Secure Use](https://docs.github.com/en/actions/reference/security/secure-use)
-- [SureCart WordPress SDK](https://github.com/surecart/wordpress-sdk)
+- [GitHub Actions secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)
+- [actions/checkout v5.0.1 commit](https://github.com/actions/checkout/commit/93cb6efe18208431cddfb8368fd83d5badbf9bfd)
+- [shivammathur/setup-php 2.37.0 commit](https://github.com/shivammathur/setup-php/commit/accd6127cb78bee3e8082180cb391013d204ef9f)
+- [softprops/action-gh-release v2.6.1 commit](https://github.com/softprops/action-gh-release/commit/153bb8e04406b158c6c84fc1615b65b24149a1fe)

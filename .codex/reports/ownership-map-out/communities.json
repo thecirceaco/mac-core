@@ -1,0 +1,305 @@
+[
+  {
+    "id": 1,
+    "size": 16,
+    "files": [
+      "src/Kernel.php",
+      "src/Services/Core/AddLastLoginAdminColumn.php",
+      "src/Services/Core/ApplyAdminBranding.php",
+      "src/Services/Core/ApplyBranding.php",
+      "src/Services/Core/ControlComments.php",
+      "src/Services/Core/CustomizeExcerpts.php",
+      "src/Services/Core/DisableAdminBar.php",
+      "src/Services/Core/DisableAutoUpdates.php",
+      "src/Services/Core/DisableSiteHealth.php",
+      "src/Services/Core/RemoveDashboardClutter.php",
+      "src/Services/Core/TruncateExcerpts.php",
+      "src/Services/Media/AddCustomImageSizes.php",
+      "src/Services/Media/AllowFontMimeTypes.php",
+      "src/Services/Media/DisallowVideoMimeTypes.php",
+      "src/Services/Media/RemoveDefaultImageSizes.php",
+      "src/Services/Updater/GitHubUpdater.php"
+    ],
+    "maintainers": [
+      {
+        "person_id": "mihai@circea.co",
+        "name": "Mihai Circea",
+        "touches": 66,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+02:00"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 66,
+      "recency_weight": 55.248692,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 2,
+    "size": 13,
+    "files": [
+      ".codex/README.md",
+      ".codex/skills/dev-zip-testing.md",
+      ".codex/skills/release.md",
+      ".codex/todos/mac-core-alignment.md",
+      ".codex/todos/surecart-licensing.md",
+      "bin/build-dev-zip.ps1",
+      "inc/constants.php",
+      "licensing/PROVENANCE.md",
+      "mac-core.php",
+      "readme.txt",
+      "release.json",
+      "src/Services/Core/AddLastLoginColumn.php",
+      "tests/stubs/wordpress.php"
+    ],
+    "maintainers": [
+      {
+        "person_id": "mihai@circea.co",
+        "name": "Mihai Circea",
+        "touches": 90,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+02:00"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 90,
+      "recency_weight": 85.64889,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 3,
+    "size": 10,
+    "files": [
+      ".codex/plans/surecart-licensing.md",
+      ".codex/skills/surecart-licensing.md",
+      "licensing/src/Activation.php",
+      "licensing/src/Client.php",
+      "licensing/src/License.php",
+      "licensing/src/Settings.php",
+      "licensing/src/Updater.php",
+      "src/Services/Licensing.php",
+      "tests/Unit/LicensingTest.php",
+      "tests/stubs/FakeSureCartClient.php"
+    ],
+    "maintainers": [
+      {
+        "person_id": "mihai@circea.co",
+        "name": "Mihai Circea",
+        "touches": 30,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+02:00"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 30,
+      "recency_weight": 29.895187,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 4,
+    "size": 7,
+    "files": [
+      "LICENSE",
+      "README.md",
+      "src/Utils/CountArrayItems.php",
+      "src/Utils/FormatDatetime.php",
+      "src/Utils/GetPostTerms.php",
+      "src/Utils/GetPostTypeLabels.php",
+      "src/Utils/GetTaxonomyLabels.php"
+    ],
+    "maintainers": [
+      {
+        "person_id": "mihai@circea.co",
+        "name": "Mihai Circea",
+        "touches": 27,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+02:00"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 27,
+      "recency_weight": 22.739626,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 5,
+    "size": 6,
+    "files": [
+      "src/Admin/AdminPage.php",
+      "src/Settings/SettingsSchema.php",
+      "src/Settings/WordPressSettingsRepository.php",
+      "tests/Unit/AdminPageTest.php",
+      "tests/Unit/PolicySettingsTest.php",
+      "tests/Unit/SettingsRepositoryTest.php"
+    ],
+    "maintainers": [
+      {
+        "person_id": "mihai@circea.co",
+        "name": "Mihai Circea",
+        "touches": 23,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+02:00"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 23,
+      "recency_weight": 22.983045,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 6,
+    "size": 3,
+    "files": [
+      "assets/img/mac-core-logo.svg",
+      "constants.php",
+      "includes/autoload.php"
+    ],
+    "maintainers": [
+      {
+        "person_id": "mihai@circea.co",
+        "name": "Mihai Circea",
+        "touches": 13,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+02:00"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 13,
+      "recency_weight": 9.704728,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 7,
+    "size": 2,
+    "files": [
+      "assets/img/mac-logomark-outline.svg",
+      "assets/img/mac-logomark.svg"
+    ],
+    "maintainers": [
+      {
+        "person_id": "mihai@circea.co",
+        "name": "Mihai Circea",
+        "touches": 4,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+02:00"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 4,
+      "recency_weight": 3.981581,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 8,
+    "size": 2,
+    "files": [
+      "src/Utils/GetPluginStatus.php",
+      "src/Utils/GetThemeStatus.php"
+    ],
+    "maintainers": [
+      {
+        "person_id": "mihai@circea.co",
+        "name": "Mihai Circea",
+        "touches": 4,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+02:00"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 4,
+      "recency_weight": 3.483263,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 9,
+    "size": 2,
+    "files": [
+      "src/Support/GetPluginStatus.php",
+      "src/Support/GetThemeStatus.php"
+    ],
+    "maintainers": [
+      {
+        "person_id": "mihai@circea.co",
+        "name": "Mihai Circea",
+        "touches": 6,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+02:00"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 6,
+      "recency_weight": 4.476838,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 10,
+    "size": 2,
+    "files": [
+      "src/Services/Comments/CustomizeCommentsAdminUi.php",
+      "src/Services/Comments/EnforceCommentPolicy.php"
+    ],
+    "maintainers": [
+      {
+        "person_id": "mihai@circea.co",
+        "name": "Mihai Circea",
+        "touches": 4,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+02:00"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 4,
+      "recency_weight": 2.982875,
+      "sensitive_weight": 0
+    }
+  }
+]

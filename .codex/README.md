@@ -23,6 +23,8 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 - `skills/dev-branch-git.md`: Add/commit/push guardrails for keeping normal work on `dev`.
 - `reports/security_best_practices_report.md`: Security best-practices review findings for MAC Core.
 - `reports/mac-core-threat-model.md`: Repo-grounded threat model for MAC Core.
+- `reports/security-ownership-summary.md`: Ownership-map summary and accepted single-maintainer constraint notes.
+- `reports/ownership-map-out/`: Raw ownership-map export files generated during the security audit.
 
 ## Usage
 

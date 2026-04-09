@@ -1,0 +1,1354 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "community_maintainers": [
+      {
+        "id": 1,
+        "size": 16,
+        "maintainers": [
+          {
+            "person_id": "mihai@circea.co",
+            "name": "Mihai Circea",
+            "touches": 66,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+02:00"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 66,
+          "recency_weight": 55.248692,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 2,
+        "size": 13,
+        "maintainers": [
+          {
+            "person_id": "mihai@circea.co",
+            "name": "Mihai Circea",
+            "touches": 90,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+02:00"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 90,
+          "recency_weight": 85.64889,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 3,
+        "size": 10,
+        "maintainers": [
+          {
+            "person_id": "mihai@circea.co",
+            "name": "Mihai Circea",
+            "touches": 30,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+02:00"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 30,
+          "recency_weight": 29.895187,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 4,
+        "size": 7,
+        "maintainers": [
+          {
+            "person_id": "mihai@circea.co",
+            "name": "Mihai Circea",
+            "touches": 27,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+02:00"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 27,
+          "recency_weight": 22.739626,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 5,
+        "size": 6,
+        "maintainers": [
+          {
+            "person_id": "mihai@circea.co",
+            "name": "Mihai Circea",
+            "touches": 23,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+02:00"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 23,
+          "recency_weight": 22.983045,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 6,
+        "size": 3,
+        "maintainers": [
+          {
+            "person_id": "mihai@circea.co",
+            "name": "Mihai Circea",
+            "touches": 13,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+02:00"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 13,
+          "recency_weight": 9.704728,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 7,
+        "size": 2,
+        "maintainers": [
+          {
+            "person_id": "mihai@circea.co",
+            "name": "Mihai Circea",
+            "touches": 4,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+02:00"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 4,
+          "recency_weight": 3.981581,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 8,
+        "size": 2,
+        "maintainers": [
+          {
+            "person_id": "mihai@circea.co",
+            "name": "Mihai Circea",
+            "touches": 4,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+02:00"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 4,
+          "recency_weight": 3.483263,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 9,
+        "size": 2,
+        "maintainers": [
+          {
+            "person_id": "mihai@circea.co",
+            "name": "Mihai Circea",
+            "touches": 6,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+02:00"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 6,
+          "recency_weight": 4.476838,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 10,
+        "size": 2,
+        "maintainers": [
+          {
+            "person_id": "mihai@circea.co",
+            "name": "Mihai Circea",
+            "touches": 4,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+02:00"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 4,
+          "recency_weight": 2.982875,
+          "sensitive_weight": 0
+        }
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "community_id": 5,
+      "id": "src/Settings/SettingsSchema.php"
+    },
+    {
+      "community_id": 5,
+      "id": "tests/Unit/PolicySettingsTest.php"
+    },
+    {
+      "community_id": 5,
+      "id": "tests/Unit/SettingsRepositoryTest.php"
+    },
+    {
+      "community_id": 5,
+      "id": "tests/Unit/AdminPageTest.php"
+    },
+    {
+      "community_id": 2,
+      "id": ".codex/README.md"
+    },
+    {
+      "community_id": 2,
+      "id": ".codex/skills/dev-zip-testing.md"
+    },
+    {
+      "community_id": 2,
+      "id": ".codex/skills/release.md"
+    },
+    {
+      "community_id": 2,
+      "id": "bin/build-dev-zip.ps1"
+    },
+    {
+      "community_id": 2,
+      "id": "inc/constants.php"
+    },
+    {
+      "community_id": 2,
+      "id": "mac-core.php"
+    },
+    {
+      "community_id": 2,
+      "id": "readme.txt"
+    },
+    {
+      "community_id": 2,
+      "id": "release.json"
+    },
+    {
+      "community_id": 5,
+      "id": "src/Settings/WordPressSettingsRepository.php"
+    },
+    {
+      "community_id": 5,
+      "id": "src/Admin/AdminPage.php"
+    },
+    {
+      "community_id": 3,
+      "id": ".codex/plans/surecart-licensing.md"
+    },
+    {
+      "community_id": 3,
+      "id": ".codex/skills/surecart-licensing.md"
+    },
+    {
+      "community_id": 3,
+      "id": "licensing/src/Activation.php"
+    },
+    {
+      "community_id": 3,
+      "id": "licensing/src/Client.php"
+    },
+    {
+      "community_id": 3,
+      "id": "licensing/src/License.php"
+    },
+    {
+      "community_id": 3,
+      "id": "licensing/src/Settings.php"
+    },
+    {
+      "community_id": 3,
+      "id": "licensing/src/Updater.php"
+    },
+    {
+      "community_id": 3,
+      "id": "src/Services/Licensing.php"
+    },
+    {
+      "community_id": 3,
+      "id": "tests/Unit/LicensingTest.php"
+    },
+    {
+      "community_id": 3,
+      "id": "tests/stubs/FakeSureCartClient.php"
+    },
+    {
+      "community_id": 7,
+      "id": "assets/img/mac-logomark-outline.svg"
+    },
+    {
+      "community_id": 7,
+      "id": "assets/img/mac-logomark.svg"
+    },
+    {
+      "community_id": 2,
+      "id": ".codex/todos/surecart-licensing.md"
+    },
+    {
+      "community_id": 2,
+      "id": "tests/stubs/wordpress.php"
+    },
+    {
+      "community_id": 2,
+      "id": ".codex/todos/mac-core-alignment.md"
+    },
+    {
+      "community_id": 2,
+      "id": "licensing/PROVENANCE.md"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Core/DisableAdminBar.php"
+    },
+    {
+      "community_id": 4,
+      "id": "src/Utils/CountArrayItems.php"
+    },
+    {
+      "community_id": 4,
+      "id": "src/Utils/FormatDatetime.php"
+    },
+    {
+      "community_id": 4,
+      "id": "src/Utils/GetPostTerms.php"
+    },
+    {
+      "community_id": 2,
+      "id": "src/Services/Core/AddLastLoginColumn.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Kernel.php"
+    },
+    {
+      "community_id": 4,
+      "id": "LICENSE"
+    },
+    {
+      "community_id": 4,
+      "id": "README.md"
+    },
+    {
+      "community_id": 4,
+      "id": "src/Utils/GetPostTypeLabels.php"
+    },
+    {
+      "community_id": 4,
+      "id": "src/Utils/GetTaxonomyLabels.php"
+    },
+    {
+      "community_id": 8,
+      "id": "src/Utils/GetPluginStatus.php"
+    },
+    {
+      "community_id": 8,
+      "id": "src/Utils/GetThemeStatus.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Core/AddLastLoginAdminColumn.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Core/ApplyBranding.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Core/ControlComments.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Core/DisableAutoUpdates.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Core/DisableSiteHealth.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Core/TruncateExcerpts.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Media/AddCustomImageSizes.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Media/AllowFontMimeTypes.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Media/DisallowVideoMimeTypes.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Media/RemoveDefaultImageSizes.php"
+    },
+    {
+      "community_id": 6,
+      "id": "assets/img/mac-core-logo.svg"
+    },
+    {
+      "community_id": 6,
+      "id": "constants.php"
+    },
+    {
+      "community_id": 6,
+      "id": "includes/autoload.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Updater/GitHubUpdater.php"
+    },
+    {
+      "community_id": 9,
+      "id": "src/Support/GetPluginStatus.php"
+    },
+    {
+      "community_id": 9,
+      "id": "src/Support/GetThemeStatus.php"
+    },
+    {
+      "community_id": 10,
+      "id": "src/Services/Comments/CustomizeCommentsAdminUi.php"
+    },
+    {
+      "community_id": 10,
+      "id": "src/Services/Comments/EnforceCommentPolicy.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Core/ApplyAdminBranding.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Core/CustomizeExcerpts.php"
+    },
+    {
+      "community_id": 1,
+      "id": "src/Services/Core/RemoveDashboardClutter.php"
+    }
+  ],
+  "edges": [
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "src/Settings/SettingsSchema.php",
+      "target": "tests/Unit/PolicySettingsTest.php"
+    },
+    {
+      "weight": 0.75,
+      "count": 3,
+      "source": "src/Settings/SettingsSchema.php",
+      "target": "tests/Unit/SettingsRepositoryTest.php"
+    },
+    {
+      "weight": 0.6,
+      "count": 3,
+      "source": "src/Settings/SettingsSchema.php",
+      "target": "tests/Unit/AdminPageTest.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "src/Settings/SettingsSchema.php",
+      "target": "src/Settings/WordPressSettingsRepository.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "tests/Unit/PolicySettingsTest.php",
+      "target": "tests/Unit/SettingsRepositoryTest.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "tests/Unit/SettingsRepositoryTest.php",
+      "target": "src/Settings/WordPressSettingsRepository.php"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "tests/Unit/SettingsRepositoryTest.php",
+      "target": "tests/Unit/AdminPageTest.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "tests/Unit/AdminPageTest.php",
+      "target": "src/Settings/WordPressSettingsRepository.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "tests/Unit/AdminPageTest.php",
+      "target": "src/Admin/AdminPage.php"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": ".codex/README.md",
+      "target": ".codex/skills/dev-zip-testing.md"
+    },
+    {
+      "weight": 0.5,
+      "count": 4,
+      "source": ".codex/README.md",
+      "target": ".codex/skills/release.md"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": ".codex/README.md",
+      "target": "bin/build-dev-zip.ps1"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": ".codex/README.md",
+      "target": ".codex/todos/mac-core-alignment.md"
+    },
+    {
+      "weight": 0.25,
+      "count": 2,
+      "source": ".codex/README.md",
+      "target": ".codex/todos/surecart-licensing.md"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": ".codex/README.md",
+      "target": "licensing/PROVENANCE.md"
+    },
+    {
+      "weight": 0.095238,
+      "count": 2,
+      "source": ".codex/README.md",
+      "target": "readme.txt"
+    },
+    {
+      "weight": 0.142857,
+      "count": 2,
+      "source": ".codex/README.md",
+      "target": "release.json"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": ".codex/skills/dev-zip-testing.md",
+      "target": ".codex/skills/release.md"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": ".codex/skills/release.md",
+      "target": "bin/build-dev-zip.ps1"
+    },
+    {
+      "weight": 0.473684,
+      "count": 9,
+      "source": "inc/constants.php",
+      "target": "mac-core.php"
+    },
+    {
+      "weight": 0.588235,
+      "count": 10,
+      "source": "inc/constants.php",
+      "target": "readme.txt"
+    },
+    {
+      "weight": 0.666667,
+      "count": 8,
+      "source": "inc/constants.php",
+      "target": "release.json"
+    },
+    {
+      "weight": 0.111111,
+      "count": 2,
+      "source": "inc/constants.php",
+      "target": "src/Kernel.php"
+    },
+    {
+      "weight": 0.65,
+      "count": 13,
+      "source": "mac-core.php",
+      "target": "readme.txt"
+    },
+    {
+      "weight": 0.444444,
+      "count": 8,
+      "source": "mac-core.php",
+      "target": "release.json"
+    },
+    {
+      "weight": 0.111111,
+      "count": 2,
+      "source": "mac-core.php",
+      "target": "src/Services/Core/DisableAdminBar.php"
+    },
+    {
+      "weight": 0.176471,
+      "count": 3,
+      "source": "mac-core.php",
+      "target": "src/Utils/CountArrayItems.php"
+    },
+    {
+      "weight": 0.117647,
+      "count": 2,
+      "source": "mac-core.php",
+      "target": "src/Utils/FormatDatetime.php"
+    },
+    {
+      "weight": 0.176471,
+      "count": 3,
+      "source": "mac-core.php",
+      "target": "src/Utils/GetPostTerms.php"
+    },
+    {
+      "weight": 0.117647,
+      "count": 2,
+      "source": "mac-core.php",
+      "target": "LICENSE"
+    },
+    {
+      "weight": 0.222222,
+      "count": 4,
+      "source": "mac-core.php",
+      "target": "README.md"
+    },
+    {
+      "weight": 0.111111,
+      "count": 2,
+      "source": "mac-core.php",
+      "target": "src/Utils/GetPostTypeLabels.php"
+    },
+    {
+      "weight": 0.111111,
+      "count": 2,
+      "source": "mac-core.php",
+      "target": "src/Utils/GetTaxonomyLabels.php"
+    },
+    {
+      "weight": 0.117647,
+      "count": 2,
+      "source": "mac-core.php",
+      "target": "assets/img/mac-core-logo.svg"
+    },
+    {
+      "weight": 0.111111,
+      "count": 2,
+      "source": "mac-core.php",
+      "target": "constants.php"
+    },
+    {
+      "weight": 0.105263,
+      "count": 2,
+      "source": "mac-core.php",
+      "target": "includes/autoload.php"
+    },
+    {
+      "weight": 0.5625,
+      "count": 9,
+      "source": "readme.txt",
+      "target": "release.json"
+    },
+    {
+      "weight": 0.117647,
+      "count": 2,
+      "source": "readme.txt",
+      "target": ".codex/todos/surecart-licensing.md"
+    },
+    {
+      "weight": 0.125,
+      "count": 2,
+      "source": "readme.txt",
+      "target": "licensing/PROVENANCE.md"
+    },
+    {
+      "weight": 0.125,
+      "count": 2,
+      "source": "readme.txt",
+      "target": "src/Services/Core/AddLastLoginColumn.php"
+    },
+    {
+      "weight": 0.117647,
+      "count": 2,
+      "source": "readme.txt",
+      "target": "src/Utils/CountArrayItems.php"
+    },
+    {
+      "weight": 0.125,
+      "count": 2,
+      "source": "readme.txt",
+      "target": "src/Utils/FormatDatetime.php"
+    },
+    {
+      "weight": 0.117647,
+      "count": 2,
+      "source": "readme.txt",
+      "target": "src/Utils/GetPostTerms.php"
+    },
+    {
+      "weight": 0.086957,
+      "count": 2,
+      "source": "readme.txt",
+      "target": "src/Kernel.php"
+    },
+    {
+      "weight": 0.105263,
+      "count": 2,
+      "source": "readme.txt",
+      "target": "README.md"
+    },
+    {
+      "weight": 0.2,
+      "count": 2,
+      "source": "release.json",
+      "target": ".codex/todos/surecart-licensing.md"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "release.json",
+      "target": "licensing/PROVENANCE.md"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": ".codex/plans/surecart-licensing.md",
+      "target": ".codex/skills/surecart-licensing.md"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": ".codex/plans/surecart-licensing.md",
+      "target": "licensing/src/Activation.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": ".codex/plans/surecart-licensing.md",
+      "target": "licensing/src/Client.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": ".codex/plans/surecart-licensing.md",
+      "target": "licensing/src/License.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": ".codex/plans/surecart-licensing.md",
+      "target": "licensing/src/Settings.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": ".codex/plans/surecart-licensing.md",
+      "target": "licensing/src/Updater.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": ".codex/plans/surecart-licensing.md",
+      "target": "src/Services/Licensing.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": ".codex/skills/surecart-licensing.md",
+      "target": "licensing/src/Activation.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": ".codex/skills/surecart-licensing.md",
+      "target": "licensing/src/Client.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": ".codex/skills/surecart-licensing.md",
+      "target": "licensing/src/License.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": ".codex/skills/surecart-licensing.md",
+      "target": "licensing/src/Settings.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": ".codex/skills/surecart-licensing.md",
+      "target": "licensing/src/Updater.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": ".codex/skills/surecart-licensing.md",
+      "target": "src/Services/Licensing.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "licensing/src/Activation.php",
+      "target": "licensing/src/Client.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "licensing/src/Activation.php",
+      "target": "licensing/src/License.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "licensing/src/Activation.php",
+      "target": "licensing/src/Settings.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "licensing/src/Activation.php",
+      "target": "licensing/src/Updater.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "licensing/src/Activation.php",
+      "target": "src/Services/Licensing.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "licensing/src/Client.php",
+      "target": "licensing/src/License.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "licensing/src/Client.php",
+      "target": "licensing/src/Settings.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "licensing/src/Client.php",
+      "target": "licensing/src/Updater.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "licensing/src/Client.php",
+      "target": "src/Services/Licensing.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "licensing/src/License.php",
+      "target": "licensing/src/Settings.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "licensing/src/License.php",
+      "target": "licensing/src/Updater.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "licensing/src/License.php",
+      "target": "src/Services/Licensing.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "licensing/src/Settings.php",
+      "target": "licensing/src/Updater.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "licensing/src/Settings.php",
+      "target": "src/Services/Licensing.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "licensing/src/Updater.php",
+      "target": "src/Services/Licensing.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 3,
+      "source": "src/Services/Licensing.php",
+      "target": "tests/Unit/LicensingTest.php"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "tests/Unit/LicensingTest.php",
+      "target": "tests/stubs/FakeSureCartClient.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "assets/img/mac-logomark-outline.svg",
+      "target": "assets/img/mac-logomark.svg"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": ".codex/todos/surecart-licensing.md",
+      "target": "tests/stubs/wordpress.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": ".codex/todos/surecart-licensing.md",
+      "target": "licensing/PROVENANCE.md"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "src/Services/Core/DisableAdminBar.php",
+      "target": "src/Utils/CountArrayItems.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "src/Services/Core/DisableAdminBar.php",
+      "target": "src/Utils/GetPostTerms.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "src/Services/Core/DisableAdminBar.php",
+      "target": "src/Services/Core/DisableAutoUpdates.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "src/Services/Core/DisableAdminBar.php",
+      "target": "src/Services/Core/DisableSiteHealth.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/DisableAdminBar.php",
+      "target": "src/Services/Core/RemoveDashboardClutter.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Utils/CountArrayItems.php",
+      "target": "src/Utils/FormatDatetime.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 3,
+      "source": "src/Utils/CountArrayItems.php",
+      "target": "src/Utils/GetPostTerms.php"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "src/Utils/CountArrayItems.php",
+      "target": "README.md"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "src/Utils/CountArrayItems.php",
+      "target": "src/Utils/GetPostTypeLabels.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "src/Utils/CountArrayItems.php",
+      "target": "src/Utils/GetTaxonomyLabels.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Utils/FormatDatetime.php",
+      "target": "src/Utils/GetPostTerms.php"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "src/Utils/GetPostTerms.php",
+      "target": "README.md"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "src/Utils/GetPostTerms.php",
+      "target": "src/Utils/GetPostTypeLabels.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "src/Utils/GetPostTerms.php",
+      "target": "src/Utils/GetTaxonomyLabels.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Core/AddLastLoginAdminColumn.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Core/ApplyBranding.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Core/ControlComments.php"
+    },
+    {
+      "weight": 0.2,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Core/DisableAutoUpdates.php"
+    },
+    {
+      "weight": 0.2,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Core/DisableSiteHealth.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Core/TruncateExcerpts.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Media/AddCustomImageSizes.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Media/AllowFontMimeTypes.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Media/DisallowVideoMimeTypes.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Media/RemoveDefaultImageSizes.php"
+    },
+    {
+      "weight": 0.181818,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "includes/autoload.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Updater/GitHubUpdater.php"
+    },
+    {
+      "weight": 0.2,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Support/GetPluginStatus.php"
+    },
+    {
+      "weight": 0.2,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Support/GetThemeStatus.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Comments/CustomizeCommentsAdminUi.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Comments/EnforceCommentPolicy.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Core/ApplyAdminBranding.php"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "src/Kernel.php",
+      "target": "src/Services/Core/CustomizeExcerpts.php"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "LICENSE",
+      "target": "README.md"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "README.md",
+      "target": "src/Utils/GetPostTypeLabels.php"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "README.md",
+      "target": "src/Utils/GetTaxonomyLabels.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 3,
+      "source": "src/Utils/GetPostTypeLabels.php",
+      "target": "src/Utils/GetTaxonomyLabels.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Utils/GetPluginStatus.php",
+      "target": "src/Utils/GetThemeStatus.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/AddLastLoginAdminColumn.php",
+      "target": "src/Services/Core/DisableAutoUpdates.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/AddLastLoginAdminColumn.php",
+      "target": "src/Services/Core/DisableSiteHealth.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Services/Core/AddLastLoginAdminColumn.php",
+      "target": "src/Services/Media/AddCustomImageSizes.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Services/Core/AddLastLoginAdminColumn.php",
+      "target": "src/Services/Media/AllowFontMimeTypes.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Services/Core/AddLastLoginAdminColumn.php",
+      "target": "src/Services/Media/DisallowVideoMimeTypes.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Services/Core/AddLastLoginAdminColumn.php",
+      "target": "src/Services/Media/RemoveDefaultImageSizes.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 3,
+      "source": "src/Services/Core/DisableAutoUpdates.php",
+      "target": "src/Services/Core/DisableSiteHealth.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/DisableAutoUpdates.php",
+      "target": "src/Services/Media/AddCustomImageSizes.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/DisableAutoUpdates.php",
+      "target": "src/Services/Media/AllowFontMimeTypes.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/DisableAutoUpdates.php",
+      "target": "src/Services/Media/DisallowVideoMimeTypes.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/DisableAutoUpdates.php",
+      "target": "src/Services/Media/RemoveDefaultImageSizes.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/DisableAutoUpdates.php",
+      "target": "src/Services/Core/RemoveDashboardClutter.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/DisableSiteHealth.php",
+      "target": "src/Services/Media/AddCustomImageSizes.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/DisableSiteHealth.php",
+      "target": "src/Services/Media/AllowFontMimeTypes.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/DisableSiteHealth.php",
+      "target": "src/Services/Media/DisallowVideoMimeTypes.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/DisableSiteHealth.php",
+      "target": "src/Services/Media/RemoveDefaultImageSizes.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "src/Services/Core/DisableSiteHealth.php",
+      "target": "src/Services/Core/RemoveDashboardClutter.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Services/Media/AddCustomImageSizes.php",
+      "target": "src/Services/Media/AllowFontMimeTypes.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Services/Media/AddCustomImageSizes.php",
+      "target": "src/Services/Media/DisallowVideoMimeTypes.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Services/Media/AddCustomImageSizes.php",
+      "target": "src/Services/Media/RemoveDefaultImageSizes.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Services/Media/AllowFontMimeTypes.php",
+      "target": "src/Services/Media/DisallowVideoMimeTypes.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Services/Media/AllowFontMimeTypes.php",
+      "target": "src/Services/Media/RemoveDefaultImageSizes.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Services/Media/DisallowVideoMimeTypes.php",
+      "target": "src/Services/Media/RemoveDefaultImageSizes.php"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "assets/img/mac-core-logo.svg",
+      "target": "constants.php"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "assets/img/mac-core-logo.svg",
+      "target": "includes/autoload.php"
+    },
+    {
+      "weight": 0.75,
+      "count": 3,
+      "source": "constants.php",
+      "target": "includes/autoload.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 3,
+      "source": "src/Support/GetPluginStatus.php",
+      "target": "src/Support/GetThemeStatus.php"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "src/Services/Comments/CustomizeCommentsAdminUi.php",
+      "target": "src/Services/Comments/EnforceCommentPolicy.php"
+    }
+  ]
+}
