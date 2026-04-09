@@ -49,6 +49,7 @@ Also check platform compatibility metadata when relevant:
 ## Local Dev ZIPs
 
 - For local testing on `dev`, build a ZIP from the current committed `HEAD` without touching `main` or creating a tag.
+- Use the dedicated dev ZIP testing skill when the user asks to test a plugin version before release.
 - Use:
   - `pwsh -File .\bin\build-dev-zip.ps1`
 - The script creates `dist/mac-core-dev-<shortsha>.zip`.
@@ -56,6 +57,7 @@ Also check platform compatibility metadata when relevant:
 - The script uses `git archive`, so it respects `.gitattributes` export-ignore rules.
 - By default the script refuses to run on a dirty worktree because uncommitted changes are not included in `git archive`.
 - Only use `-AllowDirty` if you explicitly want a ZIP from the last commit while ignoring local uncommitted edits.
+- When a feature set is ready for testing, remind the user that this helper exists before proposing a real release.
 
 ## Release Flow
 

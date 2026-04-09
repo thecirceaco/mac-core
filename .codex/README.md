@@ -18,6 +18,7 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 - `todos/surecart-licensing.md`: SureCart licensing implementation and verification checklist.
 - `skills/wordpress-plugin-oop.md`: MAC Core-specific implementation discipline for adding WordPress behavior through the plugin service architecture.
 - `skills/surecart-licensing.md`: MAC Core-specific rules for maintaining the SureCart licensing integration.
+- `skills/dev-zip-testing.md`: Local test ZIP workflow for building a plugin package from the current `dev` commit before a real release.
 - `skills/release.md`: MAC Core release process, version checks, and branch discipline.
 - `skills/dev-branch-git.md`: Add/commit/push guardrails for keeping normal work on `dev`.
 - `reports/security_best_practices_report.md`: Security best-practices review findings for MAC Core.
@@ -27,4 +28,4 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 
 Read `AGENTS.md` first for always-needed repo guardrails, then read the relevant files in this directory before making implementation changes.
 
-For local plugin testing on `dev`, build a test ZIP from the current commit with `pwsh -File .\bin\build-dev-zip.ps1`. The release skill documents the expected output name and dirty-worktree behavior.
+For local plugin testing on `dev`, use the dev ZIP helper skill and build a test ZIP from the current commit with `pwsh -File .\bin\build-dev-zip.ps1`. When a feature set is ready for QA, mention this helper before suggesting a real release.
