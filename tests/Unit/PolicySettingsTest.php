@@ -39,7 +39,7 @@ final class PolicySettingsTest extends TestCase
 	{
 		$policy = new SetExcerptLength( $this->settings );
 
-		$this->assertSame( 40, $policy->set_excerpt_length( 55 ) );
+		$this->assertSame( 55, $policy->set_excerpt_length( 55 ) );
 
 		$this->settings->save(
 			[
@@ -66,6 +66,14 @@ final class PolicySettingsTest extends TestCase
 
 	public function test_admin_bar_policy_respects_role_capability_and_empty_target(): void
 	{
+		$this->settings->save(
+			[
+				'core' => [
+					'disable_frontend_admin_bar' => '1',
+				],
+			]
+		);
+
 		$GLOBALS['mac_core_test_is_admin']     = false;
 		$GLOBALS['mac_core_test_admin_bar_state'] = true;
 		$GLOBALS['mac_core_test_current_user'] = new \WP_User(
@@ -155,8 +163,8 @@ final class PolicySettingsTest extends TestCase
 
 		$policy->register_image_sizes();
 
-		$this->assertArrayHasKey( 'mac_image_480', $GLOBALS['mac_core_test_image_sizes'] );
-		$this->assertArrayHasKey( 'post-thumbnails', array_flip( $GLOBALS['mac_core_test_theme_support'] ) );
+		$this->assertSame( [], $GLOBALS['mac_core_test_image_sizes'] );
+		$this->assertSame( [], $GLOBALS['mac_core_test_theme_support'] );
 
 		\mac_core_tests_reset_wp_state();
 		$this->settings = new WordPressSettingsRepository( new SettingsSchema() );
@@ -195,7 +203,7 @@ final class PolicySettingsTest extends TestCase
 	{
 		$policy = new DisableImageCompression( $this->settings );
 
-		$this->assertSame( 100, $policy->force_quality( 82 ) );
+		$this->assertSame( 82, $policy->force_quality( 82 ) );
 
 		$this->settings->save(
 			[
@@ -233,12 +241,14 @@ final class PolicySettingsTest extends TestCase
 
 		$this->assertArrayHasKey( 'jpg|jpeg|jpe', $result );
 		$this->assertArrayHasKey( 'svg', $result );
-		$this->assertArrayNotHasKey( 'mp4|m4v', $result );
-		$this->assertArrayNotHasKey( 'webm', $result );
+		$this->assertArrayHasKey( 'mp4|m4v', $result );
+		$this->assertArrayHasKey( 'webm', $result );
 
 		$this->settings->save(
 			[
-				'media' => [],
+				'media' => [
+					'block_video_uploads' => '1',
+				],
 			]
 		);
 
@@ -250,7 +260,7 @@ final class PolicySettingsTest extends TestCase
 			]
 		);
 
-		$this->assertArrayHasKey( 'mp4|m4v', $result );
+		$this->assertArrayNotHasKey( 'mp4|m4v', $result );
 		$this->assertArrayHasKey( 'svg', $result );
 	}
 }

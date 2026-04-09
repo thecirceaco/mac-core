@@ -29,13 +29,25 @@ final class SettingsRepositoryTest extends TestCase
 		$settings   = $repository->all();
 		$schema     = new SettingsSchema();
 
-		$this->assertTrue( $settings['core']['disable_auto_updates'] );
+		$this->assertFalse( $settings['core']['developer_branding_enabled'] );
+		$this->assertTrue( $settings['core']['comments_enabled'] );
+		$this->assertTrue( $settings['core']['comments_posts_enabled'] );
+		$this->assertTrue( $settings['core']['comments_pages_enabled'] );
+		$this->assertFalse( $settings['core']['disable_frontend_admin_bar'] );
+		$this->assertFalse( $settings['core']['disable_auto_updates'] );
+		$this->assertFalse( $settings['core']['disable_site_health'] );
+		$this->assertFalse( $settings['core']['remove_dashboard_clutter'] );
+		$this->assertFalse( $settings['core']['add_last_login_column'] );
 		$this->assertSame( 'administrator', $settings['core']['frontend_admin_bar_exempt_target'] );
-		$this->assertTrue( $settings['core']['excerpt_length_enabled'] );
+		$this->assertFalse( $settings['core']['excerpt_length_enabled'] );
 		$this->assertFalse( $settings['core']['delete_data_on_uninstall'] );
 		$this->assertSame( 40, $settings['core']['excerpt_length'] );
 		$this->assertSame( [480, 768, 960, 1440], $settings['media']['custom_image_widths'] );
-		$this->assertTrue( $settings['media']['disable_image_compression'] );
+		$this->assertFalse( $settings['media']['custom_image_sizes_enabled'] );
+		$this->assertFalse( $settings['media']['remove_image_sizes_enabled'] );
+		$this->assertFalse( $settings['media']['allow_font_uploads'] );
+		$this->assertFalse( $settings['media']['block_video_uploads'] );
+		$this->assertFalse( $settings['media']['disable_image_compression'] );
 		$this->assertSame( 'textarea', $schema->get_field( 'media', 'removed_image_sizes' )['control'] );
 		$this->assertSame( 'textarea', $schema->get_field( 'media', 'custom_image_widths' )['control'] );
 		$this->assertArrayNotHasKey( 'blocked_video_extensions', $settings['media'] );
