@@ -23,6 +23,7 @@
 /tests              export-ignore
 /tests/**           export-ignore
 /bin/install-wp-tests.sh export-ignore
+/bin/build-dev-zip.ps1 export-ignore
 
 node_modules        export-ignore
 node_modules/**     export-ignore

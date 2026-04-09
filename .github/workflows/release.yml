@@ -38,6 +38,7 @@ jobs:
             --exclude='/licensing/README.md' \
             --exclude='/tests' \
             --exclude='/bin/install-wp-tests.sh' \
+            --exclude='/bin/build-dev-zip.ps1' \
             --exclude='coverage' \
             --exclude='.phpunit.cache' \
             --exclude='.phpunit.result.cache' \

@@ -46,6 +46,17 @@ Also check platform compatibility metadata when relevant:
 - Confirm the release workflow will publish the ZIP, matching `.sha256` checksum file, and provenance JSON.
 - Confirm agent/dev files such as `.codex/`, `AGENTS.md`, `.github/`, root `README.md`, root `readme.txt`, root Composer/PHPCS/PHPUnit files, tests, caches, and local environment folders are excluded from release ZIPs.
 
+## Local Dev ZIPs
+
+- For local testing on `dev`, build a ZIP from the current committed `HEAD` without touching `main` or creating a tag.
+- Use:
+  - `pwsh -File .\bin\build-dev-zip.ps1`
+- The script creates `dist/mac-core-dev-<shortsha>.zip`.
+- The `<shortsha>` portion is the current commit hash, for example `f1ac6cb`.
+- The script uses `git archive`, so it respects `.gitattributes` export-ignore rules.
+- By default the script refuses to run on a dirty worktree because uncommitted changes are not included in `git archive`.
+- Only use `-AllowDirty` if you explicitly want a ZIP from the last commit while ignoring local uncommitted edits.
+
 ## Release Flow
 
 1. Work and commit on `dev`.

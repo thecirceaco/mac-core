@@ -12,6 +12,9 @@ Turn the current hardcoded Core and Media behavior into a real product surface w
   - `tab=settings`
   - `tab=license`
   - `tab=support`
+- `tab=support` should provide the current support path:
+  - email link: `mihai@circea.co`
+  - docs link: `https://docs.circea.co/`
 
 Settings stay inside one `Settings` view with module sections, not many top-level tabs.
 
