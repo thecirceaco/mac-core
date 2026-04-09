@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 8.3
-Stable tag: 0.5.4
+Stable tag: 0.6.0
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,11 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 0.6.0 =
+* Added the modular MAC Core admin experience with Settings, License, and Support views.
+* Added repository-backed Core and Media policy settings for comments, media behavior, branding, dashboard cleanup, and related defaults.
+* Refactored the plugin into Admin, Licensing, Settings, and Policy modules for cleaner long-term maintenance.
 
 = 0.5.4 =
 * Switched the MAC Core admin menu icon to the fill logomark and updated the license page slug to `mac-core`.
