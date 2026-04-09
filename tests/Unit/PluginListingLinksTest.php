@@ -50,7 +50,7 @@ final class PluginListingLinksTest extends TestCase
 		$this->assertStringContainsString( '>Deactivate</a>', $links[2] );
 	}
 
-	public function test_row_meta_adds_docs_and_support_for_mac_core(): void
+	public function test_row_meta_adds_support_and_documentation_for_mac_core(): void
 	{
 		$service = new PluginListingLinks();
 
@@ -65,9 +65,10 @@ final class PluginListingLinksTest extends TestCase
 		$this->assertCount( 4, $links );
 		$this->assertStringContainsString( 'plugin-install.php?tab=plugin-information&plugin=mac-core&TB_iframe=true&width=772&height=1249', $links[1] );
 		$this->assertStringContainsString( 'open-plugin-details-modal', $links[1] );
-		$this->assertStringContainsString( 'https://docs.circea.co/', $links[2] );
-		$this->assertStringContainsString( 'target="_blank"', $links[2] );
-		$this->assertStringContainsString( 'admin.php?page=mac-core&tab=support', $links[3] );
+		$this->assertStringContainsString( 'admin.php?page=mac-core&tab=support', $links[2] );
+		$this->assertStringContainsString( 'https://docs.circea.co/', $links[3] );
+		$this->assertStringContainsString( '>Documentation</a>', $links[3] );
+		$this->assertStringContainsString( 'target="_blank"', $links[3] );
 	}
 
 	public function test_row_meta_leaves_other_plugins_unchanged(): void

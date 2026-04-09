@@ -49,8 +49,8 @@ final class PluginListingLinks implements Service
 			return $links;
 		}
 
-		$links[] = '<a href="' . \esc_url( self::DOCS_URL ) . '" target="_blank" rel="noopener noreferrer">Docs</a>';
 		$links[] = '<a href="' . \esc_url( $this->tab_url( 'support' ) ) . '">Support</a>';
+		$links[] = '<a href="' . \esc_url( self::DOCS_URL ) . '" target="_blank" rel="noopener noreferrer">Documentation</a>';
 
 		return $links;
 	}
