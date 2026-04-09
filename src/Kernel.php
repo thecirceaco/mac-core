@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MacCore;
 
 use MacCore\Admin\AdminPage;
+use MacCore\Admin\PluginListingLinks;
 use MacCore\Contracts\Service;
 use MacCore\Licensing\LicensingService;
 use MacCore\Policies\Core\AddDeveloperBranding;
@@ -79,10 +80,11 @@ final class Kernel
         $settings = new WordPressSettingsRepository( $schema );
         $licensing = new LicensingService();
 
-        $services = [
-            new SettingsController( $settings ),
-            new AdminPage( $settings, $schema, $licensing ),
-            $licensing,
+		$services = [
+			new SettingsController( $settings ),
+			new AdminPage( $settings, $schema, $licensing ),
+			new PluginListingLinks(),
+			$licensing,
 
             // Core.
             new AddDeveloperBranding( $settings ),

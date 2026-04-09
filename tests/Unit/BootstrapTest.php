@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace MacCore\Tests\Unit;
 
 use MacCore\Admin\AdminPage;
+use MacCore\Admin\PluginListingLinks;
 use MacCore\Contracts\Service;
 use MacCore\Licensing\LicensingService;
 use PHPUnit\Framework\TestCase;
@@ -31,6 +32,8 @@ final class BootstrapTest extends TestCase
 		$this->assertTrue( $this->has_action_callback( 'init', LicensingService::class, 'initialize' ) );
 		$this->assertTrue( $this->has_action_callback( 'admin_menu', AdminPage::class, 'add_menu_page' ) );
 		$this->assertTrue( $this->has_action_callback( 'admin_init', AdminPage::class, 'redirect_default_view' ) );
+		$this->assertTrue( $this->has_filter_callback( 'plugin_row_meta', PluginListingLinks::class, 'row_meta' ) );
+		$this->assertTrue( $this->has_filter_callback( 'plugin_action_links_mac-core/mac-core.php', PluginListingLinks::class, 'action_links' ) );
 		$this->assertTrue( $this->has_action_callback( 'init', BootstrapTestService::class, 'handle' ) );
 		$this->assertArrayHasKey( 'automatic_updater_disabled', $GLOBALS['mac_core_test_filters'] );
 		$this->assertArrayHasKey( 'upload_mimes', $GLOBALS['mac_core_test_filters'] );
@@ -39,6 +42,23 @@ final class BootstrapTest extends TestCase
 	private function has_action_callback( string $hook, string $class, string $method ): bool
 	{
 		foreach ( $GLOBALS['mac_core_test_actions'][ $hook ] ?? [] as $registration ) {
+			$callback = $registration['callback'] ?? null;
+
+			if ( ! is_array( $callback ) ) {
+				continue;
+			}
+
+			if ( $callback[0] instanceof $class && $callback[1] === $method ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function has_filter_callback( string $hook, string $class, string $method ): bool
+	{
+		foreach ( $GLOBALS['mac_core_test_filters'][ $hook ] ?? [] as $registration ) {
 			$callback = $registration['callback'] ?? null;
 
 			if ( ! is_array( $callback ) ) {

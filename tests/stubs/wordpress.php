@@ -282,6 +282,17 @@ if ( ! function_exists( 'plugin_dir_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'plugin_basename' ) ) {
+	function plugin_basename( string $file ): string
+	{
+		$normalized = str_replace( '\\', '/', $file );
+		$filename   = basename( $normalized );
+		$directory  = basename( dirname( $normalized ) );
+
+		return $directory . '/' . $filename;
+	}
+}
+
 if ( ! function_exists( 'current_user_can' ) ) {
 	function current_user_can( string $capability ): bool
 	{
