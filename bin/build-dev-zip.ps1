@@ -21,8 +21,10 @@ try {
 
 	New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 
-	if ( Test-Path -LiteralPath $outputPath ) {
-		Remove-Item -LiteralPath $outputPath -Force
+	$existingDevZips = Get-ChildItem -LiteralPath $OutputDir -Filter 'mac-core-dev-*.zip' -File -ErrorAction SilentlyContinue
+
+	foreach ( $existingDevZip in $existingDevZips ) {
+		Remove-Item -LiteralPath $existingDevZip.FullName -Force
 	}
 
 	git archive --format=zip "--output=$outputPath" --prefix=mac-core/ HEAD

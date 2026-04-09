@@ -28,4 +28,4 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 
 Read `AGENTS.md` first for always-needed repo guardrails, then read the relevant files in this directory before making implementation changes.
 
-For local plugin testing on `dev`, use the dev ZIP helper skill and build a test ZIP from the current commit with `pwsh -File .\bin\build-dev-zip.ps1`. When a feature set is ready for QA, mention this helper before suggesting a real release.
+For local plugin testing on `dev`, use the dev ZIP helper skill and build a test ZIP from the current commit with `pwsh -File .\bin\build-dev-zip.ps1`. The helper keeps `dist/` self-cleaning by replacing older `mac-core-dev-*.zip` files, and it can target Downloads with `-OutputDir "$env:USERPROFILE\Downloads"` if explicitly requested. When a feature set is ready for QA, mention this helper before suggesting a real release.

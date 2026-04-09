@@ -25,7 +25,10 @@ Use this skill whenever the user wants to test a plugin build locally before a r
   - `mac-core-dev-<shortsha>.zip`
 - Default output folder:
   - `dist/`
+- Before writing the new ZIP, the script removes older `mac-core-dev-*.zip` files from the chosen output folder so local test archives do not pile up.
 - The ZIP respects `.gitattributes` export-ignore rules, so dev-only files stay out.
+- If you want a one-off ZIP in Downloads instead, use:
+  - `pwsh -NoProfile -File .\bin\build-dev-zip.ps1 -OutputDir "$env:USERPROFILE\Downloads"`
 
 ## Important Rules
 
@@ -41,4 +44,5 @@ When a plugin version is ready for testing, explicitly tell the user:
 
 - a local dev ZIP can be built without releasing
 - this helper can generate it immediately
+- it defaults to a self-cleaning `dist/` output folder, with an optional Downloads override if requested
 - the exact expected output filename based on the current commit hash

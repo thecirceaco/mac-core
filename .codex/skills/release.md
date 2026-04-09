@@ -55,8 +55,11 @@ Also check platform compatibility metadata when relevant:
 - The script creates `dist/mac-core-dev-<shortsha>.zip`.
 - The `<shortsha>` portion is the current commit hash, for example `f1ac6cb`.
 - The script uses `git archive`, so it respects `.gitattributes` export-ignore rules.
+- Before creating the new ZIP, the script removes older `mac-core-dev-*.zip` files from the chosen output folder.
 - By default the script refuses to run on a dirty worktree because uncommitted changes are not included in `git archive`.
 - Only use `-AllowDirty` if you explicitly want a ZIP from the last commit while ignoring local uncommitted edits.
+- If the user explicitly wants the ZIP in Downloads, use:
+  - `pwsh -File .\bin\build-dev-zip.ps1 -OutputDir "$env:USERPROFILE\Downloads"`
 - When a feature set is ready for testing, remind the user that this helper exists before proposing a real release.
 
 ## Release Flow
