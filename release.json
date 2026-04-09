@@ -5,7 +5,7 @@
   "author_profile": "https://circea.co",
   "version": "0.6.4",
   "requires": "6.9",
-  "tested": "6.9",
+  "tested": "7.0",
   "requires_php": "8.3",
   "sections": {
     "description": "Company standard core functionality plugin for WordPress projects built by Circea.",

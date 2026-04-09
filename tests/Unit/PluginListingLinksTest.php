@@ -50,13 +50,14 @@ final class PluginListingLinksTest extends TestCase
 		$this->assertStringContainsString( '>Deactivate</a>', $links[2] );
 	}
 
-	public function test_row_meta_adds_view_details_docs_and_support_for_mac_core(): void
+	public function test_row_meta_adds_docs_and_support_for_mac_core(): void
 	{
 		$service = new PluginListingLinks();
 
 		$links = $service->row_meta(
 			[
 				'<a href="https://example.test/by">By Circea</a>',
+				'<a href="https://example.test/wp-admin/plugin-install.php?tab=plugin-information&plugin=mac-core&TB_iframe=true&width=772&height=1249" class="thickbox open-plugin-details-modal">View details</a>',
 			],
 			'mac-core/mac-core.php'
 		);

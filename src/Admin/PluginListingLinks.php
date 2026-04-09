@@ -49,7 +49,6 @@ final class PluginListingLinks implements Service
 			return $links;
 		}
 
-		$links[] = '<a href="' . \esc_url( $this->details_url() ) . '" class="thickbox open-plugin-details-modal">View details</a>';
 		$links[] = '<a href="' . \esc_url( self::DOCS_URL ) . '" target="_blank" rel="noopener noreferrer">Docs</a>';
 		$links[] = '<a href="' . \esc_url( $this->tab_url( 'support' ) ) . '">Support</a>';
 
@@ -62,16 +61,6 @@ final class PluginListingLinks implements Service
 	private function tab_url( string $tab ): string
 	{
 		return \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=' . $tab );
-	}
-
-	/**
-	 * Build the WordPress plugin details modal URL.
-	 */
-	private function details_url(): string
-	{
-		return \admin_url(
-			'plugin-install.php?tab=plugin-information&plugin=mac-core&TB_iframe=true&width=772&height=1249'
-		);
 	}
 
 	/**
