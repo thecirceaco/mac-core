@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 0.6.5
+Stable tag: 0.6.6
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,10 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 0.6.6 =
+* Added filter-based `FormatDatetime` extension points for config, presets, and views so child themes or site plugins can extend formatting without editing MAC Core.
+* Added test coverage for custom presets, custom views, filtered defaults, and invalid filter fallback behavior.
 
 = 0.6.5 =
 * Removed the duplicate custom `View details` plugin row link and let WordPress keep the built-in details modal link.

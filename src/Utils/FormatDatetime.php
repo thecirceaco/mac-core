@@ -186,12 +186,16 @@ final class FormatDatetime
         ?string $view = null,
         int|string|null $postId = null
     ): string {
+        $config = self::config($preset, $view, $postId);
+
         $preset = \strtolower(\trim((string) $preset));
         $preset = $preset !== ''
             ? $preset
-            : \strtolower(\trim((string) (self::$config['default_preset'] ?? '')));
+            : \strtolower(\trim((string) ($config['default_preset'] ?? '')));
 
-        if (! isset(self::$presets[$preset]) || ! \is_array(self::$presets[$preset])) {
+        $presets = self::presets($preset, $view, $postId);
+
+        if (! isset($presets[$preset]) || ! \is_array($presets[$preset])) {
             return '';
         }
 
@@ -216,15 +220,17 @@ final class FormatDatetime
                 'date_labels'            => [],
                 'diff_labels'            => [],
             ],
-            self::$presets[$preset]
+            $presets[$preset]
         );
 
         $view = \strtolower(\trim((string) $view));
         $view = $view !== ''
             ? $view
-            : \strtolower(\trim((string) (self::$config['default_view'] ?? '')));
+            : \strtolower(\trim((string) ($config['default_view'] ?? '')));
 
-        if (! isset(self::$views[$view]) || ! \is_array(self::$views[$view])) {
+        $views = self::views($preset, $view, $postId);
+
+        if (! isset($views[$view]) || ! \is_array($views[$view])) {
             return '';
         }
 
@@ -242,7 +248,7 @@ final class FormatDatetime
                 'date_labels'            => [],
                 'diff_labels'            => [],
             ],
-            self::$views[$view]
+            $views[$view]
         );
 
         $postId = self::contextId($postId);
@@ -351,6 +357,67 @@ final class FormatDatetime
         }
 
         return self::htmlOutput($start, $startDate, $startTime, $end, $endDate, $endTime, $sameDayRange, $timezone);
+    }
+
+    /**
+     * Filterable default preset and view configuration.
+     *
+     * Hook: `mac_core_format_datetime_config`
+     *
+     * @return array{default_preset:string,default_view:string}
+     */
+    private static function config(
+        ?string $preset = null,
+        ?string $view = null,
+        int|string|null $postId = null
+    ): array {
+        $config = \function_exists('apply_filters')
+            ? \apply_filters('mac_core_format_datetime_config', self::$config, $preset, $view, $postId)
+            : self::$config;
+
+        if (! \is_array($config)) {
+            return self::$config;
+        }
+
+        return \array_merge(self::$config, $config);
+    }
+
+    /**
+     * Filterable preset definitions.
+     *
+     * Hook: `mac_core_format_datetime_presets`
+     *
+     * @return array<string,array<string,mixed>>
+     */
+    private static function presets(
+        ?string $preset = null,
+        ?string $view = null,
+        int|string|null $postId = null
+    ): array {
+        $presets = \function_exists('apply_filters')
+            ? \apply_filters('mac_core_format_datetime_presets', self::$presets, $preset, $view, $postId)
+            : self::$presets;
+
+        return \is_array($presets) ? $presets : self::$presets;
+    }
+
+    /**
+     * Filterable view definitions.
+     *
+     * Hook: `mac_core_format_datetime_views`
+     *
+     * @return array<string,array<string,mixed>>
+     */
+    private static function views(
+        ?string $preset = null,
+        ?string $view = null,
+        int|string|null $postId = null
+    ): array {
+        $views = \function_exists('apply_filters')
+            ? \apply_filters('mac_core_format_datetime_views', self::$views, $preset, $view, $postId)
+            : self::$views;
+
+        return \is_array($views) ? $views : self::$views;
     }
 
     private static function bool(mixed $value): bool
