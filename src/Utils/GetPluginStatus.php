@@ -14,168 +14,93 @@ namespace MacCore\Utils;
  */
 final class GetPluginStatus
 {
-    /** @var array<string,bool> */
-    private static array $cache = [];
+	/**
+	 * Supported plugin keys and their main plugin files.
+	 *
+	 * @var array<string,array<int,string>>
+	 */
+	private const PLUGINS = [
+		'acp'           => [ 'admin-columns-pro/admin-columns-pro.php' ],
+		'acf'           => [ 'advanced-custom-fields/acf.php', 'advanced-custom-fields-pro/acf.php' ],
+		'aiowpm'        => [ 'all-in-one-wp-migration/all-in-one-wp-migration.php', 'all-in-one-wp-migration-unlimited-extension/all-in-one-wp-migration-unlimited-extension.php' ],
+		'acss'          => [ 'automaticcss-plugin/automaticcss-plugin.php' ],
+		'cui'           => [ 'commandui/commandui.php' ],
+		'etch'          => [ 'etch/etch.php' ],
+		'frames'        => [ 'frames-plugin/frames-plugin.php' ],
+		'meta-box'      => [ 'meta-box/meta-box.php', 'meta-box-aio/meta-box-aio.php' ],
+		'motionpage'    => [ 'motionpage/motionpage.php' ],
+		'patchstack'    => [ 'patchstack/patchstack.php' ],
+		'perfmatters'   => [ 'perfmatters/perfmatters.php' ],
+		'rank-math'     => [ 'seo-by-rank-math/rank-math.php', 'seo-by-rank-math-pro/rank-math-pro.php' ],
+		'spio'          => [ 'shortpixel-image-optimizer/shortpixel-plugin.php' ],
+		'surecart'      => [ 'surecart/surecart.php' ],
+		'suremembers'   => [ 'suremembers/suremembers.php' ],
+		'wpgb'          => [ 'wp-grid-builder/wp-grid-builder.php' ],
+		'wsf'           => [ 'ws-form/ws-form.php', 'ws-form-pro/ws-form.php' ],
+		'surecontact'   => [ 'surecontact/surecontact.php' ],
+		'presto-player' => [ 'presto-player-pro/presto-player-pro.php' ],
+		'suretriggers'  => [ 'suretriggers/suretriggers.php' ],
+		'ottokit'       => [ 'ottokit/ottokit.php', 'suretriggers/suretriggers.php' ],
+		'fluent-smtp'   => [ 'fluent-smtp/fluent-smtp.php' ],
+		'postmark'      => [ 'postmark-approved-wordpress-plugin/postmark-approved-wordpress-plugin.php' ],
+		'suremails'     => [ 'suremails/suremails.php' ],
+	];
 
-    /**
-     * Generic plugin active check.
-     */
-    public static function isPluginActive(string $pluginFile): bool
-    {
-        $pluginFile = ltrim($pluginFile, '/');
-        if ($pluginFile === '') {
-            return false;
-        }
+	/** @var array<string,bool> */
+	private static array $cache = [];
 
-        if (isset(self::$cache[$pluginFile])) {
-            return self::$cache[$pluginFile];
-        }
+	/**
+	 * Check whether one supported plugin key is active.
+	 */
+	public static function get( string $plugin ): bool
+	{
+		$plugin = \sanitize_key( $plugin );
 
-        if (! function_exists('is_plugin_active')) {
-            require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        }
+		if ( $plugin === '' || ! isset( self::PLUGINS[ $plugin ] ) ) {
+			return false;
+		}
 
-        $active = false;
+		if ( isset( self::$cache[ $plugin ] ) ) {
+			return self::$cache[ $plugin ];
+		}
 
-        if (function_exists('is_plugin_active') && is_plugin_active($pluginFile)) {
-            $active = true;
-        } elseif (is_multisite() && function_exists('is_plugin_active_for_network')) {
-            $active = is_plugin_active_for_network($pluginFile);
-        } else {
-            $siteActive = (array) get_option('active_plugins', []);
-            $netActive  = (array) get_site_option('active_sitewide_plugins', []);
-            $active     = in_array($pluginFile, $siteActive, true) || isset($netActive[$pluginFile]);
-        }
+		if ( $plugin === 'etch' && \class_exists( '\Etch\Plugin' ) ) {
+			return self::$cache[ $plugin ] = true;
+		}
 
-        return self::$cache[$pluginFile] = $active;
-    }
+		foreach ( self::PLUGINS[ $plugin ] as $plugin_file ) {
+			if ( self::is_plugin_file_active( $plugin_file ) ) {
+				return self::$cache[ $plugin ] = true;
+			}
+		}
 
-    /* -------------------------
-     * Explicit helpers
-     * ------------------------- */
+		return self::$cache[ $plugin ] = false;
+	}
 
-    public static function isAdminColumnsActive(): bool
-    {
-        return self::isPluginActive('admin-columns-pro/admin-columns-pro.php');
-    }
+	private static function is_plugin_file_active( string $plugin_file ): bool
+	{
+		$plugin_file = \ltrim( $plugin_file, '/' );
 
-    public static function isAcfActive(): bool
-    {
-        return self::isPluginActive('advanced-custom-fields/acf.php')
-            || self::isPluginActive('advanced-custom-fields-pro/acf.php');
-    }
+		if ( $plugin_file === '' ) {
+			return false;
+		}
 
-    public static function isAllInOneWpMigrationActive(): bool
-    {
-        return self::isPluginActive('all-in-one-wp-migration/all-in-one-wp-migration.php')
-            || self::isPluginActive('all-in-one-wp-migration-unlimited-extension/all-in-one-wp-migration-unlimited-extension.php');
-    }
+		if ( ! \function_exists( 'is_plugin_active' ) ) {
+			require_once \ABSPATH . 'wp-admin/includes/plugin.php';
+		}
 
-    public static function isAutomaticCssActive(): bool
-    {
-        return self::isPluginActive('automaticcss-plugin/automaticcss-plugin.php');
-    }
+		$active = false;
 
-    public static function isCommandUiActive(): bool
-    {
-        return self::isPluginActive('commandui/commandui.php');
-    }
+		if ( \function_exists( 'is_plugin_active' ) && \is_plugin_active( $plugin_file ) ) {
+			$active = true;
+		} elseif ( \is_multisite() && \function_exists( 'is_plugin_active_for_network' ) ) {
+			$active = \is_plugin_active_for_network( $plugin_file );
+		} else {
+			$site_active = (array) \get_option( 'active_plugins', [] );
+			$net_active  = (array) \get_site_option( 'active_sitewide_plugins', [] );
+			$active      = \in_array( $plugin_file, $site_active, true ) || isset( $net_active[ $plugin_file ] );
+		}
 
-    public static function isEtchActive(): bool
-    {
-        return self::isPluginActive('etch/etch.php') || class_exists('\Etch\Plugin');
-    }
-
-    public static function isFramesActive(): bool
-    {
-        return self::isPluginActive('frames-plugin/frames-plugin.php');
-    }
-
-    public static function isMetaBoxActive(): bool
-    {
-        return self::isPluginActive('meta-box/meta-box.php')
-            || self::isPluginActive('meta-box-aio/meta-box-aio.php');
-    }
-
-    public static function isMotionPageActive(): bool
-    {
-        return self::isPluginActive('motionpage/motionpage.php');
-    }
-
-    public static function isPatchstackActive(): bool
-    {
-        return self::isPluginActive('patchstack/patchstack.php');
-    }
-
-    public static function isPerfmattersActive(): bool
-    {
-        return self::isPluginActive('perfmatters/perfmatters.php');
-    }
-
-    public static function isRankMathActive(): bool
-    {
-        return self::isPluginActive('seo-by-rank-math/rank-math.php')
-            || self::isPluginActive('seo-by-rank-math-pro/rank-math-pro.php');
-    }
-
-    public static function isShortPixelActive(): bool
-    {
-        return self::isPluginActive('shortpixel-image-optimizer/shortpixel-plugin.php');
-    }
-
-    public static function isSureCartActive(): bool
-    {
-        return self::isPluginActive('surecart/surecart.php');
-    }
-
-    public static function isSureMembersActive(): bool
-    {
-        return self::isPluginActive('suremembers/suremembers.php');
-    }
-
-    public static function isWpGridBuilderActive(): bool
-    {
-        return self::isPluginActive('wp-grid-builder/wp-grid-builder.php');
-    }
-
-    public static function isWsFormActive(): bool
-    {
-        return self::isPluginActive('ws-form/ws-form.php')
-            || self::isPluginActive('ws-form-pro/ws-form.php');
-    }
-
-    public static function isSureContactActive(): bool
-    {
-        return self::isPluginActive('surecontact/surecontact.php');
-    }
-
-    public static function isPrestoPlayerActive(): bool
-    {
-        return self::isPluginActive('presto-player-pro/presto-player-pro.php');
-    }
-
-    public static function isSureTriggersActive(): bool
-    {
-        return self::isPluginActive('suretriggers/suretriggers.php');
-    }
-
-    public static function isOttokitActive(): bool
-    {
-        return self::isPluginActive('suretriggers/suretriggers.php');
-    }
-
-    public static function isFluentSmtpActive(): bool
-    {
-        return self::isPluginActive('fluent-smtp/fluent-smtp.php');
-    }
-
-    public static function isPostmarkActive(): bool
-    {
-        return self::isPluginActive('postmark-approved-wordpress-plugin/postmark-approved-wordpress-plugin.php');
-    }
-
-    public static function isSureMailsActive(): bool
-    {
-        return self::isPluginActive('suremails/suremails.php');
-    }
+		return $active;
+	}
 }

@@ -21,6 +21,18 @@ if ( ! defined( 'DAY_IN_SECONDS' ) ) {
 	define( 'DAY_IN_SECONDS', 86400 );
 }
 
+if ( ! defined( 'WEEK_IN_SECONDS' ) ) {
+	define( 'WEEK_IN_SECONDS', 604800 );
+}
+
+if ( ! defined( 'MONTH_IN_SECONDS' ) ) {
+	define( 'MONTH_IN_SECONDS', 2592000 );
+}
+
+if ( ! defined( 'YEAR_IN_SECONDS' ) ) {
+	define( 'YEAR_IN_SECONDS', 31536000 );
+}
+
 if ( ! class_exists( 'WP_Error' ) ) {
 	class WP_Error
 	{
@@ -64,10 +76,115 @@ if ( ! class_exists( 'WP_Term' ) ) {
 	}
 }
 
+if ( ! class_exists( 'WP_Post_Type' ) ) {
+	class WP_Post_Type
+	{
+		public string $name = '';
+		public object $labels;
+
+		/**
+		 * @param array<string,mixed> $data Post type data.
+		 */
+		public function __construct( array $data = [] )
+		{
+			$this->labels = (object) [
+				'name'          => '',
+				'singular_name' => '',
+			];
+
+			foreach ( $data as $key => $value ) {
+				if ( $key === 'labels' ) {
+					$labels = \is_array( $value ) ? $value : [];
+					$this->labels = (object) \array_merge(
+						[
+							'name'          => '',
+							'singular_name' => '',
+						],
+						$labels
+					);
+					continue;
+				}
+
+				if ( \property_exists( $this, (string) $key ) ) {
+					$this->{$key} = (string) $value;
+				}
+			}
+		}
+	}
+}
+
+if ( ! class_exists( 'WP_Taxonomy' ) ) {
+	class WP_Taxonomy
+	{
+		public string $name = '';
+		public object $labels;
+
+		/**
+		 * @param array<string,mixed> $data Taxonomy data.
+		 */
+		public function __construct( array $data = [] )
+		{
+			$this->labels = (object) [
+				'name'          => '',
+				'singular_name' => '',
+			];
+
+			foreach ( $data as $key => $value ) {
+				if ( $key === 'labels' ) {
+					$labels = \is_array( $value ) ? $value : [];
+					$this->labels = (object) \array_merge(
+						[
+							'name'          => '',
+							'singular_name' => '',
+						],
+						$labels
+					);
+					continue;
+				}
+
+				if ( \property_exists( $this, (string) $key ) ) {
+					$this->{$key} = (string) $value;
+				}
+			}
+		}
+	}
+}
+
 if ( ! class_exists( 'WP_Post' ) ) {
 	class WP_Post
 	{
 		public int $ID = 0;
+	}
+}
+
+if ( ! class_exists( 'WP_Theme' ) ) {
+	class WP_Theme
+	{
+		public string $stylesheet = '';
+		public string $template = '';
+		private WP_Theme|false $parent_theme = false;
+
+		/**
+		 * @param array<string,mixed> $data Theme data.
+		 */
+		public function __construct( array $data = [] )
+		{
+			foreach ( $data as $key => $value ) {
+				if ( $key === 'parent' ) {
+					$this->parent_theme = $value instanceof WP_Theme ? $value : false;
+					continue;
+				}
+
+				if ( \property_exists( $this, (string) $key ) ) {
+					$this->{$key} = (string) $value;
+				}
+			}
+		}
+
+		public function parent(): WP_Theme|false
+		{
+			return $this->parent_theme;
+		}
 	}
 }
 
@@ -125,6 +242,32 @@ if ( ! class_exists( 'WP_Admin_Bar' ) ) {
 	}
 }
 
+function mac_core_tests_make_post_type( string $name, string $singular_label, string $plural_label ): WP_Post_Type
+{
+	return new WP_Post_Type(
+		[
+			'name'   => $name,
+			'labels' => [
+				'name'          => $plural_label,
+				'singular_name' => $singular_label,
+			],
+		]
+	);
+}
+
+function mac_core_tests_make_taxonomy( string $name, string $singular_label, string $plural_label ): WP_Taxonomy
+{
+	return new WP_Taxonomy(
+		[
+			'name'   => $name,
+			'labels' => [
+				'name'          => $plural_label,
+				'singular_name' => $singular_label,
+			],
+		]
+	);
+}
+
 function mac_core_tests_reset_wp_state(): void
 {
 	$GLOBALS['mac_core_test_actions']         = [];
@@ -141,8 +284,13 @@ function mac_core_tests_reset_wp_state(): void
 	$GLOBALS['mac_core_test_options']         = [
 		'date_format' => 'M j, Y',
 		'time_format' => 'g:i a',
+		'active_plugins' => [],
+	];
+	$GLOBALS['mac_core_test_site_options']    = [
+		'active_sitewide_plugins' => [],
 	];
 	$GLOBALS['mac_core_test_terms']           = [];
+	$GLOBALS['mac_core_test_term_lookup']     = [];
 	$GLOBALS['mac_core_test_term_links']      = [];
 	$GLOBALS['mac_core_test_post_meta']       = [];
 	$GLOBALS['mac_core_test_post_types']      = [
@@ -150,9 +298,17 @@ function mac_core_tests_reset_wp_state(): void
 		'page',
 	];
 	$GLOBALS['mac_core_test_post_type_map']   = [];
+	$GLOBALS['mac_core_test_post_type_objects'] = [
+		'post' => mac_core_tests_make_post_type( 'post', 'Post', 'Posts' ),
+		'page' => mac_core_tests_make_post_type( 'page', 'Page', 'Pages' ),
+	];
 	$GLOBALS['mac_core_test_post_type_support'] = [
 		'post' => ['comments' => true, 'trackbacks' => true],
 		'page' => ['comments' => true, 'trackbacks' => true],
+	];
+	$GLOBALS['mac_core_test_taxonomies']      = [
+		'category' => mac_core_tests_make_taxonomy( 'category', 'Category', 'Categories' ),
+		'post_tag' => mac_core_tests_make_taxonomy( 'post_tag', 'Tag', 'Tags' ),
 	];
 	$GLOBALS['mac_core_test_current_post_id'] = 0;
 	$GLOBALS['mac_core_test_current_time']    = strtotime( '2026-04-08 12:00:00 UTC' );
@@ -162,6 +318,13 @@ function mac_core_tests_reset_wp_state(): void
 	$GLOBALS['mac_core_test_theme_support']   = [];
 	$GLOBALS['mac_core_test_image_sizes']     = [];
 	$GLOBALS['mac_core_test_removed_image_sizes'] = [];
+	$GLOBALS['mac_core_test_theme']           = new WP_Theme(
+		[
+			'stylesheet' => '',
+			'template'   => '',
+		]
+	);
+	$GLOBALS['mac_core_test_is_multisite']    = false;
 	$GLOBALS['mac_core_test_transients']      = [];
 	$GLOBALS['mac_core_test_redirect_to']     = null;
 	$GLOBALS['mac_core_test_is_admin']        = true;
@@ -346,6 +509,15 @@ if ( ! function_exists( 'get_the_terms' ) ) {
 	}
 }
 
+if ( ! function_exists( 'get_term' ) ) {
+	function get_term( int $term_id ): WP_Term|null
+	{
+		$term = $GLOBALS['mac_core_test_term_lookup'][ $term_id ] ?? null;
+
+		return $term instanceof WP_Term ? $term : null;
+	}
+}
+
 if ( ! function_exists( 'get_term_link' ) ) {
 	function get_term_link( WP_Term $term ): string|WP_Error
 	{
@@ -429,6 +601,13 @@ if ( ! function_exists( 'get_option' ) ) {
 	function get_option( string $option, mixed $default = false ): mixed
 	{
 		return $GLOBALS['mac_core_test_options'][ $option ] ?? $default;
+	}
+}
+
+if ( ! function_exists( 'get_site_option' ) ) {
+	function get_site_option( string $option, mixed $default = false ): mixed
+	{
+		return $GLOBALS['mac_core_test_site_options'][ $option ] ?? $default;
 	}
 }
 
@@ -701,9 +880,32 @@ if ( ! function_exists( 'get_post_types' ) ) {
 }
 
 if ( ! function_exists( 'get_post_type' ) ) {
-	function get_post_type( int $post_id ): string
+	function get_post_type( mixed $post = null ): string
 	{
+		if ( null === $post || $post === '' ) {
+			$post = $GLOBALS['mac_core_test_current_post_id'] ?? 0;
+		}
+
+		if ( $post instanceof WP_Post ) {
+			$post = $post->ID;
+		}
+
+		if ( ! \is_numeric( $post ) ) {
+			return 'post';
+		}
+
+		$post_id = (int) $post;
+
 		return $GLOBALS['mac_core_test_post_type_map'][ $post_id ] ?? 'post';
+	}
+}
+
+if ( ! function_exists( 'get_post_type_object' ) ) {
+	function get_post_type_object( string $post_type ): WP_Post_Type|null
+	{
+		$object = $GLOBALS['mac_core_test_post_type_objects'][ $post_type ] ?? null;
+
+		return $object instanceof WP_Post_Type ? $object : null;
 	}
 }
 
@@ -718,6 +920,56 @@ if ( ! function_exists( 'remove_post_type_support' ) ) {
 	function remove_post_type_support( string $post_type, string $feature ): void
 	{
 		$GLOBALS['mac_core_test_post_type_support'][ $post_type ][ $feature ] = false;
+	}
+}
+
+if ( ! function_exists( 'taxonomy_exists' ) ) {
+	function taxonomy_exists( string $taxonomy ): bool
+	{
+		return isset( $GLOBALS['mac_core_test_taxonomies'][ $taxonomy ] );
+	}
+}
+
+if ( ! function_exists( 'get_taxonomy' ) ) {
+	function get_taxonomy( string $taxonomy ): WP_Taxonomy|null
+	{
+		$object = $GLOBALS['mac_core_test_taxonomies'][ $taxonomy ] ?? null;
+
+		return $object instanceof WP_Taxonomy ? $object : null;
+	}
+}
+
+if ( ! function_exists( 'wp_get_theme' ) ) {
+	function wp_get_theme(): WP_Theme
+	{
+		$theme = $GLOBALS['mac_core_test_theme'] ?? null;
+
+		return $theme instanceof WP_Theme ? $theme : new WP_Theme();
+	}
+}
+
+if ( ! function_exists( 'is_multisite' ) ) {
+	function is_multisite(): bool
+	{
+		return (bool) ( $GLOBALS['mac_core_test_is_multisite'] ?? false );
+	}
+}
+
+if ( ! function_exists( 'is_plugin_active' ) ) {
+	function is_plugin_active( string $plugin_file ): bool
+	{
+		$active_plugins = (array) \get_option( 'active_plugins', [] );
+
+		return \in_array( $plugin_file, $active_plugins, true );
+	}
+}
+
+if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+	function is_plugin_active_for_network( string $plugin_file ): bool
+	{
+		$sitewide_plugins = (array) \get_site_option( 'active_sitewide_plugins', [] );
+
+		return isset( $sitewide_plugins[ $plugin_file ] );
 	}
 }
 

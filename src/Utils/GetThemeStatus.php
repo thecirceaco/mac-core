@@ -16,54 +16,54 @@ use WP_Theme;
  */
 final class GetThemeStatus
 {
-    /** @var array<string,bool> */
-    private static array $cache = [];
+	/**
+	 * Supported theme keys and the slugs they map to.
+	 *
+	 * @var array<string,string>
+	 */
+	private const THEMES = [
+		'bricks' => 'bricks',
+		'etch'   => 'etch-theme',
+	];
 
-    /**
-     * Generic theme active check by slug.
-     * Matches active or parent theme.
-     */
-    public static function isThemeActive(string $slug): bool
-    {
-        $slug = \sanitize_key($slug);
-        if ($slug === '') {
-            return false;
-        }
+	/** @var array<string,bool> */
+	private static array $cache = [];
 
-        if (isset(self::$cache[$slug])) {
-            return self::$cache[$slug];
-        }
+	/**
+	 * Check whether one supported theme key is active.
+	 */
+	public static function get( string $theme = 'bricks' ): bool
+	{
+		$theme = \sanitize_key( $theme );
 
-        $theme = wp_get_theme();
-        if (! $theme instanceof WP_Theme) {
-            return self::$cache[$slug] = false;
-        }
+		if ( $theme === '' || ! isset( self::THEMES[ $theme ] ) ) {
+			return false;
+		}
 
-        if ($theme->stylesheet === $slug || $theme->template === $slug) {
-            return self::$cache[$slug] = true;
-        }
+		if ( isset( self::$cache[ $theme ] ) ) {
+			return self::$cache[ $theme ];
+		}
 
-        $parent = $theme->parent();
-        if ($parent instanceof WP_Theme) {
-            if ($parent->stylesheet === $slug || $parent->template === $slug) {
-                return self::$cache[$slug] = true;
-            }
-        }
+		$theme_object = \wp_get_theme();
 
-        return self::$cache[$slug] = false;
-    }
+		if ( ! $theme_object instanceof WP_Theme ) {
+			return self::$cache[ $theme ] = false;
+		}
 
-    /* -------------------------
-     * Explicit helpers
-     * ------------------------- */
+		$slug = self::THEMES[ $theme ];
 
-    public static function isBricksThemeActive(): bool
-    {
-        return self::isThemeActive('bricks');
-    }
+		if ( $theme_object->stylesheet === $slug || $theme_object->template === $slug ) {
+			return self::$cache[ $theme ] = true;
+		}
 
-    public static function isEtchThemeActive(): bool
-    {
-        return self::isThemeActive('etch-theme');
-    }
+		$parent = $theme_object->parent();
+
+		if ( $parent instanceof WP_Theme ) {
+			if ( $parent->stylesheet === $slug || $parent->template === $slug ) {
+				return self::$cache[ $theme ] = true;
+			}
+		}
+
+		return self::$cache[ $theme ] = false;
+	}
 }

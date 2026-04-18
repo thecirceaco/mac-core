@@ -11,6 +11,7 @@ namespace MacCore\Tests\Unit;
 
 use MacCore\Policies\Core\ControlComments;
 use MacCore\Policies\Core\DisableAdminBar;
+use MacCore\Policies\Core\DisableNativePosts;
 use MacCore\Policies\Media\AddCustomImageSizes;
 use MacCore\Policies\Media\DisableImageCompression;
 use MacCore\Policies\Media\DisallowVideoMimeTypes;
@@ -32,6 +33,10 @@ final class PolicySettingsTest extends TestCase
 		if ( ! \defined( 'MAC_CORE_SETTINGS_OPTION' ) ) {
 			\define( 'MAC_CORE_SETTINGS_OPTION', 'mac_core_settings' );
 		}
+
+		$_GET = [];
+		$_POST = [];
+		$_SERVER = [];
 
 		$this->settings = new WordPressSettingsRepository( new SettingsSchema() );
 	}
@@ -198,6 +203,135 @@ final class PolicySettingsTest extends TestCase
 		$policy->register_image_sizes();
 
 		$this->assertSame( [], $GLOBALS['mac_core_test_image_sizes'] );
+	}
+
+	public function test_native_posts_policy_is_noop_when_disabled(): void
+	{
+		$GLOBALS['mac_core_test_post_types'] = ['post', 'page', 'blog'];
+
+		$policy = new DisableNativePosts( $this->settings );
+
+		$this->assertNull( $policy->maybe_redirect_post_list() );
+		$this->assertNull( $policy->maybe_redirect_post_create() );
+		$this->assertNull( $policy->maybe_redirect_post_edit() );
+
+		$policy->remove_posts_menu();
+		$policy->remove_new_post_admin_bar_node( new \WP_Admin_Bar() );
+		$policy->remove_native_posts_dashboard_widgets();
+
+		$this->assertSame( [], $GLOBALS['mac_core_test_removed_menu_pages'] );
+		$this->assertSame( [], $GLOBALS['mac_core_test_removed_submenu_pages'] );
+		$this->assertSame( [], $GLOBALS['mac_core_test_removed_admin_bar_nodes'] );
+		$this->assertSame( [], $GLOBALS['mac_core_test_removed_meta_boxes'] );
+		$this->assertNull( $GLOBALS['mac_core_test_redirect_to'] );
+		$this->assertSame( ['post', 'page', 'blog'], $GLOBALS['mac_core_test_post_types'] );
+	}
+
+	public function test_native_posts_policy_hides_admin_entry_points_when_enabled(): void
+	{
+		$this->settings->save(
+			[
+				'core' => [
+					'disable_native_posts' => '1',
+				],
+			]
+		);
+
+		$policy = new DisableNativePosts( $this->settings );
+		$policy->remove_posts_menu();
+		$policy->remove_new_post_admin_bar_node( new \WP_Admin_Bar() );
+		$policy->remove_native_posts_dashboard_widgets();
+
+		$this->assertContains( 'edit.php', $GLOBALS['mac_core_test_removed_menu_pages'] );
+		$this->assertContains(
+			[
+				'parent_slug' => 'edit.php',
+				'menu_slug'   => 'edit.php',
+			],
+			$GLOBALS['mac_core_test_removed_submenu_pages']
+		);
+		$this->assertContains(
+			[
+				'parent_slug' => 'edit.php',
+				'menu_slug'   => 'post-new.php',
+			],
+			$GLOBALS['mac_core_test_removed_submenu_pages']
+		);
+		$this->assertContains(
+			[
+				'parent_slug' => 'edit.php',
+				'menu_slug'   => 'edit-tags.php?taxonomy=category',
+			],
+			$GLOBALS['mac_core_test_removed_submenu_pages']
+		);
+		$this->assertContains(
+			[
+				'parent_slug' => 'edit.php',
+				'menu_slug'   => 'edit-tags.php?taxonomy=post_tag',
+			],
+			$GLOBALS['mac_core_test_removed_submenu_pages']
+		);
+		$this->assertContains( 'new-post', $GLOBALS['mac_core_test_removed_admin_bar_nodes'] );
+		$this->assertContains(
+			[
+				'id'      => 'dashboard_quick_press',
+				'screen'  => 'dashboard',
+				'context' => 'side',
+			],
+			$GLOBALS['mac_core_test_removed_meta_boxes']
+		);
+		$this->assertContains(
+			[
+				'id'      => 'dashboard_recent_drafts',
+				'screen'  => 'dashboard',
+				'context' => 'side',
+			],
+			$GLOBALS['mac_core_test_removed_meta_boxes']
+		);
+	}
+
+	public function test_native_posts_policy_redirects_only_native_post_admin_screens(): void
+	{
+		$this->settings->save(
+			[
+				'core' => [
+					'disable_native_posts' => '1',
+				],
+			]
+		);
+
+		$policy = new DisableNativePosts( $this->settings );
+
+		$_GET = [];
+		$this->assertSame( 'https://example.test/wp-admin/index.php', $policy->maybe_redirect_post_list() );
+		$this->assertSame( 'https://example.test/wp-admin/index.php', $GLOBALS['mac_core_test_redirect_to'] );
+
+		$GLOBALS['mac_core_test_redirect_to'] = null;
+		$_GET = ['post_type' => 'page'];
+		$this->assertNull( $policy->maybe_redirect_post_list() );
+		$this->assertNull( $GLOBALS['mac_core_test_redirect_to'] );
+
+		$_GET = [];
+		$this->assertSame( 'https://example.test/wp-admin/index.php', $policy->maybe_redirect_post_create() );
+
+		$GLOBALS['mac_core_test_redirect_to'] = null;
+		$_GET = ['post_type' => 'blog'];
+		$this->assertNull( $policy->maybe_redirect_post_create() );
+		$this->assertNull( $GLOBALS['mac_core_test_redirect_to'] );
+
+		$GLOBALS['mac_core_test_post_type_map'] = [
+			41 => 'post',
+			42 => 'page',
+		];
+
+		$_GET = ['post' => '41'];
+		$this->assertSame( 'https://example.test/wp-admin/index.php', $policy->maybe_redirect_post_edit() );
+
+		$GLOBALS['mac_core_test_redirect_to'] = null;
+		$_GET = ['post' => '42'];
+		$this->assertNull( $policy->maybe_redirect_post_edit() );
+		$this->assertNull( $GLOBALS['mac_core_test_redirect_to'] );
+		$this->assertContains( 'post', $GLOBALS['mac_core_test_post_types'] );
 	}
 
 	public function test_comment_policy_is_noop_when_comment_control_is_disabled(): void

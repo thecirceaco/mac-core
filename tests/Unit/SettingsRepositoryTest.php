@@ -34,6 +34,7 @@ final class SettingsRepositoryTest extends TestCase
 		$this->assertTrue( $settings['core']['comments_enabled'] );
 		$this->assertTrue( $settings['core']['comments_posts_enabled'] );
 		$this->assertTrue( $settings['core']['comments_pages_enabled'] );
+		$this->assertFalse( $settings['core']['disable_native_posts'] );
 		$this->assertFalse( $settings['core']['disable_frontend_admin_bar'] );
 		$this->assertFalse( $settings['core']['disable_auto_updates'] );
 		$this->assertFalse( $settings['core']['disable_site_health'] );
@@ -49,6 +50,15 @@ final class SettingsRepositoryTest extends TestCase
 		$this->assertFalse( $settings['media']['allow_font_uploads'] );
 		$this->assertFalse( $settings['media']['block_video_uploads'] );
 		$this->assertFalse( $settings['media']['disable_image_compression'] );
+		$this->assertFalse( $settings['utils']['utils_enabled'] );
+		$this->assertFalse( $settings['utils']['count_array_items_enabled'] );
+		$this->assertFalse( $settings['utils']['format_datetime_enabled'] );
+		$this->assertFalse( $settings['utils']['format_price_enabled'] );
+		$this->assertFalse( $settings['utils']['post_type_label_enabled'] );
+		$this->assertFalse( $settings['utils']['taxonomy_label_enabled'] );
+		$this->assertFalse( $settings['utils']['post_terms_enabled'] );
+		$this->assertFalse( $settings['utils']['plugin_status_enabled'] );
+		$this->assertFalse( $settings['utils']['theme_status_enabled'] );
 		$this->assertSame( 'textarea', $schema->get_field( 'media', 'removed_image_sizes' )['control'] );
 		$this->assertSame( 'textarea', $schema->get_field( 'media', 'custom_image_widths' )['control'] );
 		$this->assertArrayNotHasKey( 'blocked_video_extensions', $settings['media'] );
@@ -64,6 +74,7 @@ final class SettingsRepositoryTest extends TestCase
 					'developer_branding_enabled' => '1',
 					'developer_branding_author'  => '  Mihai   Circea ',
 					'comment_control_enabled'    => '1',
+					'disable_native_posts'       => '1',
 					'disable_frontend_admin_bar' => '1',
 					'frontend_admin_bar_exempt_target' => ' Administrator ',
 					'excerpt_length_enabled'     => '1',
@@ -78,11 +89,18 @@ final class SettingsRepositoryTest extends TestCase
 					'remove_image_sizes_enabled' => '1',
 					'removed_image_sizes'        => "thumbnail\nmedium_large,\nLarge",
 				],
+				'utils' => [
+					'utils_enabled'             => '1',
+					'format_price_enabled'      => '1',
+					'post_terms_enabled'        => '1',
+					'plugin_status_enabled'     => '',
+				],
 			]
 		);
 
 		$this->assertSame( 'Mihai Circea', $settings['core']['developer_branding_author'] );
 		$this->assertTrue( $settings['core']['comment_control_enabled'] );
+		$this->assertTrue( $settings['core']['disable_native_posts'] );
 		$this->assertTrue( $settings['core']['disable_frontend_admin_bar'] );
 		$this->assertSame( 'administrator', $settings['core']['frontend_admin_bar_exempt_target'] );
 		$this->assertTrue( $settings['core']['excerpt_length_enabled'] );
@@ -92,6 +110,10 @@ final class SettingsRepositoryTest extends TestCase
 		$this->assertTrue( $settings['media']['disable_image_compression'] );
 		$this->assertTrue( $settings['media']['remove_image_sizes_enabled'] );
 		$this->assertSame( ['thumbnail', 'medium_large', 'large'], $settings['media']['removed_image_sizes'] );
+		$this->assertTrue( $settings['utils']['utils_enabled'] );
+		$this->assertTrue( $settings['utils']['format_price_enabled'] );
+		$this->assertTrue( $settings['utils']['post_terms_enabled'] );
+		$this->assertFalse( $settings['utils']['plugin_status_enabled'] );
 		$this->assertArrayNotHasKey( 'image_quality', $settings['media'] );
 		$this->assertArrayNotHasKey( 'blocked_video_extensions', $settings['media'] );
 		$this->assertSame( $settings, $GLOBALS['mac_core_test_options']['mac_core_settings'] );

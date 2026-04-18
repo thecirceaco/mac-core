@@ -83,14 +83,21 @@ final class AdminPageTest extends TestCase
 
 		$this->assertStringContainsString( 'Core Policies', $output );
 		$this->assertStringContainsString( 'Media Policies', $output );
+		$this->assertStringContainsString( 'Utils', $output );
 		$this->assertStringContainsString( '<h3>Uninstall</h3>', $output );
 		$this->assertStringContainsString( '<h3>Comments</h3>', $output );
+		$this->assertStringContainsString( '<h3>Content Types</h3>', $output );
 		$this->assertStringContainsString( '<h3>Image Sizes</h3>', $output );
 		$this->assertStringContainsString( '<h3>Uploads</h3>', $output );
+		$this->assertStringContainsString( '<h3>Loading</h3>', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][comment_control_enabled]"', $output );
+		$this->assertStringContainsString( 'name="mac_core_settings[core][disable_native_posts]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][excerpt_length]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][frontend_admin_bar_exempt_target]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[media][custom_image_widths]"', $output );
+		$this->assertStringContainsString( 'name="mac_core_settings[utils][utils_enabled]"', $output );
+		$this->assertStringContainsString( 'name="mac_core_settings[utils][format_price_enabled]"', $output );
+		$this->assertStringContainsString( 'name="mac_core_settings[utils][plugin_status_enabled]"', $output );
 		$this->assertStringContainsString( '<textarea class="large-text code" id="mac-core-media-custom_image_widths"', $output );
 		$this->assertStringContainsString( '<textarea class="large-text code" id="mac-core-media-removed_image_sizes"', $output );
 		$this->assertStringContainsString( 'Height is automatic and aspect ratio is preserved.', $output );

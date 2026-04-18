@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 0.7.0
+Stable tag: 0.8.0
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,13 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 0.8.0 =
+* Added a default-off `Utils` settings module so utility wrappers are only available when explicitly enabled.
+* Unified the public utility API around wrapper-first helpers including `mac_format_datetime()`, `mac_format_price()`, `mac_count_array_items()`, `mac_get_post_type_label()`, `mac_get_taxonomy_label()`, `mac_get_post_terms()`, `mac_get_plugin_status()`, and `mac_get_theme_status()`.
+* Added the new generic `FormatPrice` utility helper.
+* Removed the older convenience wrappers in favor of the unified helper surface.
+* Added migration-focused coverage around the default-off utils loader and wrapper availability.
 
 = 0.7.0 =
 * Added a new `Control comments in MAC Core` master setting so MAC Core comment behavior is explicitly opt-in.

@@ -1110,20 +1110,3 @@ final class FormatDatetime
 }
 
 }
-
-namespace {
-
-if (! function_exists('mac_format_datetime')) {
-    /**
-     * Format a preset date/time value for Bricks or templates.
-     */
-    function mac_format_datetime(
-        ?string $preset = null,
-        ?string $view = null,
-        int|string|null $post_id = null
-    ): string {
-        return \MacCore\Utils\FormatDatetime::format($preset, $view, $post_id);
-    }
-}
-
-}

@@ -20,6 +20,7 @@ use MacCore\Policies\Core\AddLastLoginColumn;
 use MacCore\Policies\Core\ControlComments;
 use MacCore\Policies\Core\DisableAdminBar;
 use MacCore\Policies\Core\DisableAutoUpdates;
+use MacCore\Policies\Core\DisableNativePosts;
 use MacCore\Policies\Core\DisableSiteHealth;
 use MacCore\Policies\Core\RemoveDashboardClutter;
 use MacCore\Policies\Core\SetExcerptLength;
@@ -31,6 +32,7 @@ use MacCore\Policies\Media\RemoveDefaultImageSizes;
 use MacCore\Settings\SettingsController;
 use MacCore\Settings\SettingsSchema;
 use MacCore\Settings\WordPressSettingsRepository;
+use MacCore\Utils\UtilsLoader;
 
 final class Kernel
 {
@@ -85,12 +87,14 @@ final class Kernel
 			new AdminPage( $settings, $schema, $licensing ),
 			new PluginListingLinks(),
 			$licensing,
+			new UtilsLoader( $settings ),
 
             // Core.
             new AddDeveloperBranding( $settings ),
             new ControlComments( $settings ),
             new DisableAdminBar( $settings ),
             new DisableAutoUpdates( $settings ),
+            new DisableNativePosts( $settings ),
             new DisableSiteHealth( $settings ),
             new SetExcerptLength( $settings ),
             new RemoveDashboardClutter( $settings ),

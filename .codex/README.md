@@ -14,6 +14,7 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 - `context/surecart-sdk-provenance.md`: Source, tag, runtime-file path, and maintenance notes for the vendored SureCart WordPress SDK.
 - `context/etch-1.4.9-review.md`: Detailed notes from reviewing the Etch 1.4.9 plugin ZIP and how to adapt the useful patterns.
 - `context/acss-4.0.0-rc-1-review.md`: Automatic.css review notes for admin routing, settings storage, lifecycle timing, and extension seams.
+- `context/mac-docs-sync.md`: Durable map of the main `mac-docs` touchpoints that should be reviewed when `MAC Core` changes.
 - `todos/mac-core-alignment.md`: Actionable implementation checklist and verification steps for the alignment pass.
 - `todos/surecart-licensing.md`: SureCart licensing implementation and verification checklist.
 - `skills/wordpress-plugin-oop/SKILL.md`: MAC Core-specific implementation discipline for adding WordPress behavior through the plugin service architecture.
@@ -21,6 +22,7 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 - `skills/dev-zip-testing/SKILL.md`: Local test ZIP workflow for building a plugin package from the current `dev` commit before a real release.
 - `skills/release/SKILL.md`: MAC Core release process, version checks, and branch discipline.
 - `skills/dev-branch-git/SKILL.md`: Add/commit/push guardrails for keeping normal work on `dev`.
+- `skills/mac-docs-sync/SKILL.md`: Workflow for reviewing and updating `mac-docs` when `MAC Core` public behavior changes.
 - `reports/security_best_practices_report.md`: Security best-practices review findings for MAC Core.
 - `reports/mac-core-threat-model.md`: Repo-grounded threat model for MAC Core.
 - `reports/security-ownership-summary.md`: Ownership-map summary and accepted single-maintainer constraint notes.
