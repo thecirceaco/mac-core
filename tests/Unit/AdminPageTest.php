@@ -53,11 +53,9 @@ final class AdminPageTest extends TestCase
 		$_GET['page']              = 'mac-core';
 		$_SERVER['REQUEST_METHOD'] = 'GET';
 
-		$this->make_page()->redirect_default_view();
-
 		$this->assertSame(
 			'https://example.test/wp-admin/admin.php?page=mac-core&tab=settings',
-			$GLOBALS['mac_core_test_redirect_to']
+			$this->make_page()->default_view_redirect_target()
 		);
 	}
 

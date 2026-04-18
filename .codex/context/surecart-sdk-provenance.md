@@ -18,4 +18,11 @@ The local patch intentionally does not change:
 - option keys/transient keys used by the SDK
 - release JSON shape or package URL handling
 
-Treat files under `inc/Vendor/SureCart/Licensing/` as vendored third-party code. Do not edit them unless applying a deliberate, documented vendor patch.
+Treat files under `inc/Vendor/SureCart/Licensing/` as official vendored third-party code from SureCart. In normal MAC Core work, this SDK code must not be touched directly.
+
+Allowed exceptions are intentionally narrow:
+
+- a deliberate, documented vendor patch that is called out before implementation
+- a controlled re-vendor or version bump from upstream SureCart
+
+Default rule: change MAC Core-owned wrapper/integration code first, not the official SDK files.

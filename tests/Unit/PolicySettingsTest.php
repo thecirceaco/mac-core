@@ -211,9 +211,9 @@ final class PolicySettingsTest extends TestCase
 
 		$policy = new DisableNativePosts( $this->settings );
 
-		$this->assertNull( $policy->maybe_redirect_post_list() );
-		$this->assertNull( $policy->maybe_redirect_post_create() );
-		$this->assertNull( $policy->maybe_redirect_post_edit() );
+		$this->assertNull( $policy->post_list_redirect_target() );
+		$this->assertNull( $policy->post_create_redirect_target() );
+		$this->assertNull( $policy->post_edit_redirect_target() );
 
 		$policy->remove_posts_menu();
 		$policy->remove_new_post_admin_bar_node( new \WP_Admin_Bar() );
@@ -303,20 +303,20 @@ final class PolicySettingsTest extends TestCase
 		$policy = new DisableNativePosts( $this->settings );
 
 		$_GET = [];
-		$this->assertSame( 'https://example.test/wp-admin/index.php', $policy->maybe_redirect_post_list() );
-		$this->assertSame( 'https://example.test/wp-admin/index.php', $GLOBALS['mac_core_test_redirect_to'] );
+		$this->assertSame( 'https://example.test/wp-admin/index.php', $policy->post_list_redirect_target() );
+		$this->assertNull( $GLOBALS['mac_core_test_redirect_to'] );
 
 		$GLOBALS['mac_core_test_redirect_to'] = null;
 		$_GET = ['post_type' => 'page'];
-		$this->assertNull( $policy->maybe_redirect_post_list() );
+		$this->assertNull( $policy->post_list_redirect_target() );
 		$this->assertNull( $GLOBALS['mac_core_test_redirect_to'] );
 
 		$_GET = [];
-		$this->assertSame( 'https://example.test/wp-admin/index.php', $policy->maybe_redirect_post_create() );
+		$this->assertSame( 'https://example.test/wp-admin/index.php', $policy->post_create_redirect_target() );
 
 		$GLOBALS['mac_core_test_redirect_to'] = null;
 		$_GET = ['post_type' => 'blog'];
-		$this->assertNull( $policy->maybe_redirect_post_create() );
+		$this->assertNull( $policy->post_create_redirect_target() );
 		$this->assertNull( $GLOBALS['mac_core_test_redirect_to'] );
 
 		$GLOBALS['mac_core_test_post_type_map'] = [
@@ -325,11 +325,11 @@ final class PolicySettingsTest extends TestCase
 		];
 
 		$_GET = ['post' => '41'];
-		$this->assertSame( 'https://example.test/wp-admin/index.php', $policy->maybe_redirect_post_edit() );
+		$this->assertSame( 'https://example.test/wp-admin/index.php', $policy->post_edit_redirect_target() );
 
 		$GLOBALS['mac_core_test_redirect_to'] = null;
 		$_GET = ['post' => '42'];
-		$this->assertNull( $policy->maybe_redirect_post_edit() );
+		$this->assertNull( $policy->post_edit_redirect_target() );
 		$this->assertNull( $GLOBALS['mac_core_test_redirect_to'] );
 		$this->assertContains( 'post', $GLOBALS['mac_core_test_post_types'] );
 	}

@@ -55,3 +55,5 @@
 - The bundled SDK runtime is from `surecart/wordpress-sdk` tag `v1.1.2`.
 - The tag's `composer.json` declares license `MIT`.
 - MAC Core keeps provenance details in `.codex/context/surecart-sdk-provenance.md` and only ships the five runtime PHP files, not upstream package metadata files.
+- The official SDK files under `inc/Vendor/SureCart/Licensing/` are treated as upstream-owned vendor code and should not be edited during normal MAC Core work.
+- Future maintenance should prefer MAC Core-owned integration changes in `src/Licensing/` and related services. Only use a documented vendor patch or a controlled upstream re-vendor when the SDK itself must change.

@@ -67,22 +67,44 @@ final class DisableNativePosts implements Service
 
 	public function maybe_redirect_post_list(): ?string
 	{
-		if ( ! $this->enabled() ) {
+		$target = $this->post_list_redirect_target();
+
+		if ( null === $target ) {
 			return null;
 		}
 
-		$post_type = isset( $_GET['post_type'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin routing.
-			? \sanitize_key( (string) \wp_unslash( $_GET['post_type'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin routing.
-			: 'post';
-
-		if ( $post_type !== '' && $post_type !== 'post' ) {
-			return null;
-		}
-
-		return $this->redirect_to_dashboard();
+		$this->redirect_to( $target );
+		return $target;
 	}
 
 	public function maybe_redirect_post_create(): ?string
+	{
+		$target = $this->post_create_redirect_target();
+
+		if ( null === $target ) {
+			return null;
+		}
+
+		$this->redirect_to( $target );
+		return $target;
+	}
+
+	public function maybe_redirect_post_edit(): ?string
+	{
+		$target = $this->post_edit_redirect_target();
+
+		if ( null === $target ) {
+			return null;
+		}
+
+		$this->redirect_to( $target );
+		return $target;
+	}
+
+	/**
+	 * Return the redirect target for the native Posts list screen.
+	 */
+	public function post_list_redirect_target(): ?string
 	{
 		if ( ! $this->enabled() ) {
 			return null;
@@ -96,10 +118,33 @@ final class DisableNativePosts implements Service
 			return null;
 		}
 
-		return $this->redirect_to_dashboard();
+		return \admin_url( 'index.php' );
 	}
 
-	public function maybe_redirect_post_edit(): ?string
+	/**
+	 * Return the redirect target for the native Posts create screen.
+	 */
+	public function post_create_redirect_target(): ?string
+	{
+		if ( ! $this->enabled() ) {
+			return null;
+		}
+
+		$post_type = isset( $_GET['post_type'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin routing.
+			? \sanitize_key( (string) \wp_unslash( $_GET['post_type'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin routing.
+			: 'post';
+
+		if ( $post_type !== '' && $post_type !== 'post' ) {
+			return null;
+		}
+
+		return \admin_url( 'index.php' );
+	}
+
+	/**
+	 * Return the redirect target for the native Posts edit screen.
+	 */
+	public function post_edit_redirect_target(): ?string
 	{
 		if ( ! $this->enabled() ) {
 			return null;
@@ -113,15 +158,13 @@ final class DisableNativePosts implements Service
 			return null;
 		}
 
-		return $this->redirect_to_dashboard();
+		return \admin_url( 'index.php' );
 	}
 
-	private function redirect_to_dashboard(): string
+	private function redirect_to( string $target ): void
 	{
-		$target = \admin_url( 'index.php' );
 		\wp_safe_redirect( $target );
-
-		return $target;
+		exit;
 	}
 
 	private function enabled(): bool

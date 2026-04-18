@@ -73,12 +73,27 @@ final class AdminPage implements Service
 	 */
 	public function redirect_default_view(): void
 	{
+		$target = $this->default_view_redirect_target();
+
+		if ( null === $target ) {
+			return;
+		}
+
+		\wp_safe_redirect( $target );
+		exit;
+	}
+
+	/**
+	 * Return the default-view redirect target for the MAC Core base route.
+	 */
+	public function default_view_redirect_target(): ?string
+	{
 		$page = isset( $_GET['page'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin routing.
 			? \sanitize_key( (string) \wp_unslash( $_GET['page'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin routing.
 			: '';
 
 		if ( $page !== \MAC_CORE_ADMIN_SLUG ) {
-			return;
+			return null;
 		}
 
 		$tab = isset( $_GET['tab'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin routing.
@@ -86,7 +101,7 @@ final class AdminPage implements Service
 			: '';
 
 		if ( $tab !== '' ) {
-			return;
+			return null;
 		}
 
 		$method = isset( $_SERVER['REQUEST_METHOD'] )
@@ -94,10 +109,10 @@ final class AdminPage implements Service
 			: 'GET';
 
 		if ( $method !== 'GET' ) {
-			return;
+			return null;
 		}
 
-		\wp_safe_redirect( \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=settings' ) );
+		return \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=settings' );
 	}
 
 	/**
