@@ -36,6 +36,10 @@ final class ControlComments implements Service
 
 	public function filter_comments_open( bool $open, int|WP_Post|null $post ): bool
 	{
+		if ( ! $this->comment_control_enabled() ) {
+			return $open;
+		}
+
 		if ( ! $this->comments_enabled() ) {
 			return false;
 		}
@@ -50,6 +54,10 @@ final class ControlComments implements Service
 
 	public function filter_comments_array( array $comments, int $post_id ): array
 	{
+		if ( ! $this->comment_control_enabled() ) {
+			return $comments;
+		}
+
 		if ( ! $this->comments_enabled() || ! $this->is_allowed_for_post( $post_id ) ) {
 			return [];
 		}
@@ -59,6 +67,10 @@ final class ControlComments implements Service
 
 	public function enforce_post_type_support(): void
 	{
+		if ( ! $this->comment_control_enabled() ) {
+			return;
+		}
+
 		foreach ( \get_post_types( ['public' => true], 'names' ) as $post_type ) {
 			$allow = match ( $post_type ) {
 				'post'    => $this->comments_enabled() && $this->posts_enabled(),
@@ -75,6 +87,10 @@ final class ControlComments implements Service
 
 	public function cleanup_admin_menu(): void
 	{
+		if ( ! $this->comment_control_enabled() ) {
+			return;
+		}
+
 		if ( ! $this->comments_enabled() || ! $this->any_comments_supported() ) {
 			\remove_menu_page( 'edit-comments.php' );
 		}
@@ -82,6 +98,10 @@ final class ControlComments implements Service
 
 	public function cleanup_dashboard(): void
 	{
+		if ( ! $this->comment_control_enabled() ) {
+			return;
+		}
+
 		if ( ! $this->comments_enabled() || ! $this->any_comments_supported() ) {
 			\remove_meta_box( 'dashboard_recent_comments', 'dashboard', 'normal' );
 		}
@@ -89,6 +109,10 @@ final class ControlComments implements Service
 
 	public function cleanup_admin_bar( WP_Admin_Bar $bar ): void
 	{
+		if ( ! $this->comment_control_enabled() ) {
+			return;
+		}
+
 		if ( ! \is_admin_bar_showing() ) {
 			return;
 		}
@@ -100,6 +124,10 @@ final class ControlComments implements Service
 
 	public function block_comments_screen(): void
 	{
+		if ( ! $this->comment_control_enabled() ) {
+			return;
+		}
+
 		if ( ! $this->comments_enabled() || ! $this->any_comments_supported() ) {
 			\wp_safe_redirect( \admin_url( 'index.php' ) );
 			exit;
@@ -139,6 +167,11 @@ final class ControlComments implements Service
 	private function comments_enabled(): bool
 	{
 		return (bool) $this->settings->get( 'core', 'comments_enabled' );
+	}
+
+	private function comment_control_enabled(): bool
+	{
+		return (bool) $this->settings->get( 'core', 'comment_control_enabled' );
 	}
 
 	private function posts_enabled(): bool

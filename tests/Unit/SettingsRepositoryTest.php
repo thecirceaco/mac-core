@@ -30,6 +30,7 @@ final class SettingsRepositoryTest extends TestCase
 		$schema     = new SettingsSchema();
 
 		$this->assertFalse( $settings['core']['developer_branding_enabled'] );
+		$this->assertFalse( $settings['core']['comment_control_enabled'] );
 		$this->assertTrue( $settings['core']['comments_enabled'] );
 		$this->assertTrue( $settings['core']['comments_posts_enabled'] );
 		$this->assertTrue( $settings['core']['comments_pages_enabled'] );
@@ -62,6 +63,7 @@ final class SettingsRepositoryTest extends TestCase
 				'core'  => [
 					'developer_branding_enabled' => '1',
 					'developer_branding_author'  => '  Mihai   Circea ',
+					'comment_control_enabled'    => '1',
 					'disable_frontend_admin_bar' => '1',
 					'frontend_admin_bar_exempt_target' => ' Administrator ',
 					'excerpt_length_enabled'     => '1',
@@ -80,6 +82,7 @@ final class SettingsRepositoryTest extends TestCase
 		);
 
 		$this->assertSame( 'Mihai Circea', $settings['core']['developer_branding_author'] );
+		$this->assertTrue( $settings['core']['comment_control_enabled'] );
 		$this->assertTrue( $settings['core']['disable_frontend_admin_bar'] );
 		$this->assertSame( 'administrator', $settings['core']['frontend_admin_bar_exempt_target'] );
 		$this->assertTrue( $settings['core']['excerpt_length_enabled'] );

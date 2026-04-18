@@ -58,6 +58,13 @@ final class SettingsSchema
 						'description' => 'Used for the admin footer link and frontend source comment.',
 						'default'     => 'https://circea.co',
 					],
+					'comment_control_enabled'          => [
+						'type'        => 'checkbox',
+						'group'       => 'Comments',
+						'label'       => 'Control comments in MAC Core',
+						'description' => 'When disabled, MAC Core leaves frontend comment behavior and comment-related admin UI untouched.',
+						'default'     => false,
+					],
 					'comments_enabled'                 => [
 						'type'        => 'checkbox',
 						'group'       => 'Comments',

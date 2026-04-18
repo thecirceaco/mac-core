@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 0.6.7
+Stable tag: 0.7.0
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,11 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 0.7.0 =
+* Added a new `Control comments in MAC Core` master setting so MAC Core comment behavior is explicitly opt-in.
+* Changed the comment policy to be a true no-op unless that new master setting is enabled, including comment-related admin UI.
+* Added test coverage for the new passive and active comment-control paths.
 
 = 0.6.7 =
 * Updated the default developer branding company and URL settings from All Phase Media to Circea.

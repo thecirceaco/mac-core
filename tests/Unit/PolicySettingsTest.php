@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace MacCore\Tests\Unit;
 
+use MacCore\Policies\Core\ControlComments;
 use MacCore\Policies\Core\DisableAdminBar;
 use MacCore\Policies\Media\AddCustomImageSizes;
 use MacCore\Policies\Media\DisableImageCompression;
@@ -197,6 +198,106 @@ final class PolicySettingsTest extends TestCase
 		$policy->register_image_sizes();
 
 		$this->assertSame( [], $GLOBALS['mac_core_test_image_sizes'] );
+	}
+
+	public function test_comment_policy_is_noop_when_comment_control_is_disabled(): void
+	{
+		$GLOBALS['mac_core_test_post_types'] = ['post', 'page', 'event'];
+		$GLOBALS['mac_core_test_post_type_map'] = [
+			12 => 'post',
+		];
+		$GLOBALS['mac_core_test_post_type_support']['event'] = [
+			'comments' => true,
+			'trackbacks' => true,
+		];
+
+		$policy = new ControlComments( $this->settings );
+
+		$this->assertTrue( $policy->filter_comments_open( true, 12 ) );
+		$this->assertSame( ['existing'], $policy->filter_comments_array( ['existing'], 12 ) );
+
+		$policy->enforce_post_type_support();
+		$policy->cleanup_admin_menu();
+		$policy->cleanup_dashboard();
+		$policy->cleanup_admin_bar( new \WP_Admin_Bar() );
+		$policy->block_comments_screen();
+
+		$this->assertTrue( $GLOBALS['mac_core_test_post_type_support']['post']['comments'] );
+		$this->assertTrue( $GLOBALS['mac_core_test_post_type_support']['page']['comments'] );
+		$this->assertSame( [], $GLOBALS['mac_core_test_removed_menu_pages'] );
+		$this->assertSame( [], $GLOBALS['mac_core_test_removed_meta_boxes'] );
+		$this->assertSame( [], $GLOBALS['mac_core_test_removed_admin_bar_nodes'] );
+		$this->assertNull( $GLOBALS['mac_core_test_redirect_to'] );
+	}
+
+	public function test_comment_policy_disables_comments_when_control_is_enabled_and_global_comments_are_off(): void
+	{
+		$GLOBALS['mac_core_test_post_types'] = ['post', 'page', 'event'];
+		$GLOBALS['mac_core_test_post_type_map'] = [
+			12 => 'post',
+		];
+		$GLOBALS['mac_core_test_post_type_support']['event'] = [
+			'comments' => true,
+			'trackbacks' => true,
+		];
+
+		$this->settings->save(
+			[
+				'core' => [
+					'comment_control_enabled' => '1',
+				],
+			]
+		);
+
+		$policy = new ControlComments( $this->settings );
+
+		$this->assertFalse( $policy->filter_comments_open( true, 12 ) );
+		$this->assertSame( [], $policy->filter_comments_array( ['existing'], 12 ) );
+
+		$policy->enforce_post_type_support();
+		$policy->cleanup_admin_menu();
+		$policy->cleanup_dashboard();
+		$policy->cleanup_admin_bar( new \WP_Admin_Bar() );
+
+		$this->assertFalse( $GLOBALS['mac_core_test_post_type_support']['post']['comments'] );
+		$this->assertFalse( $GLOBALS['mac_core_test_post_type_support']['page']['comments'] );
+		$this->assertFalse( $GLOBALS['mac_core_test_post_type_support']['event']['comments'] );
+		$this->assertContains( 'edit-comments.php', $GLOBALS['mac_core_test_removed_menu_pages'] );
+		$this->assertContains( 'comments', $GLOBALS['mac_core_test_removed_admin_bar_nodes'] );
+		$this->assertContains(
+			[
+				'id'      => 'dashboard_recent_comments',
+				'screen'  => 'dashboard',
+				'context' => 'normal',
+			],
+			$GLOBALS['mac_core_test_removed_meta_boxes']
+		);
+	}
+
+	public function test_comment_policy_allows_post_and_page_comments_when_all_toggles_are_enabled(): void
+	{
+		$GLOBALS['mac_core_test_post_type_map'] = [
+			12 => 'post',
+			14 => 'page',
+		];
+
+		$this->settings->save(
+			[
+				'core' => [
+					'comment_control_enabled' => '1',
+					'comments_enabled'        => '1',
+					'comments_posts_enabled'  => '1',
+					'comments_pages_enabled'  => '1',
+				],
+			]
+		);
+
+		$policy = new ControlComments( $this->settings );
+
+		$this->assertTrue( $policy->filter_comments_open( false, 12 ) );
+		$this->assertTrue( $policy->filter_comments_open( false, 14 ) );
+		$this->assertSame( ['existing'], $policy->filter_comments_array( ['existing'], 12 ) );
+		$this->assertSame( ['existing'], $policy->filter_comments_array( ['existing'], 14 ) );
 	}
 
 	public function test_image_compression_policy_forces_quality_to_one_hundred_when_enabled(): void

@@ -87,6 +87,7 @@ final class AdminPageTest extends TestCase
 		$this->assertStringContainsString( '<h3>Comments</h3>', $output );
 		$this->assertStringContainsString( '<h3>Image Sizes</h3>', $output );
 		$this->assertStringContainsString( '<h3>Uploads</h3>', $output );
+		$this->assertStringContainsString( 'name="mac_core_settings[core][comment_control_enabled]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][excerpt_length]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][frontend_admin_bar_exempt_target]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[media][custom_image_widths]"', $output );

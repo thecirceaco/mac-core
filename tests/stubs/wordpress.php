@@ -120,6 +120,7 @@ if ( ! class_exists( 'WP_Admin_Bar' ) ) {
 	{
 		public function remove_node( string $id ): void
 		{
+			$GLOBALS['mac_core_test_removed_admin_bar_nodes'][] = $id;
 		}
 	}
 }
@@ -134,6 +135,7 @@ function mac_core_tests_reset_wp_state(): void
 	$GLOBALS['mac_core_test_removed_menu_pages'] = [];
 	$GLOBALS['mac_core_test_removed_submenu_pages'] = [];
 	$GLOBALS['mac_core_test_removed_meta_boxes'] = [];
+	$GLOBALS['mac_core_test_removed_admin_bar_nodes'] = [];
 	$GLOBALS['mac_core_test_removed_actions'] = [];
 	$GLOBALS['mac_core_test_settings_errors'] = [];
 	$GLOBALS['mac_core_test_options']         = [
