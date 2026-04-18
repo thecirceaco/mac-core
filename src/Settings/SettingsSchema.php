@@ -49,14 +49,14 @@ final class SettingsSchema
 						'group'       => 'Branding',
 						'label'       => 'Branding company',
 						'description' => 'Used in the frontend source comment and admin footer link text.',
-						'default'     => 'All Phase Media',
+						'default'     => 'Circea',
 					],
 					'developer_branding_url'           => [
 						'type'        => 'url',
 						'group'       => 'Branding',
 						'label'       => 'Branding URL',
 						'description' => 'Used for the admin footer link and frontend source comment.',
-						'default'     => 'https://allphasemedia.com',
+						'default'     => 'https://circea.co',
 					],
 					'comments_enabled'                 => [
 						'type'        => 'checkbox',
