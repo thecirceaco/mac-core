@@ -27,7 +27,10 @@ final class CountArrayItemsTest extends TestCase
 		$GLOBALS['mac_core_test_post_meta'][123]['gallery_images'] = [ 'a', 'b', 'c' ];
 		$GLOBALS['mac_core_test_post_meta'][456]['gallery_images'] = [ 'a', 'b' ];
 
-		$this->assertSame( 3, CountArrayItems::count( 'gallery_images' ) );
+		$result = CountArrayItems::count( 'gallery_images' );
+
+		$this->assertSame( 3, $result );
+		$this->assertIsInt( $result );
 		$this->assertSame( 2, CountArrayItems::count( 'gallery_images', 456 ) );
 	}
 

@@ -74,7 +74,10 @@ final class GetPluginStatusTest extends TestCase
 
 	public function test_get_returns_false_for_unknown_plugin_keys(): void
 	{
-		$this->assertFalse( GetPluginStatus::get( 'missing-plugin' ) );
+		$result = GetPluginStatus::get( 'missing-plugin' );
+
+		$this->assertFalse( $result );
+		$this->assertIsBool( $result );
 	}
 
 	private function reset_cache(): void

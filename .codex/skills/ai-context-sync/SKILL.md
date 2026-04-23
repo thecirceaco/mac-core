@@ -17,8 +17,9 @@ Use this skill whenever a `MAC Core` change may require updates in the repo-loca
    - `D:\business\projects\mac-core\.codex\README.md`
 2. Review the `.codex` files most likely touched by the change:
    - relevant files under `context/`
-   - relevant files under `plans/` and `todos/`
+   - relevant files under `plans/` and `reports/` when they describe the affected behavior
    - relevant files under `skills/`
+   - `context/manual-smoke-testing/runbook.md`, `context/manual-smoke-testing/acf-import.json`, `context/manual-smoke-testing/release-matrix.md`, and `skills/manual-smoke-testing/SKILL.md` when helper behavior, `FormatDatetime`, or the WordPress smoke path changes
 3. Search `.codex` for stale behavior, routing, settings, or release references before finishing:
    - `rg -n "MAC Core|mac-core|tab=|Helpers|Utils|mac_core_settings|MAC_CORE_VERSION|release.json|SureCart|multisite|mac_" D:\business\projects\mac-core\.codex`
 4. Confirm repo-local AI docs and skills still live in the expected places:
@@ -36,4 +37,4 @@ Use this skill whenever a `MAC Core` change may require updates in the repo-loca
 - Do not leave repo-local AI docs or skill files scattered outside `.codex/`.
 - Do not create non-standard repo-local skill files; use `.codex/skills/<skill-name>/SKILL.md`.
 - If a note is intentionally historical rather than current guidance, label it clearly as historical or superseded instead of leaving it silently stale.
-- Release preparation is not complete until the relevant `.codex` docs and skills have been reviewed and updated if needed.
+- Release preparation is not complete until the relevant `.codex` docs and skills, including the manual smoke-testing runbook when applicable, have been reviewed and updated if needed.

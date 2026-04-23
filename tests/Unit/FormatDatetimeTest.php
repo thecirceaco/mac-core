@@ -73,6 +73,64 @@ final class FormatDatetimeTest extends TestCase
 		$this->assertStringNotContainsString( '<script>', $result );
 	}
 
+	public function test_default_call_uses_plain_default_view(): void
+	{
+		$GLOBALS['mac_core_test_post_meta'][123] = [
+			'event_start_date' => '2026-04-08',
+		];
+
+		$result = FormatDatetime::format( null, null, 123 );
+
+		$this->assertSame( 'Apr 8, 2026', $result );
+		$this->assertStringNotContainsString( 'mac-core-datetime', $result );
+	}
+
+	public function test_view_without_return_defaults_to_plain_output(): void
+	{
+		\add_filter(
+			'mac_core_format_datetime_views',
+			static function ( array $views ): array {
+				$views['plain_without_return'] = [
+					'output_date_format' => 'Y/m/d',
+				];
+
+				return $views;
+			}
+		);
+
+		$GLOBALS['mac_core_test_post_meta'][123] = [
+			'event_start_date' => '2026-04-08',
+		];
+
+		$result = FormatDatetime::format( 'event', 'plain_without_return', 123 );
+
+		$this->assertSame( '2026/04/08', $result );
+		$this->assertStringNotContainsString( 'mac-core-datetime', $result );
+	}
+
+	public function test_html_views_use_standard_mac_core_classes(): void
+	{
+		$GLOBALS['mac_core_test_post_meta'][123] = [
+			'event_start_datetime' => '2026-04-08 09:00:00',
+			'event_end_datetime'   => '2026-04-09 17:30:00',
+			'event_timezone'       => [
+				'label' => 'UTC',
+			],
+		];
+
+		$html = FormatDatetime::format( 'event', 'html_with_timezone', 123 );
+
+		$this->assertStringContainsString( 'class="mac-core-datetime"', $html );
+		$this->assertStringContainsString( 'class="mac-core-datetime__start"', $html );
+		$this->assertStringContainsString( 'class="mac-core-datetime__end"', $html );
+		$this->assertStringContainsString( 'class="mac-core-datetime__timezone"', $html );
+
+		$diff = FormatDatetime::format( 'event', 'html_diff', 123 );
+
+		$this->assertStringContainsString( 'class="mac-core-datetime"', $diff );
+		$this->assertStringContainsString( 'class="mac-core-datetime__diff"', $diff );
+	}
+
 	public function test_preset_registered_through_filter_is_used(): void
 	{
 		\add_filter(

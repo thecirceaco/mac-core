@@ -35,3 +35,4 @@ Use this skill when adding or changing MAC Core WordPress behavior.
 ## Before Finishing
 
 - If the change affects admin tabs/routing, settings structure, public helpers/hooks, licensing/update flow, or release workflow, run `D:\business\projects\mac-core\.codex\skills\ai-context-sync\SKILL.md` before wrapping up.
+- If the change affects public helpers, `FormatDatetime`, or builder-facing smoke coverage, also review `D:\business\projects\mac-core\.codex\skills\manual-smoke-testing\SKILL.md` and keep the runbook current.

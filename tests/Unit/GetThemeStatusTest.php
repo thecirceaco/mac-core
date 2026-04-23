@@ -46,7 +46,10 @@ final class GetThemeStatusTest extends TestCase
 
 	public function test_get_returns_false_for_unknown_theme_keys(): void
 	{
-		$this->assertFalse( GetThemeStatus::get( 'missing-theme' ) );
+		$result = GetThemeStatus::get( 'missing-theme' );
+
+		$this->assertFalse( $result );
+		$this->assertIsBool( $result );
 	}
 
 	private function reset_cache(): void

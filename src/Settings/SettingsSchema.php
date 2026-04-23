@@ -104,8 +104,9 @@ final class SettingsSchema
 						'type'        => 'key',
 						'group'       => 'Admin',
 						'label'       => 'Admin bar exempt role or capability',
-						'description' => 'Role or capability that keeps the frontend admin bar. Default: administrator. Leave empty to let WordPress keep its normal frontend admin bar behavior instead of hiding it through MAC Core.',
+						'description' => 'Role or capability that keeps the frontend admin bar. Default: administrator.',
 						'default'     => 'administrator',
+						'fallback_on_empty' => true,
 					],
 					'disable_auto_updates'             => [
 						'type'        => 'checkbox',
@@ -383,6 +384,7 @@ final class SettingsSchema
 					'label'       => (string) ( $config['label'] ?? $field ),
 					'description' => (string) ( $config['description'] ?? '' ),
 					'default'     => $config['default'] ?? '',
+					'fallback_on_empty' => (bool) ( $config['fallback_on_empty'] ?? false ),
 					'rows'        => isset( $config['rows'] ) ? \max( 2, (int) $config['rows'] ) : 5,
 					'min'         => isset( $config['min'] ) ? (int) $config['min'] : null,
 					'max'         => isset( $config['max'] ) ? (int) $config['max'] : null,

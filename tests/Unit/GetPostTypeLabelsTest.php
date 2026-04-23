@@ -27,7 +27,11 @@ final class GetPostTypeLabelsTest extends TestCase
 		$GLOBALS['mac_core_test_post_type_map'][77]     = 'event';
 		$GLOBALS['mac_core_test_post_type_objects']['event'] = \mac_core_tests_make_post_type( 'event', 'Event', 'Events' );
 
-		$this->assertSame( 'Event', GetPostTypeLabels::get() );
+		$result = GetPostTypeLabels::get();
+
+		$this->assertSame( 'Event', $result );
+		$this->assertIsString( $result );
+		$this->assertStringNotContainsString( '<', $result );
 		$this->assertSame( 'Events', GetPostTypeLabels::get( 'event', 'plural' ) );
 	}
 

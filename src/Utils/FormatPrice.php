@@ -12,6 +12,18 @@ namespace MacCore\Utils;
 final class FormatPrice
 {
 	/**
+	 * Standard HTML classes for formatted price markup.
+	 *
+	 * @var array<string,string>
+	 */
+	private const CLASSES = [
+		'wrapper' => 'mac-core-price',
+		'sign'    => 'mac-core-price__sign',
+		'symbol'  => 'mac-core-price__symbol',
+		'value'   => 'mac-core-price__value',
+	];
+
+	/**
 	 * Common currency symbols used as defaults.
 	 *
 	 * @var array<string,string>
@@ -31,16 +43,10 @@ final class FormatPrice
 	 * Format a numeric amount as a price string.
 	 *
 	 * @param int|float|string     $amount   Raw amount.
-	 * @param array<string,mixed>  $args     Formatting overrides.
+	 * @param array<string,mixed>  $args     Formatting overrides, including `return => plain|html|raw`.
 	 */
 	public static function format( int|float|string $amount, string $currency = 'USD', array $args = [] ): string
 	{
-		$normalized_amount = self::normalize_amount( $amount );
-
-		if ( null === $normalized_amount ) {
-			return '';
-		}
-
 		$currency = \strtoupper( \trim( $currency ) );
 		$currency = $currency !== '' ? $currency : 'USD';
 
@@ -52,22 +58,36 @@ final class FormatPrice
 			'symbol_position'       => 'before',
 			'space_between'         => false,
 			'strip_trailing_zeros'  => false,
+			'return'                => 'plain',
 		];
 
 		$config = \array_merge( $defaults, $args );
 
+		$return              = self::normalize_return( $config['return'] ?? 'plain' );
 		$decimals            = self::normalize_decimals( $config['decimals'] ?? 2 );
 		$decimal_separator   = self::normalize_separator( $config['decimal_separator'] ?? '.', '.' );
-		$thousands_separator = self::normalize_separator( $config['thousands_separator'] ?? ',', ',' );
+		$thousands_separator = self::normalize_separator( $config['thousands_separator'] ?? ',', ',', true );
 		$symbol              = \is_scalar( $config['symbol'] ?? null ) ? (string) $config['symbol'] : $defaults['symbol'];
 		$symbol_position     = self::normalize_symbol_position( $config['symbol_position'] ?? 'before' );
 		$space_between       = (bool) ( $config['space_between'] ?? false );
-		$strip_trailing      = (bool) ( $config['strip_trailing_zeros'] ?? false );
-		$prefix              = $normalized_amount < 0 ? '-' : '';
-		$formatted_amount    = \number_format( \abs( $normalized_amount ), $decimals, $decimal_separator, $thousands_separator );
+		$strip_trailing      = self::resolve_strip_trailing_zeros( $args, $config, $return );
+		$normalized_amount   = self::normalize_amount( $amount, $decimal_separator, $thousands_separator );
 
-		if ( $strip_trailing && $decimals > 0 ) {
-			$formatted_amount = self::strip_trailing_zeros( $formatted_amount, $decimal_separator );
+		if ( null === $normalized_amount ) {
+			return '';
+		}
+
+		$prefix              = $normalized_amount < 0 ? '-' : '';
+		$absolute_amount     = \abs( $normalized_amount );
+
+		if ( $return === 'raw' ) {
+			return $prefix . self::format_amount( $absolute_amount, $decimals, '.', '', $strip_trailing );
+		}
+
+		$formatted_amount = self::format_amount( $absolute_amount, $decimals, $decimal_separator, $thousands_separator, $strip_trailing );
+
+		if ( $return === 'html' ) {
+			return self::html_output( $prefix, $symbol, $formatted_amount, $symbol_position, $space_between );
 		}
 
 		$glue = $space_between && $symbol !== '' ? ' ' : '';
@@ -79,7 +99,7 @@ final class FormatPrice
 		return $prefix . $symbol . $glue . $formatted_amount;
 	}
 
-	private static function normalize_amount( int|float|string $amount ): ?float
+	private static function normalize_amount( int|float|string $amount, string $decimal_separator = '.', string $thousands_separator = ',' ): ?float
 	{
 		if ( \is_int( $amount ) || \is_float( $amount ) ) {
 			return (float) $amount;
@@ -91,9 +111,19 @@ final class FormatPrice
 			return null;
 		}
 
-		$normalized = \str_replace( [ ' ', ',' ], [ '', '' ], $amount );
+		if ( $thousands_separator !== '' && $thousands_separator === $decimal_separator ) {
+			$thousands_separator = '';
+		}
 
-		return \is_numeric( $normalized ) ? (float) $normalized : null;
+		if ( $thousands_separator !== '' ) {
+			$amount = \str_replace( $thousands_separator, '', $amount );
+		}
+
+		if ( $decimal_separator !== '' && $decimal_separator !== '.' ) {
+			$amount = \str_replace( $decimal_separator, '.', $amount );
+		}
+
+		return \is_numeric( $amount ) ? (float) $amount : null;
 	}
 
 	private static function symbol_for_currency( string $currency ): string
@@ -110,7 +140,7 @@ final class FormatPrice
 		return \max( 0, (int) $value );
 	}
 
-	private static function normalize_separator( mixed $value, string $fallback ): string
+	private static function normalize_separator( mixed $value, string $fallback, bool $allow_empty = false ): string
 	{
 		if ( ! \is_scalar( $value ) ) {
 			return $fallback;
@@ -118,7 +148,87 @@ final class FormatPrice
 
 		$separator = (string) $value;
 
-		return $separator !== '' ? $separator : $fallback;
+		if ( $separator === '' ) {
+			return $allow_empty ? '' : $fallback;
+		}
+
+		return $separator;
+	}
+
+	private static function normalize_return( mixed $value ): string
+	{
+		if ( ! \is_scalar( $value ) ) {
+			return 'plain';
+		}
+
+		$return = \strtolower( \trim( (string) $value ) );
+
+		return \in_array( $return, [ 'plain', 'html', 'raw' ], true ) ? $return : 'plain';
+	}
+
+	private static function resolve_strip_trailing_zeros( array $args, array $config, string $return ): bool
+	{
+		if ( \array_key_exists( 'strip_trailing_zeros', $args ) ) {
+			return (bool) ( $config['strip_trailing_zeros'] ?? false );
+		}
+
+		return $return === 'raw';
+	}
+
+	private static function format_amount(
+		float $amount,
+		int $decimals,
+		string $decimal_separator,
+		string $thousands_separator,
+		bool $strip_trailing
+	): string {
+		$formatted_amount = \number_format( $amount, $decimals, $decimal_separator, $thousands_separator );
+
+		if ( $strip_trailing && $decimals > 0 ) {
+			$formatted_amount = self::strip_trailing_zeros( $formatted_amount, $decimal_separator );
+		}
+
+		return $formatted_amount;
+	}
+
+	private static function html_output(
+		string $prefix,
+		string $symbol,
+		string $formatted_amount,
+		string $symbol_position,
+		bool $space_between
+	): string {
+		$out = '<span class="' . \esc_attr( self::CLASSES['wrapper'] ) . '">';
+
+		if ( $prefix !== '' ) {
+			$out .= '<span class="' . \esc_attr( self::CLASSES['sign'] ) . '">' . \esc_html( $prefix ) . '</span>';
+		}
+
+		if ( $symbol_position === 'after' ) {
+			$out .= '<span class="' . \esc_attr( self::CLASSES['value'] ) . '">' . \esc_html( $formatted_amount ) . '</span>';
+
+			if ( $symbol !== '' ) {
+				if ( $space_between ) {
+					$out .= ' ';
+				}
+
+				$out .= '<span class="' . \esc_attr( self::CLASSES['symbol'] ) . '">' . \esc_html( $symbol ) . '</span>';
+			}
+		} else {
+			if ( $symbol !== '' ) {
+				$out .= '<span class="' . \esc_attr( self::CLASSES['symbol'] ) . '">' . \esc_html( $symbol ) . '</span>';
+
+				if ( $space_between ) {
+					$out .= ' ';
+				}
+			}
+
+			$out .= '<span class="' . \esc_attr( self::CLASSES['value'] ) . '">' . \esc_html( $formatted_amount ) . '</span>';
+		}
+
+		$out .= '</span>';
+
+		return $out;
 	}
 
 	private static function normalize_symbol_position( mixed $value ): string

@@ -136,17 +136,17 @@ final class FormatDatetime
     ];
 
     /** @var array<string,string> */
-    public static array $classes = [
-        'wrapper'    => 'mac-datetime',
-        'start'      => 'mac-datetime__start',
-        'start_date' => 'mac-datetime__start-date',
-        'start_time' => 'mac-datetime__start-time',
-        'end'        => 'mac-datetime__end',
-        'end_date'   => 'mac-datetime__end-date',
-        'end_time'   => 'mac-datetime__end-time',
-        'separator'  => 'mac-datetime__separator',
-        'timezone'   => 'mac-datetime__timezone',
-        'diff'       => 'mac-datetime__diff',
+    private const CLASSES = [
+        'wrapper'    => 'mac-core-datetime',
+        'start'      => 'mac-core-datetime__start',
+        'start_date' => 'mac-core-datetime__start-date',
+        'start_time' => 'mac-core-datetime__start-time',
+        'end'        => 'mac-core-datetime__end',
+        'end_date'   => 'mac-core-datetime__end-date',
+        'end_time'   => 'mac-core-datetime__end-time',
+        'separator'  => 'mac-core-datetime__separator',
+        'timezone'   => 'mac-core-datetime__timezone',
+        'diff'       => 'mac-core-datetime__diff',
     ];
 
     /** @var array<string,string> */
@@ -236,7 +236,7 @@ final class FormatDatetime
 
         $viewConfig = \array_merge(
             [
-                'return'                 => 'html',
+                'return'                 => 'plain',
                 'show_timezone'          => false,
                 'relative'               => false,
                 'show_year_now'          => false,
@@ -1103,8 +1103,8 @@ final class FormatDatetime
 
     private static function className(string $key): string
     {
-        return isset(self::$classes[$key]) && \is_string(self::$classes[$key])
-            ? self::$classes[$key]
+        return isset(self::CLASSES[$key]) && \is_string(self::CLASSES[$key])
+            ? self::CLASSES[$key]
             : '';
     }
 }

@@ -34,7 +34,11 @@ final class GetTaxonomyLabelsTest extends TestCase
 	{
 		$term = $GLOBALS['mac_core_test_term_lookup'][25];
 
-		$this->assertSame( 'Event Categories', GetTaxonomyLabels::get( 'event-category', 'plural' ) );
+		$result = GetTaxonomyLabels::get( 'event-category', 'plural' );
+
+		$this->assertSame( 'Event Categories', $result );
+		$this->assertIsString( $result );
+		$this->assertStringNotContainsString( '<', $result );
 		$this->assertSame( 'Event Category', GetTaxonomyLabels::get( 25, 'singular' ) );
 		$this->assertSame( 'Event Categories', GetTaxonomyLabels::get( $term, 'plural' ) );
 	}

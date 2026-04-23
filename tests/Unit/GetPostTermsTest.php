@@ -48,11 +48,36 @@ final class GetPostTermsTest extends TestCase
 			'&lt;script&gt;alert(1)&lt;/script&gt; &lt;b&gt;|&lt;/b&gt; Safe',
 			$result
 		);
+		$this->assertIsString( $result );
 		$this->assertStringNotContainsString( '<script>', $result );
 		$this->assertStringNotContainsString( '<b>', $result );
 	}
 
-	public function test_link_format_outputs_escaped_list_items(): void
+	public function test_default_format_is_plain_output(): void
+	{
+		$GLOBALS['mac_core_test_terms'][123]['category'] = [
+			new \WP_Term(
+				[
+					'term_id'  => 10,
+					'name'     => 'News',
+					'slug'     => 'news',
+					'taxonomy' => 'category',
+				]
+			),
+			new \WP_Term(
+				[
+					'term_id'  => 11,
+					'name'     => 'Updates',
+					'slug'     => 'updates',
+					'taxonomy' => 'category',
+				]
+			),
+		];
+
+		$this->assertSame( 'News, Updates', GetPostTerms::get( 123, 'category' ) );
+	}
+
+	public function test_link_format_outputs_standard_classes_and_wrapper_class(): void
 	{
 		$GLOBALS['mac_core_test_terms'][123]['category'] = [
 			new \WP_Term(
@@ -67,10 +92,10 @@ final class GetPostTermsTest extends TestCase
 		$GLOBALS['mac_core_test_term_lookup'][10] = $GLOBALS['mac_core_test_terms'][123]['category'][0];
 		$GLOBALS['mac_core_test_term_links'][10]  = 'https://example.test/category/news';
 
-		$result = GetPostTerms::get( 123, 'category', 'links', 'name', 'term-list__item' );
+		$result = GetPostTerms::get( 123, 'category', 'links', 'name', 'term-list' );
 
 		$this->assertSame(
-			'<ul><li class="term-list__item"><a href="https://example.test/category/news" rel="tag">News</a></li></ul>',
+			'<ul class="mac-core-terms term-list"><li class="mac-core-terms__item"><a class="mac-core-terms__link" href="https://example.test/category/news" rel="tag">News</a></li></ul>',
 			$result
 		);
 	}
@@ -88,10 +113,10 @@ final class GetPostTermsTest extends TestCase
 			),
 		];
 
-		$result = GetPostTerms::get( 123, 'category', 'spans', 'term_id', 'term-list__item' );
+		$result = GetPostTerms::get( 123, 'category', 'spans', 'term_id', 'term-list' );
 
 		$this->assertSame(
-			'<ul><li class="term-list__item"><span>10</span></li></ul>',
+			'<ul class="mac-core-terms term-list"><li class="mac-core-terms__item"><span class="mac-core-terms__text">10</span></li></ul>',
 			$result
 		);
 	}

@@ -119,6 +119,22 @@ final class SettingsRepositoryTest extends TestCase
 		$this->assertSame( $settings, $GLOBALS['mac_core_test_options']['mac_core_settings'] );
 	}
 
+	public function test_key_field_can_fallback_to_default_when_saved_empty(): void
+	{
+		$repository = new WordPressSettingsRepository( new SettingsSchema() );
+		$settings   = $repository->save(
+			[
+				'core' => [
+					'disable_frontend_admin_bar'       => '1',
+					'frontend_admin_bar_exempt_target' => '',
+				],
+			]
+		);
+
+		$this->assertSame( 'administrator', $settings['core']['frontend_admin_bar_exempt_target'] );
+		$this->assertSame( 'administrator', $GLOBALS['mac_core_test_options']['mac_core_settings']['core']['frontend_admin_bar_exempt_target'] );
+	}
+
 	public function test_filtered_settings_sections_extend_defaults_and_persistence(): void
 	{
 		\add_filter(

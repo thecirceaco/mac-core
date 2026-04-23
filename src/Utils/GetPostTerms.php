@@ -16,6 +16,14 @@ use WP_Term;
  */
 final class GetPostTerms
 {
+	private const WRAPPER_CLASS = 'mac-core-terms';
+
+	private const ITEM_CLASS = 'mac-core-terms__item';
+
+	private const LINK_CLASS = 'mac-core-terms__link';
+
+	private const TEXT_CLASS = 'mac-core-terms__text';
+
 	/**
 	 * Unified post terms output.
 	 *
@@ -23,7 +31,7 @@ final class GetPostTerms
 	 * @param string          $taxonomy Taxonomy slug.
 	 * @param string          $format   Output format: plain, links, or spans.
 	 * @param string          $attr     Term attribute: name, slug, or term_id.
-	 * @param string          $class    Optional list item class for HTML formats.
+	 * @param string          $class    Optional wrapper list class for HTML formats.
 	 * @param string          $sep      Separator for plain output.
 	 */
 	public static function get(
@@ -81,8 +89,6 @@ final class GetPostTerms
 				continue;
 			}
 
-			$li_class = $class !== '' ? ' class="' . \esc_attr( $class ) . '"' : '';
-
 			if ( $format === 'links' ) {
 				$url = \get_term_link( $term );
 
@@ -91,8 +97,9 @@ final class GetPostTerms
 				}
 
 				$items[] = \sprintf(
-					'<li%s><a href="%s" rel="tag">%s</a></li>',
-					$li_class,
+					'<li class="%s"><a class="%s" href="%s" rel="tag">%s</a></li>',
+					\esc_attr( self::ITEM_CLASS ),
+					\esc_attr( self::LINK_CLASS ),
 					\esc_url( $url ),
 					\esc_html( $value )
 				);
@@ -101,8 +108,9 @@ final class GetPostTerms
 			}
 
 			$items[] = \sprintf(
-				'<li%s><span>%s</span></li>',
-				$li_class,
+				'<li class="%s"><span class="%s">%s</span></li>',
+				\esc_attr( self::ITEM_CLASS ),
+				\esc_attr( self::TEXT_CLASS ),
 				\esc_html( $value )
 			);
 		}
@@ -115,6 +123,13 @@ final class GetPostTerms
 			return '';
 		}
 
-		return '<ul>' . \implode( '', $items ) . '</ul>';
+		$wrapper_classes = [ self::WRAPPER_CLASS ];
+		$class           = \trim( $class );
+
+		if ( $class !== '' ) {
+			$wrapper_classes[] = $class;
+		}
+
+		return '<ul class="' . \esc_attr( \implode( ' ', $wrapper_classes ) ) . '">' . \implode( '', $items ) . '</ul>';
 	}
 }

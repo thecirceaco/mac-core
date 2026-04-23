@@ -70,7 +70,7 @@ final class PolicySettingsTest extends TestCase
 		$this->assertSame( 55, $policy->set_excerpt_length( 55 ) );
 	}
 
-	public function test_admin_bar_policy_respects_role_capability_and_empty_target(): void
+	public function test_admin_bar_policy_respects_role_capability_and_default_exempt_target(): void
 	{
 		$this->settings->save(
 			[
@@ -160,7 +160,7 @@ final class PolicySettingsTest extends TestCase
 
 		$policy = new DisableAdminBar( $this->settings );
 		$policy->maybe_disable_admin_bar();
-		$this->assertTrue( $GLOBALS['mac_core_test_admin_bar_state'] );
+		$this->assertFalse( $GLOBALS['mac_core_test_admin_bar_state'] );
 	}
 
 	public function test_custom_image_sizes_respect_setting_toggle_and_widths(): void

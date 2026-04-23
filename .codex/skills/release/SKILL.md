@@ -42,11 +42,17 @@ Also check platform compatibility metadata when relevant:
 - Validate `release.json` parses as JSON.
 - Run the dedicated AI context sync review and update stale `.codex` docs or skills before tagging:
   - `D:\business\projects\mac-core\.codex\skills\ai-context-sync\SKILL.md`
+- Review the manual smoke-testing runbook and update stale setup steps or snippets before tagging:
+  - `D:\business\projects\mac-core\.codex\skills\manual-smoke-testing\SKILL.md`
+  - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\runbook.md`
+  - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
+  - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\release-matrix.md`
 - Confirm repo-local AI docs and skills still follow the expected structure before tagging:
   - only `AGENTS.md` lives at repo root
   - repo-local AI docs live under `.codex/`
   - repo-local skills use `.codex/skills/<skill-name>/SKILL.md`
 - Run available syntax/tooling checks. At minimum run PHP syntax checks for files changed in the release.
+- Delete generated local artifacts from `dist/` before the real release/tag flow, even though `dist/` is gitignored and excluded from release archives.
 - Check `git archive` contents before tagging so release ZIPs include runtime assets and exclude dev-only files.
 - Confirm SureCart licensing releases include `release.json` and `inc/Vendor/SureCart/Licensing/`.
 - Confirm the release workflow will publish the ZIP, matching `.sha256` checksum file, and provenance JSON.
@@ -64,9 +70,52 @@ Also check platform compatibility metadata when relevant:
 - Before creating the new ZIP, the script removes older `mac-core-dev-*.zip` files from the chosen output folder.
 - By default the script refuses to run on a dirty worktree because uncommitted changes are not included in `git archive`.
 - Only use `-AllowDirty` if you explicitly want a ZIP from the last commit while ignoring local uncommitted edits.
+- After building the ZIP for QA, use the manual smoke-testing runbook on a single-site WordPress test install.
 - If the user explicitly wants the ZIP in Downloads, use:
   - `pwsh -File .\bin\build-dev-zip.ps1 -OutputDir "$env:USERPROFILE\Downloads"`
 - When a feature set is ready for testing, remind the user that this helper exists before proposing a real release.
+
+## Release Tier QA Rules
+
+Classify the release before signoff:
+
+- `patch`
+  - targeted bugfix, internal cleanup, copy tweak, or low-risk behavior correction
+  - human QA is required if shipped runtime behavior changed
+- `minor`
+  - new feature, new setting, new helper, new hook, or admin IA expansion
+  - human QA is always required
+- `major`
+  - breaking change, public contract shift, settings/default/upgrade impact, or other high-risk release
+  - human QA is always required at the broadest level
+
+Do not under-test a patch that touches high-risk areas. If the changed surface is licensing, updates, settings persistence, helper output, builder behavior, install/upgrade flow, or packaging, use at least the relevant human QA from the higher-risk bar.
+
+Use the detailed matrix here:
+
+- `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\release-matrix.md`
+
+## Dist Cleanup Rule
+
+- `dist/` is local-only build output.
+- Keep it gitignored.
+- Keep it excluded from release archives.
+- Before a real release or tag, delete generated artifacts from `dist/` anyway so stale local ZIPs do not confuse release prep or handoff.
+
+## User Handoff Requirement
+
+Before wrapping a release-prep task, explicitly tell the user:
+
+- which release tier applies
+- whether human QA is required
+- why
+- which `.codex` files to use
+- the exact WordPress test steps when human QA is required
+
+If helper or builder behavior is in scope, point them to:
+
+- `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
+- `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\runbook.md`
 
 ## Release Flow
 
