@@ -40,7 +40,7 @@ final class SettingsController implements Service
 			? \sanitize_key( (string) \wp_unslash( $_GET['tab'] ) )
 			: '';
 
-		if ( $tab !== 'settings' ) {
+		if ( ! \in_array( $tab, ['settings', 'helpers'], true ) ) {
 			return;
 		}
 

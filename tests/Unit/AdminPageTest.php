@@ -81,30 +81,45 @@ final class AdminPageTest extends TestCase
 
 		$this->assertStringContainsString( 'Core Policies', $output );
 		$this->assertStringContainsString( 'Media Policies', $output );
-		$this->assertStringContainsString( 'Utils', $output );
 		$this->assertStringContainsString( '<h3>Uninstall</h3>', $output );
 		$this->assertStringContainsString( '<h3>Comments</h3>', $output );
 		$this->assertStringContainsString( '<h3>Content Types</h3>', $output );
 		$this->assertStringContainsString( '<h3>Image Sizes</h3>', $output );
 		$this->assertStringContainsString( '<h3>Uploads</h3>', $output );
-		$this->assertStringContainsString( '<h3>Loading</h3>', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][comment_control_enabled]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][disable_native_posts]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][excerpt_length]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][frontend_admin_bar_exempt_target]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[media][custom_image_widths]"', $output );
-		$this->assertStringContainsString( 'name="mac_core_settings[utils][utils_enabled]"', $output );
-		$this->assertStringContainsString( 'name="mac_core_settings[utils][format_price_enabled]"', $output );
-		$this->assertStringContainsString( 'name="mac_core_settings[utils][plugin_status_enabled]"', $output );
 		$this->assertStringContainsString( '<textarea class="large-text code" id="mac-core-media-custom_image_widths"', $output );
 		$this->assertStringContainsString( '<textarea class="large-text code" id="mac-core-media-removed_image_sizes"', $output );
 		$this->assertStringContainsString( 'Height is automatic and aspect ratio is preserved.', $output );
 		$this->assertStringContainsString( 'Applies to both intermediate and advanced image sizes.', $output );
 		$this->assertStringContainsString( 'Disables WordPress image compression for JPEG, WebP, and AVIF uploads.', $output );
+		$this->assertStringContainsString( 'page=mac-core&tab=helpers', $output );
+		$this->assertStringNotContainsString( 'name="mac_core_settings[utils][utils_enabled]"', $output );
 		$this->assertLessThan(
 			strpos( $output, '<h3>Branding</h3>' ),
 			strpos( $output, '<h3>Uninstall</h3>' )
 		);
+	}
+
+	public function test_render_helpers_view_outputs_utils_fields(): void
+	{
+		$_GET = ['page' => 'mac-core', 'tab' => 'helpers'];
+
+		ob_start();
+		$this->make_page()->render();
+		$output = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'Utils', $output );
+		$this->assertStringContainsString( '<h3>Loading</h3>', $output );
+		$this->assertStringContainsString( 'name="mac_core_settings[utils][utils_enabled]"', $output );
+		$this->assertStringContainsString( 'name="mac_core_settings[utils][format_price_enabled]"', $output );
+		$this->assertStringContainsString( 'name="mac_core_settings[utils][plugin_status_enabled]"', $output );
+		$this->assertStringContainsString( 'class="nav-tab nav-tab-active">Helpers</a>', $output );
+		$this->assertStringNotContainsString( 'Core Policies', $output );
+		$this->assertStringNotContainsString( 'Media Policies', $output );
 	}
 
 	public function test_render_license_view_outputs_license_content(): void

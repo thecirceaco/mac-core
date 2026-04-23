@@ -62,6 +62,37 @@ final class SettingsControllerTest extends TestCase
 		$this->assertSame( 'success', $GLOBALS['mac_core_test_settings_errors'][0]['type'] );
 	}
 
+	public function test_handle_save_persists_valid_helpers_submission(): void
+	{
+		$GLOBALS['mac_core_test_user_caps']['manage_options'] = true;
+
+		$_GET = [
+			'page' => 'mac-core',
+			'tab'  => 'helpers',
+		];
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_POST = [
+			'mac_core_action'         => 'save_settings',
+			'mac_core_settings_nonce' => \wp_create_nonce( 'mac_core_save_settings' ),
+			'mac_core_settings'       => [
+				'utils' => [
+					'utils_enabled'         => '1',
+					'format_price_enabled'  => '1',
+					'plugin_status_enabled' => '',
+				],
+			],
+		];
+
+		$controller = new SettingsController( $this->settings );
+		$controller->handle_save();
+
+		$this->assertTrue( $this->settings->get( 'utils', 'utils_enabled' ) );
+		$this->assertTrue( $this->settings->get( 'utils', 'format_price_enabled' ) );
+		$this->assertFalse( $this->settings->get( 'utils', 'plugin_status_enabled' ) );
+		$this->assertCount( 1, $GLOBALS['mac_core_test_settings_errors'] );
+		$this->assertSame( 'success', $GLOBALS['mac_core_test_settings_errors'][0]['type'] );
+	}
+
 	public function test_handle_save_rejects_invalid_nonce(): void
 	{
 		$GLOBALS['mac_core_test_user_caps']['manage_options'] = true;

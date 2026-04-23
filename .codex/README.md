@@ -2,6 +2,13 @@
 
 This directory stores repo-local context for agents working on MAC Core. Keep detailed plans, todos, reusable skills, and durable working notes here instead of expanding `AGENTS.md` with implementation backlog.
 
+## Structure Rules
+
+- Keep repo-local AI docs, durable context notes, plans, todos, and reusable skills under `.codex/`.
+- The only intended repo-root AI guidance file is `AGENTS.md`, which points agents into `.codex/`.
+- Keep every repo-local skill in the standard Codex structure: `.codex/skills/<skill-name>/SKILL.md`.
+- Do not add loose skill markdown files outside `.codex/skills/`.
+
 ## Contents
 
 - `plans/mac-core-alignment.md`: Full alignment plan for bringing MAC Core in line with the `mac-bricks` and `mac-etch` baseline while preserving the plugin OOP architecture.
@@ -23,6 +30,7 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 - `skills/release/SKILL.md`: MAC Core release process, version checks, and branch discipline.
 - `skills/dev-branch-git/SKILL.md`: Add/commit/push guardrails for keeping normal work on `dev`.
 - `skills/mac-docs-sync/SKILL.md`: Workflow for reviewing and updating `mac-docs` when `MAC Core` public behavior changes.
+- `skills/ai-context-sync/SKILL.md`: Workflow for reviewing and updating repo-local AI context notes and skills when `MAC Core` behavior or release process changes.
 - `reports/security_best_practices_report.md`: Security best-practices review findings for MAC Core.
 - `reports/mac-core-threat-model.md`: Repo-grounded threat model for MAC Core.
 - `reports/security-ownership-summary.md`: Ownership-map summary and accepted single-maintainer constraint notes.
@@ -32,4 +40,8 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 
 Read `AGENTS.md` first for always-needed repo guardrails, then read the relevant files in this directory before making implementation changes.
 
+After plugin changes that affect admin IA, settings/storage behavior, public helpers/hooks, licensing/update flow, or release workflow, use the AI context sync skill to review `.codex` and update stale notes or skills in the same task. Pair it with the MAC Docs sync skill when the change is also public-facing.
+
 For local plugin testing on `dev`, use the dev ZIP helper skill and build a test ZIP from the current commit with `pwsh -File .\bin\build-dev-zip.ps1`. The helper keeps `dist/` self-cleaning by replacing older `mac-core-dev-*.zip` files, and it can target Downloads with `-OutputDir "$env:USERPROFILE\Downloads"` if explicitly requested. When a feature set is ready for QA, mention this helper before suggesting a real release.
+
+Before any release, explicitly run the AI context sync review even if no obvious `.codex` file changed during the feature work.

@@ -26,5 +26,6 @@ Use this skill whenever a `MAC Core` change may require an update in `mac-docs`.
 
 - Do not leave `mac-docs` stale when `MAC Core` public behavior changes.
 - Prefer updating the official product docs and the starter docs in the same change set.
+- Pair this review with `D:\business\projects\mac-core\.codex\skills\ai-context-sync\SKILL.md` when repo-local agent guidance may also have drifted.
 - If a `MAC Core` change creates duplicate-feature ownership rules with another plugin, update the relevant starter plugin pages too.
 - Keep docs accurate to the current shipped or intended plugin behavior; do not leave stale version-specific messaging behind.

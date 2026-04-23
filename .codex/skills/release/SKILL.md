@@ -40,6 +40,12 @@ Also check platform compatibility metadata when relevant:
 - Search version carriers:
   - `rg -n 'Stable tag|Version:|MAC_CORE_VERSION|"version"|requires_php|requires|tested' mac-core.php inc readme.txt release.json`
 - Validate `release.json` parses as JSON.
+- Run the dedicated AI context sync review and update stale `.codex` docs or skills before tagging:
+  - `D:\business\projects\mac-core\.codex\skills\ai-context-sync\SKILL.md`
+- Confirm repo-local AI docs and skills still follow the expected structure before tagging:
+  - only `AGENTS.md` lives at repo root
+  - repo-local AI docs live under `.codex/`
+  - repo-local skills use `.codex/skills/<skill-name>/SKILL.md`
 - Run available syntax/tooling checks. At minimum run PHP syntax checks for files changed in the release.
 - Check `git archive` contents before tagging so release ZIPs include runtime assets and exclude dev-only files.
 - Confirm SureCart licensing releases include `release.json` and `inc/Vendor/SureCart/Licensing/`.
@@ -65,7 +71,7 @@ Also check platform compatibility metadata when relevant:
 ## Release Flow
 
 1. Work and commit on `dev`.
-2. Verify versions and release metadata on `dev`.
+2. Verify versions, release metadata, and repo-local AI context on `dev`.
 3. Switch to `main`.
 4. Fast-forward `main` from `dev`; do not merge with a non-fast-forward release merge unless explicitly requested.
 5. Create the release tag on `main`, for example `v0.5.0`.

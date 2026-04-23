@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 0.8.0
+Stable tag: 1.0.0
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,14 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 1.0.0 =
+* Marked `1.0.0` as the first stable baseline for the current MAC Core feature set.
+* Documented the supported public helper API around `mac_format_datetime()`, `mac_format_price()`, `mac_count_array_items()`, `mac_get_post_type_label()`, `mac_get_taxonomy_label()`, `mac_get_post_terms()`, `mac_get_plugin_status()`, and `mac_get_theme_status()`.
+* Treated the documented `mac_core_*` hooks and `mac_core_format_datetime_*` filters as the supported extension surface for add-ons and site-specific overrides.
+* Split utility controls into a dedicated `Helpers` admin tab while keeping the existing `mac_core_settings['utils']` storage and upgrade path intact.
+* Clarified helper gating and frontend admin-bar setting copy, and kept multisite outside the supported scope for `1.0.0`.
+* Required no settings schema migration when upgrading from the current `0.x` line.
 
 = 0.8.0 =
 * Added a default-off `Utils` settings module so utility wrappers are only available when explicitly enabled.

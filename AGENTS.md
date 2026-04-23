@@ -19,6 +19,10 @@ MAC Core must remain OOP. Do not port the procedural organization from the `mac-
 
 Detailed implementation plans, todos, skills, and working context live under `.codex/`. Start there before working on the alignment backlog.
 
+- Keep repo-local AI docs, durable agent notes, and reusable skills under `.codex/`.
+- Use the standard Codex skill layout for repo-local skills: `.codex/skills/<skill-name>/SKILL.md`.
+- Do not create additional repo-local AI guidance files outside `.codex/`, except for this root `AGENTS.md` entrypoint.
+
 ## Editing Discipline
 
 Before editing implementation files, check `git status` and preserve user changes. If `LICENSE`, `README.md`, `mac-core.php`, or `readme.txt` contain uncommitted edits, build on them instead of replacing them.

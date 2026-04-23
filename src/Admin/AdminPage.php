@@ -136,38 +136,15 @@ final class AdminPage implements Service
 	 */
 	public function render_settings(): void
 	{
-		$sections = $this->schema->get_sections();
-		$values   = $this->settings->all();
+		$this->render_settings_modules( $this->settings_tab_modules() );
+	}
 
-		echo '<form method="post" action="">';
-		\wp_nonce_field( 'mac_core_save_settings', 'mac_core_settings_nonce' );
-		echo '<input type="hidden" name="mac_core_action" value="save_settings">';
-
-		foreach ( $sections as $module => $section ) {
-			echo '<h2>' . \esc_html( $section['title'] ) . '</h2>';
-
-			if ( $section['description'] !== '' ) {
-				echo '<p>' . \esc_html( $section['description'] ) . '</p>';
-			}
-
-			foreach ( $this->group_fields( $section['fields'] ) as $group ) {
-				if ( $group['title'] !== '' ) {
-					echo '<h3>' . \esc_html( $group['title'] ) . '</h3>';
-				}
-
-				echo '<table class="form-table" role="presentation"><tbody>';
-
-				foreach ( $group['fields'] as $field => $config ) {
-					$current = $values[ $module ][ $field ] ?? $config['default'];
-					$this->render_field_row( $module, $field, $config, $current );
-				}
-
-				echo '</tbody></table>';
-			}
-		}
-
-		\submit_button( 'Save Settings' );
-		echo '</form>';
+	/**
+	 * Render the helpers view.
+	 */
+	public function render_helpers(): void
+	{
+		$this->render_settings_modules( ['utils'] );
 	}
 
 	/**
@@ -199,14 +176,23 @@ final class AdminPage implements Service
 				'label'    => 'Settings',
 				'callback' => [ $this, 'render_settings' ],
 			],
-			'license'  => [
-				'label'    => 'License',
-				'callback' => [ $this, 'render_license' ],
-			],
-			'support'  => [
-				'label'    => 'Support',
-				'callback' => [ $this, 'render_support' ],
-			],
+		];
+
+		if ( \in_array( 'utils', $this->module_keys(), true ) ) {
+			$default_tabs['helpers'] = [
+				'label'    => 'Helpers',
+				'callback' => [ $this, 'render_helpers' ],
+			];
+		}
+
+		$default_tabs['license'] = [
+			'label'    => 'License',
+			'callback' => [ $this, 'render_license' ],
+		];
+
+		$default_tabs['support'] = [
+			'label'    => 'Support',
+			'callback' => [ $this, 'render_support' ],
 		];
 
 		/**
@@ -308,6 +294,78 @@ final class AdminPage implements Service
 
 		echo '</td>';
 		echo '</tr>';
+	}
+
+	/**
+	 * Render a settings form for the provided modules.
+	 *
+	 * @param array<int,string> $modules Module keys to include.
+	 */
+	private function render_settings_modules( array $modules ): void
+	{
+		$sections = $this->schema->get_sections();
+		$values   = $this->settings->all();
+
+		echo '<form method="post" action="">';
+		\wp_nonce_field( 'mac_core_save_settings', 'mac_core_settings_nonce' );
+		echo '<input type="hidden" name="mac_core_action" value="save_settings">';
+
+		foreach ( $modules as $module ) {
+			$section = $sections[ $module ] ?? null;
+
+			if ( ! \is_array( $section ) ) {
+				continue;
+			}
+
+			echo '<h2>' . \esc_html( $section['title'] ) . '</h2>';
+
+			if ( $section['description'] !== '' ) {
+				echo '<p>' . \esc_html( $section['description'] ) . '</p>';
+			}
+
+			foreach ( $this->group_fields( $section['fields'] ) as $group ) {
+				if ( $group['title'] !== '' ) {
+					echo '<h3>' . \esc_html( $group['title'] ) . '</h3>';
+				}
+
+				echo '<table class="form-table" role="presentation"><tbody>';
+
+				foreach ( $group['fields'] as $field => $config ) {
+					$current = $values[ $module ][ $field ] ?? $config['default'];
+					$this->render_field_row( $module, $field, $config, $current );
+				}
+
+				echo '</tbody></table>';
+			}
+		}
+
+		\submit_button( 'Save Settings' );
+		echo '</form>';
+	}
+
+	/**
+	 * Return settings modules shown on the main settings tab.
+	 *
+	 * @return array<int,string>
+	 */
+	private function settings_tab_modules(): array
+	{
+		return \array_values(
+			\array_filter(
+				$this->module_keys(),
+				static fn ( string $module ): bool => $module !== 'utils'
+			)
+		);
+	}
+
+	/**
+	 * Return normalized module keys from the schema.
+	 *
+	 * @return array<int,string>
+	 */
+	private function module_keys(): array
+	{
+		return \array_keys( $this->schema->get_sections() );
 	}
 
 	/**

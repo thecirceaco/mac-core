@@ -28,3 +28,8 @@ Use this skill when maintaining MAC Core's SureCart licensing integration.
 - Release ZIPs must include `release.json` and `inc/Vendor/SureCart/Licensing/`.
 - Release ZIPs must publish a `.sha256` checksum file and a provenance JSON alongside the ZIP artifact.
 - Release ZIPs must exclude `.codex/`, `AGENTS.md`, Composer/PHPCS/PHPUnit dev files, tests, caches, and local editor/dev-environment folders.
+
+## Before Finishing
+
+- If a licensing or update-flow change affects builder-visible behavior, release process, or local agent guidance, also run `D:\business\projects\mac-core\.codex\skills\ai-context-sync\SKILL.md`.
+- Pair that with `D:\business\projects\mac-core\.codex\skills\mac-docs-sync\SKILL.md` when the change is public-facing.

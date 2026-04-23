@@ -16,12 +16,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Plugin version.
 if ( ! defined( 'MAC_CORE_VERSION' ) ) {
-	define( 'MAC_CORE_VERSION', '0.8.0' );
+	define( 'MAC_CORE_VERSION', '1.0.0' );
 }
 
 // SureCart licensing public token.
 if ( ! defined( 'MAC_CORE_SURECART_PUBLIC_TOKEN' ) ) {
-	define( 'MAC_CORE_SURECART_PUBLIC_TOKEN', 'pt_gkYCpfc8FGWpJ1dFTfnNxC9D' );
+	define( 'MAC_CORE_SURECART_PUBLIC_TOKEN', 'pt_T7wtCcQ2DNPZvadkHjy1uXbw' );
 }
 
 // Core option and admin slugs.

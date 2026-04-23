@@ -2,7 +2,7 @@
 
 ## Goal
 
-Turn the current hardcoded Core and Media behavior into a real product surface without overbuilding.
+Keep the MAC Core settings-backed product surface clear and durable without overbuilding.
 
 ## Admin Structure
 
@@ -10,13 +10,14 @@ Turn the current hardcoded Core and Media behavior into a real product surface w
 - Base route redirects to `tab=settings` until a real Welcome screen is needed.
 - Explicit views:
   - `tab=settings`
+  - `tab=helpers`
   - `tab=license`
   - `tab=support`
 - `tab=support` should provide the current support path:
   - email link: `mihai@circea.co`
   - docs link: `https://docs.circea.co/`
 
-Settings stay inside one `Settings` view with module sections, not many top-level tabs.
+Keep storage module-based, not tab-based. `core` and `media` render under `Settings`, while `utils` renders under `Helpers`.
 
 ## Settings Storage
 
@@ -28,6 +29,7 @@ Current modules:
 
 - `core`
 - `media`
+- `utils`
 
 Future add-ons should add their own module namespace through `mac_core_settings_sections`.
 
@@ -51,6 +53,16 @@ Future add-ons should add their own module namespace through `mac_core_settings_
 - image quality override
 - blocked video uploads
 - removed stock image sizes
+
+### Utils
+
+- wrapper loading gate
+- datetime formatting helper
+- price formatting helper
+- post type and taxonomy label helpers
+- post terms helper
+- array counting helper
+- plugin and theme status helpers
 
 ## Implementation Rule
 

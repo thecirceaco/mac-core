@@ -13,7 +13,7 @@ Automatic.css is a larger product plugin than MAC Core, but it has several matur
 - ACSS uses one top-level page and then routes to specific screens.
 - MAC Core should keep one top-level page at `page=mac-core`.
 - The base route should redirect to `tab=settings` until a real Welcome screen exists.
-- Secondary views use `tab=settings`, `tab=license`, `tab=support`, and later add-on views.
+- Secondary views use `tab=settings`, `tab=helpers`, `tab=license`, `tab=support`, and later add-on views.
 
 ### Settings repository over one option
 
@@ -22,6 +22,7 @@ Automatic.css is a larger product plugin than MAC Core, but it has several matur
 - Use nested module data inside that option:
   - `core`
   - `media`
+  - `utils`
   - future add-on namespaces
 - Use native WordPress option serialization, not JSON blobs.
 
@@ -55,9 +56,10 @@ Automatic.css is a larger product plugin than MAC Core, but it has several matur
   - `Admin`
   - `Licensing`
   - `Settings`
+  - `Utils`
   - `Policies/Core`
   - `Policies/Media`
 - One settings repository.
-- One top-level admin page.
+- One top-level admin page with `Settings`, `Helpers`, `License`, and `Support` views.
 - One light extension seam for future add-ons.
 - Deferred lifecycle/migrations after settings exist.

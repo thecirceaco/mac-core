@@ -31,3 +31,7 @@ Use this skill when adding or changing MAC Core WordPress behavior.
 
 - Run `git status`.
 - Preserve user changes. If an implementation file already contains uncommitted edits, build on the existing content instead of replacing it.
+
+## Before Finishing
+
+- If the change affects admin tabs/routing, settings structure, public helpers/hooks, licensing/update flow, or release workflow, run `D:\business\projects\mac-core\.codex\skills\ai-context-sync\SKILL.md` before wrapping up.
