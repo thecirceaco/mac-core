@@ -28,6 +28,8 @@ final class UtilsLoaderTest extends TestCase
 		$loader = new UtilsLoader( new WordPressSettingsRepository( new SettingsSchema() ) );
 		$loader->register();
 
+		$this->assertFalse( \function_exists( 'mac_core_format_price' ) );
+		$this->assertFalse( \function_exists( 'mac_core_get_post_type_label' ) );
 		$this->assertFalse( \function_exists( 'mac_format_price' ) );
 		$this->assertFalse( \function_exists( 'mac_get_post_type_label' ) );
 	}
@@ -51,6 +53,7 @@ final class UtilsLoaderTest extends TestCase
 		$loader = new UtilsLoader( $settings );
 		$loader->register();
 
+		$this->assertFalse( \function_exists( 'mac_core_format_price' ) );
 		$this->assertFalse( \function_exists( 'mac_format_price' ) );
 	}
 
@@ -84,22 +87,36 @@ final class UtilsLoaderTest extends TestCase
 		$loader = new UtilsLoader( $settings );
 		$loader->register();
 
-		$this->assertTrue( \function_exists( 'mac_count_array_items' ) );
-		$this->assertTrue( \function_exists( 'mac_format_datetime' ) );
-		$this->assertTrue( \function_exists( 'mac_format_price' ) );
-		$this->assertTrue( \function_exists( 'mac_get_post_type_label' ) );
-		$this->assertTrue( \function_exists( 'mac_get_taxonomy_label' ) );
-		$this->assertTrue( \function_exists( 'mac_get_post_terms' ) );
-		$this->assertTrue( \function_exists( 'mac_get_plugin_status' ) );
-		$this->assertTrue( \function_exists( 'mac_get_theme_status' ) );
+		$this->assertTrue( \function_exists( 'mac_core_count_array_items' ) );
+		$this->assertTrue( \function_exists( 'mac_core_format_datetime' ) );
+		$this->assertTrue( \function_exists( 'mac_core_format_price' ) );
+		$this->assertTrue( \function_exists( 'mac_core_get_post_type_label' ) );
+		$this->assertTrue( \function_exists( 'mac_core_get_taxonomy_label' ) );
+		$this->assertTrue( \function_exists( 'mac_core_get_post_terms' ) );
+		$this->assertTrue( \function_exists( 'mac_core_get_plugin_status' ) );
+		$this->assertTrue( \function_exists( 'mac_core_get_theme_status' ) );
+		$this->assertFalse( \function_exists( 'mac_count_array_items' ) );
+		$this->assertFalse( \function_exists( 'mac_format_datetime' ) );
+		$this->assertFalse( \function_exists( 'mac_format_price' ) );
+		$this->assertFalse( \function_exists( 'mac_get_post_type_label' ) );
+		$this->assertFalse( \function_exists( 'mac_get_taxonomy_label' ) );
+		$this->assertFalse( \function_exists( 'mac_get_post_terms' ) );
+		$this->assertFalse( \function_exists( 'mac_get_plugin_status' ) );
+		$this->assertFalse( \function_exists( 'mac_get_theme_status' ) );
 		$this->assertFalse( \function_exists( 'mac_get_post_type_singular' ) );
 		$this->assertFalse( \function_exists( 'mac_get_post_type_plural' ) );
 		$this->assertFalse( \function_exists( 'mac_get_taxonomy_singular' ) );
 		$this->assertFalse( \function_exists( 'mac_get_taxonomy_plural' ) );
+		$this->assertFalse( \function_exists( 'mac_core_get_post_type_singular' ) );
+		$this->assertFalse( \function_exists( 'mac_core_get_post_type_plural' ) );
+		$this->assertFalse( \function_exists( 'mac_core_get_taxonomy_singular' ) );
+		$this->assertFalse( \function_exists( 'mac_core_get_taxonomy_plural' ) );
 		$this->assertFalse( \function_exists( 'mac_get_post_terms_html' ) );
 		$this->assertFalse( \function_exists( 'mac_get_post_terms_plain' ) );
-		$this->assertSame( '$1,000.50', \mac_format_price( 1000.5, 'USD' ) );
-		$this->assertSame( 2, \mac_count_array_items( 'gallery_images' ) );
+		$this->assertFalse( \function_exists( 'mac_core_get_post_terms_html' ) );
+		$this->assertFalse( \function_exists( 'mac_core_get_post_terms_plain' ) );
+		$this->assertSame( '$1,000.50', \mac_core_format_price( 1000.5, 'USD' ) );
+		$this->assertSame( 2, \mac_core_count_array_items( 'gallery_images' ) );
 	}
 
 	private function define_constants(): void

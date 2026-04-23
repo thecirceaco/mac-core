@@ -1,8 +1,11 @@
 # MAC Core Manual Smoke Testing
 
-Use this runbook for fast single-site QA of the public helper surface and the `mac_core_format_datetime_*` filter seams.
+Use this runbook for fast single-site QA of two separate surfaces:
 
-This supplements normal admin, licensing, and update-flow QA. It does not replace them.
+- frontend helper runtime
+- admin settings and save behavior
+
+The Bricks snippet is only for the frontend helper/runtime side. It supplements normal admin, licensing, and update-flow QA. It does not replace them.
 
 For release-tier decisions and the minimum required QA scope, also read:
 
@@ -10,18 +13,29 @@ For release-tier decisions and the minimum required QA scope, also read:
 
 ## Scope
 
+- `Settings`, `Helpers`, `License`, and `Support` tab routing.
+- `Helpers` tab save behavior and persistence.
 - `Helpers` tab gating and individual wrapper loading.
 - Public helper wrappers:
-  - `mac_count_array_items()`
-  - `mac_format_datetime()`
-  - `mac_format_price()`
-  - `mac_get_plugin_status()`
-  - `mac_get_post_terms()`
-  - `mac_get_post_type_label()`
-  - `mac_get_taxonomy_label()`
-  - `mac_get_theme_status()`
+  - `mac_core_count_array_items()`
+  - `mac_core_format_datetime()`
+  - `mac_core_format_price()`
+  - `mac_core_get_plugin_status()`
+  - `mac_core_get_post_terms()`
+  - `mac_core_get_post_type_label()`
+  - `mac_core_get_taxonomy_label()`
+  - `mac_core_get_theme_status()`
 - `FormatDatetime` preset, view, and config filters through child-theme code.
 - Builder-side output sanity on the Home page with a Bricks Code element.
+
+## What The Bricks Snippet Does Not Prove
+
+- It does not prove admin tab routing.
+- It does not prove settings save behavior or persistence after refresh.
+- It does not prove non-helper settings behavior from the `Settings` tab.
+- It does not prove licensing or update flow.
+
+Use the Bricks snippet for frontend runtime verification only, and pair it with the admin checklist below when release QA requires settings or admin coverage.
 
 ## Gallery Datetime Fields Needed
 
@@ -191,14 +205,14 @@ $utils_settings = ( is_array( $settings ) && isset( $settings['utils'] ) && is_a
 $utils_master = ! empty( $utils_settings['utils_enabled'] );
 
 $wrapper_map = [
-	'count_array_items_enabled' => 'mac_count_array_items',
-	'format_datetime_enabled'   => 'mac_format_datetime',
-	'format_price_enabled'      => 'mac_format_price',
-	'post_type_label_enabled'   => 'mac_get_post_type_label',
-	'taxonomy_label_enabled'    => 'mac_get_taxonomy_label',
-	'post_terms_enabled'        => 'mac_get_post_terms',
-	'plugin_status_enabled'     => 'mac_get_plugin_status',
-	'theme_status_enabled'      => 'mac_get_theme_status',
+	'count_array_items_enabled' => 'mac_core_count_array_items',
+	'format_datetime_enabled'   => 'mac_core_format_datetime',
+	'format_price_enabled'      => 'mac_core_format_price',
+	'post_type_label_enabled'   => 'mac_core_get_post_type_label',
+	'taxonomy_label_enabled'    => 'mac_core_get_taxonomy_label',
+	'post_terms_enabled'        => 'mac_core_get_post_terms',
+	'plugin_status_enabled'     => 'mac_core_get_plugin_status',
+	'theme_status_enabled'      => 'mac_core_get_theme_status',
 ];
 
 $gallery_datetime_fields = [
@@ -299,40 +313,40 @@ $samples = [
 	'Current theme' => $theme_name,
 	'Utils master enabled (settings)' => $bool( $utils_master ),
 
-	'mac_get_post_type_label(galleries, singular)' => function_exists( 'mac_get_post_type_label' )
-		? $call( fn() => mac_get_post_type_label( $test_post_type, 'singular' ) )
+	'mac_core_get_post_type_label(galleries, singular)' => function_exists( 'mac_core_get_post_type_label' )
+		? $call( fn() => mac_core_get_post_type_label( $test_post_type, 'singular' ) )
 		: 'wrapper disabled',
 
-	'mac_get_post_type_label(galleries, plural)' => function_exists( 'mac_get_post_type_label' )
-		? $call( fn() => mac_get_post_type_label( $test_post_type, 'plural' ) )
+	'mac_core_get_post_type_label(galleries, plural)' => function_exists( 'mac_core_get_post_type_label' )
+		? $call( fn() => mac_core_get_post_type_label( $test_post_type, 'plural' ) )
 		: 'wrapper disabled',
 
-	'mac_get_taxonomy_label(gallery-cat, singular)' => function_exists( 'mac_get_taxonomy_label' )
-		? $call( fn() => mac_get_taxonomy_label( $test_taxonomy, 'singular' ) )
+	'mac_core_get_taxonomy_label(gallery-cat, singular)' => function_exists( 'mac_core_get_taxonomy_label' )
+		? $call( fn() => mac_core_get_taxonomy_label( $test_taxonomy, 'singular' ) )
 		: 'wrapper disabled',
 
-	'mac_get_taxonomy_label(gallery-cat, plural)' => function_exists( 'mac_get_taxonomy_label' )
-		? $call( fn() => mac_get_taxonomy_label( $test_taxonomy, 'plural' ) )
+	'mac_core_get_taxonomy_label(gallery-cat, plural)' => function_exists( 'mac_core_get_taxonomy_label' )
+		? $call( fn() => mac_core_get_taxonomy_label( $test_taxonomy, 'plural' ) )
 		: 'wrapper disabled',
 
-	'mac_get_post_terms(39, gallery-cat, plain)' => function_exists( 'mac_get_post_terms' )
-		? $call( fn() => mac_get_post_terms( $test_post_id, $test_taxonomy, 'plain' ) )
+	'mac_core_get_post_terms(39, gallery-cat, plain)' => function_exists( 'mac_core_get_post_terms' )
+		? $call( fn() => mac_core_get_post_terms( $test_post_id, $test_taxonomy, 'plain' ) )
 		: 'wrapper disabled',
 
-	'mac_get_post_terms(39, gallery-cat, links)' => function_exists( 'mac_get_post_terms' )
-		? $call( fn() => mac_get_post_terms( $test_post_id, $test_taxonomy, 'links' ) )
+	'mac_core_get_post_terms(39, gallery-cat, links)' => function_exists( 'mac_core_get_post_terms' )
+		? $call( fn() => mac_core_get_post_terms( $test_post_id, $test_taxonomy, 'links' ) )
 		: 'wrapper disabled',
 
-	'mac_get_post_terms(39, gallery-cat, links, name, term-list)' => function_exists( 'mac_get_post_terms' )
-		? $call( fn() => mac_get_post_terms( $test_post_id, $test_taxonomy, 'links', 'name', 'term-list' ) )
+	'mac_core_get_post_terms(39, gallery-cat, links, name, term-list)' => function_exists( 'mac_core_get_post_terms' )
+		? $call( fn() => mac_core_get_post_terms( $test_post_id, $test_taxonomy, 'links', 'name', 'term-list' ) )
 		: 'wrapper disabled',
 
-	'mac_get_post_terms(39, gallery-cat, spans)' => function_exists( 'mac_get_post_terms' )
-		? $call( fn() => mac_get_post_terms( $test_post_id, $test_taxonomy, 'spans' ) )
+	'mac_core_get_post_terms(39, gallery-cat, spans)' => function_exists( 'mac_core_get_post_terms' )
+		? $call( fn() => mac_core_get_post_terms( $test_post_id, $test_taxonomy, 'spans' ) )
 		: 'wrapper disabled',
 
-	'mac_count_array_items(gallery_images, 39)' => function_exists( 'mac_count_array_items' )
-		? $call( fn() => mac_count_array_items( $test_gallery_field, $test_post_id ) )
+	'mac_core_count_array_items(gallery_images, 39)' => function_exists( 'mac_core_count_array_items' )
+		? $call( fn() => mac_core_count_array_items( $test_gallery_field, $test_post_id ) )
 		: 'wrapper disabled',
 
 	'raw get_field(gallery_images, 39) count' => function_exists( 'get_field' )
@@ -345,13 +359,13 @@ $samples = [
 		)
 		: 'ACF not available',
 
-	'mac_format_price(1234.5, USD)' => function_exists( 'mac_format_price' )
-		? $call( fn() => mac_format_price( 1234.5, 'USD' ) )
+	'mac_core_format_price(1234.5, USD)' => function_exists( 'mac_core_format_price' )
+		? $call( fn() => mac_core_format_price( 1234.5, 'USD' ) )
 		: 'wrapper disabled',
 
-	'mac_format_price(1000, RON, after)' => function_exists( 'mac_format_price' )
+	'mac_core_format_price(1000, RON, after)' => function_exists( 'mac_core_format_price' )
 		? $call(
-			fn() => mac_format_price(
+			fn() => mac_core_format_price(
 				1000,
 				'RON',
 				[
@@ -363,9 +377,9 @@ $samples = [
 		)
 		: 'wrapper disabled',
 
-	'mac_format_price(1234.5, USD, html)' => function_exists( 'mac_format_price' )
+	'mac_core_format_price(1234.5, USD, html)' => function_exists( 'mac_core_format_price' )
 		? $call(
-			fn() => mac_format_price(
+			fn() => mac_core_format_price(
 				1234.5,
 				'USD',
 				[
@@ -375,9 +389,9 @@ $samples = [
 		)
 		: 'wrapper disabled',
 
-	'mac_format_price(12,524.00, USD, raw)' => function_exists( 'mac_format_price' )
+	'mac_core_format_price(12,524.00, USD, raw)' => function_exists( 'mac_core_format_price' )
 		? $call(
-			fn() => mac_format_price(
+			fn() => mac_core_format_price(
 				'12,524.00',
 				'USD',
 				[
@@ -387,9 +401,9 @@ $samples = [
 		)
 		: 'wrapper disabled',
 
-	'mac_format_price(352,42, EUR, raw comma-decimal)' => function_exists( 'mac_format_price' )
+	'mac_core_format_price(352,42, EUR, raw comma-decimal)' => function_exists( 'mac_core_format_price' )
 		? $call(
-			fn() => mac_format_price(
+			fn() => mac_core_format_price(
 				'352,42',
 				'EUR',
 				[
@@ -401,64 +415,64 @@ $samples = [
 		)
 		: 'wrapper disabled',
 
-	'mac_get_plugin_status(acf)' => function_exists( 'mac_get_plugin_status' )
-		? $call( fn() => mac_get_plugin_status( 'acf' ) )
+	'mac_core_get_plugin_status(acf)' => function_exists( 'mac_core_get_plugin_status' )
+		? $call( fn() => mac_core_get_plugin_status( 'acf' ) )
 		: 'wrapper disabled',
 
-	'mac_get_plugin_status(surecart)' => function_exists( 'mac_get_plugin_status' )
-		? $call( fn() => mac_get_plugin_status( 'surecart' ) )
+	'mac_core_get_plugin_status(surecart)' => function_exists( 'mac_core_get_plugin_status' )
+		? $call( fn() => mac_core_get_plugin_status( 'surecart' ) )
 		: 'wrapper disabled',
 
-	'mac_get_theme_status(bricks)' => function_exists( 'mac_get_theme_status' )
-		? $call( fn() => mac_get_theme_status( 'bricks' ) )
+	'mac_core_get_theme_status(bricks)' => function_exists( 'mac_core_get_theme_status' )
+		? $call( fn() => mac_core_get_theme_status( 'bricks' ) )
 		: 'wrapper disabled',
 
-	'mac_get_theme_status(etch)' => function_exists( 'mac_get_theme_status' )
-		? $call( fn() => mac_get_theme_status( 'etch' ) )
+	'mac_core_get_theme_status(etch)' => function_exists( 'mac_core_get_theme_status' )
+		? $call( fn() => mac_core_get_theme_status( 'etch' ) )
 		: 'wrapper disabled',
 
-	'mac_format_datetime(gallery_event, plain, 39)' => function_exists( 'mac_format_datetime' )
-		? $call( fn() => mac_format_datetime( $custom_preset, 'plain', $test_post_id ) )
+	'mac_core_format_datetime(gallery_event, plain, 39)' => function_exists( 'mac_core_format_datetime' )
+		? $call( fn() => mac_core_format_datetime( $custom_preset, 'plain', $test_post_id ) )
 		: 'wrapper disabled',
 
-	'mac_format_datetime(gallery_event, plain_relative, 39)' => function_exists( 'mac_format_datetime' )
-		? $call( fn() => mac_format_datetime( $custom_preset, 'plain_relative', $test_post_id ) )
+	'mac_core_format_datetime(gallery_event, plain_relative, 39)' => function_exists( 'mac_core_format_datetime' )
+		? $call( fn() => mac_core_format_datetime( $custom_preset, 'plain_relative', $test_post_id ) )
 		: 'wrapper disabled',
 
-	'mac_format_datetime(gallery_event, plain_with_timezone, 39)' => function_exists( 'mac_format_datetime' )
-		? $call( fn() => mac_format_datetime( $custom_preset, 'plain_with_timezone', $test_post_id ) )
+	'mac_core_format_datetime(gallery_event, plain_with_timezone, 39)' => function_exists( 'mac_core_format_datetime' )
+		? $call( fn() => mac_core_format_datetime( $custom_preset, 'plain_with_timezone', $test_post_id ) )
 		: 'wrapper disabled',
 
-	'mac_format_datetime(gallery_event, plain_relative_with_timezone, 39)' => function_exists( 'mac_format_datetime' )
-		? $call( fn() => mac_format_datetime( $custom_preset, 'plain_relative_with_timezone', $test_post_id ) )
+	'mac_core_format_datetime(gallery_event, plain_relative_with_timezone, 39)' => function_exists( 'mac_core_format_datetime' )
+		? $call( fn() => mac_core_format_datetime( $custom_preset, 'plain_relative_with_timezone', $test_post_id ) )
 		: 'wrapper disabled',
 
-	'mac_format_datetime(gallery_event, plain_diff, 39)' => function_exists( 'mac_format_datetime' )
-		? $call( fn() => mac_format_datetime( $custom_preset, 'plain_diff', $test_post_id ) )
+	'mac_core_format_datetime(gallery_event, plain_diff, 39)' => function_exists( 'mac_core_format_datetime' )
+		? $call( fn() => mac_core_format_datetime( $custom_preset, 'plain_diff', $test_post_id ) )
 		: 'wrapper disabled',
 
-	'mac_format_datetime(gallery_event, html, 39)' => function_exists( 'mac_format_datetime' )
-		? $call( fn() => mac_format_datetime( $custom_preset, 'html', $test_post_id ) )
+	'mac_core_format_datetime(gallery_event, html, 39)' => function_exists( 'mac_core_format_datetime' )
+		? $call( fn() => mac_core_format_datetime( $custom_preset, 'html', $test_post_id ) )
 		: 'wrapper disabled',
 
-	'mac_format_datetime(gallery_event, html_with_timezone, 39)' => function_exists( 'mac_format_datetime' )
-		? $call( fn() => mac_format_datetime( $custom_preset, 'html_with_timezone', $test_post_id ) )
+	'mac_core_format_datetime(gallery_event, html_with_timezone, 39)' => function_exists( 'mac_core_format_datetime' )
+		? $call( fn() => mac_core_format_datetime( $custom_preset, 'html_with_timezone', $test_post_id ) )
 		: 'wrapper disabled',
 
-	'mac_format_datetime(gallery_event, html_diff, 39)' => function_exists( 'mac_format_datetime' )
-		? $call( fn() => mac_format_datetime( $custom_preset, 'html_diff', $test_post_id ) )
+	'mac_core_format_datetime(gallery_event, html_diff, 39)' => function_exists( 'mac_core_format_datetime' )
+		? $call( fn() => mac_core_format_datetime( $custom_preset, 'html_diff', $test_post_id ) )
 		: 'wrapper disabled',
 
-	'mac_format_datetime(gallery_event, attr, 39)' => function_exists( 'mac_format_datetime' )
-		? $call( fn() => mac_format_datetime( $custom_preset, 'attr', $test_post_id ) )
+	'mac_core_format_datetime(gallery_event, attr, 39)' => function_exists( 'mac_core_format_datetime' )
+		? $call( fn() => mac_core_format_datetime( $custom_preset, 'attr', $test_post_id ) )
 		: 'wrapper disabled',
 
-	'mac_format_datetime(gallery_event, gallery_plain_compact, 39)' => function_exists( 'mac_format_datetime' )
-		? $call( fn() => mac_format_datetime( $custom_preset, $custom_view, $test_post_id ) )
+	'mac_core_format_datetime(gallery_event, gallery_plain_compact, 39)' => function_exists( 'mac_core_format_datetime' )
+		? $call( fn() => mac_core_format_datetime( $custom_preset, $custom_view, $test_post_id ) )
 		: 'wrapper disabled',
 
-	'mac_format_datetime(null, null, 39) on front page' => function_exists( 'mac_format_datetime' )
-		? $call( fn() => mac_format_datetime( null, null, $test_post_id ) )
+	'mac_core_format_datetime(null, null, 39) on front page' => function_exists( 'mac_core_format_datetime' )
+		? $call( fn() => mac_core_format_datetime( null, null, $test_post_id ) )
 		: 'wrapper disabled',
 ];
 
@@ -595,7 +609,8 @@ echo ob_get_clean();
 ## WordPress Test Steps
 
 1. Install and activate the current MAC Core dev ZIP on a single-site test install.
-2. In `MAC Core > Helpers`, enable:
+2. Open `MAC Core` and confirm the `Settings`, `Helpers`, `License`, and `Support` tabs all load.
+3. In `MAC Core > Helpers`, enable:
    - `Utils`
    - `Count array items`
    - `Format datetime`
@@ -605,59 +620,64 @@ echo ob_get_clean();
    - `Post terms`
    - `Plugin status`
    - `Theme status`
-3. Register or import the `galleries` CPT, the `gallery-cat` taxonomy, and the `gallery_images` ACF gallery field.
-4. Add the `gallery_*` datetime fields above to the `galleries` post type with the exact field names and return formats listed in this runbook.
-5. Edit the test gallery post and populate:
+4. Save the `Helpers` tab, refresh the page, and confirm those saved values persist.
+5. Register or import the `galleries` CPT, the `gallery-cat` taxonomy, and the `gallery_images` ACF gallery field.
+6. Add the `gallery_*` datetime fields above to the `galleries` post type with the exact field names and return formats listed in this runbook.
+7. Edit the test gallery post and populate:
    - at least 3 gallery images
    - at least 1 `gallery-cat` term
    - gallery dates and times
    - a real `gallery_timezone` choice
-6. Add the child-theme filter snippet to the active child theme `functions.php`.
-7. Add the Bricks Code element to the Home page and enable PHP execution.
-8. Load the Home page while logged in and confirm the output tables render.
-9. Confirm the `Wrapper Audit` table shows `PASS` for every enabled helper.
-10. Run the separate-field pass:
+8. Add the child-theme filter snippet to the active child theme `functions.php`.
+9. Add the Bricks Code element to the Home page and enable PHP execution.
+10. Load the Home page while logged in and confirm the output tables render.
+11. Confirm the `Wrapper Audit` table shows `PASS` for every enabled helper.
+12. Run the separate-field pass:
    - keep `gallery_start_datetime` and `gallery_end_datetime` empty
    - confirm the `gallery_event` outputs are non-empty
-11. Run the combined-datetime pass:
+13. Run the combined-datetime pass:
    - populate `gallery_start_datetime` and `gallery_end_datetime`
    - clear `gallery_start_date`, `gallery_end_date`, `gallery_start_time`, and `gallery_end_time`
    - confirm the `gallery_event` outputs stay non-empty
-12. Optional mixed-source pass when `FormatDatetime` parsing or precedence is in scope:
+14. Optional mixed-source pass when `FormatDatetime` parsing or precedence is in scope:
    - populate only `gallery_start_datetime`
    - keep `gallery_end_datetime` empty
    - fill `gallery_end_date` and `gallery_end_time`
    - confirm the output uses the combined datetime for the start and the separate fields for the end
    - for a same-day range, confirm the end side can collapse to time-only output such as `April 10, 2026 1:13 pm - 10:18 pm`
-13. Confirm `mac_format_datetime(gallery_event, gallery_plain_compact, 39)` is non-empty. This proves the preset and view filters are active.
-14. Confirm `mac_format_datetime(null, null, 39)` on the Home page matches the custom compact output. This proves the config filter is active on the front page.
-15. Temporarily disable one helper toggle in `MAC Core > Helpers`, save, refresh the Home page, and confirm:
+15. Confirm `mac_core_format_datetime(gallery_event, gallery_plain_compact, 39)` is non-empty. This proves the preset and view filters are active.
+16. Confirm `mac_core_format_datetime(null, null, 39)` on the Home page matches the custom compact output. This proves the config filter is active on the front page.
+17. Temporarily disable one helper toggle in `MAC Core > Helpers`, save, refresh the Home page, and confirm:
    - the wrapper audit for that function flips to disabled
    - the helper sample output changes to `wrapper disabled`
-16. Re-enable the helper after the check.
-17. Copy the full rendered page output from the Home page and paste it back into the working thread for review.
+18. Re-enable the helper, save again, refresh, and confirm the wrapper audit returns to `PASS`.
+19. In `MAC Core > Settings`, change one real `Settings`-tab field, save, refresh, and confirm the value persists.
+20. For the current `1.0.0` candidate, also clear the frontend admin bar exempt-target field, save, refresh, and confirm it normalizes back to `administrator`.
+21. Copy the full rendered page output from the Home page and paste it back into the working thread for review.
+22. In the same message, also state which admin settings/toggle changes you tested so the frontend output can be interpreted against the right saved state.
 
 ## Expected Quick Wins
 
-- `mac_get_post_type_label(galleries, singular)` returns `Gallery`.
-- `mac_get_post_type_label(galleries, plural)` returns `Galleries`.
-- `mac_get_taxonomy_label(gallery-cat, singular)` returns `Gallery Category`.
-- `mac_get_taxonomy_label(gallery-cat, plural)` returns `Gallery Categories`.
-- `mac_count_array_items(gallery_images, 39)` matches the raw ACF gallery count.
-- `mac_get_post_terms(39, gallery-cat, plain)` returns at least one assigned term.
-- `mac_get_post_terms(39, gallery-cat, links, name, term-list)` returns a wrapper `<ul>` that includes both `mac-core-terms` and `term-list`.
-- `mac_format_datetime(gallery_event, plain, 39)` returns a readable date or date range.
-- `mac_format_datetime(gallery_event, plain_relative, 39)` returns either relative labels when applicable or a normal date string when not.
-- `mac_format_datetime(gallery_event, plain_with_timezone, 39)` appends the selected timezone value.
-- `mac_format_datetime(gallery_event, plain_relative_with_timezone, 39)` still appends the timezone.
-- `mac_format_datetime(gallery_event, plain_diff, 39)` returns lifecycle text such as `Starts in ...` or `Ended ... ago`.
-- `mac_format_datetime(gallery_event, html, 39)` returns escaped HTML markup using `mac-core-datetime*` classes.
-- `mac_format_datetime(gallery_event, html_with_timezone, 39)` returns escaped HTML markup including the timezone span and `mac-core-datetime*` classes.
-- `mac_format_datetime(gallery_event, html_diff, 39)` returns escaped HTML markup for lifecycle text using `mac-core-datetime__diff`.
-- `mac_format_price(1234.5, USD, html)` returns escaped HTML markup using `mac-core-price*` classes.
-- `mac_format_price(12,524.00, USD, raw)` returns `12524`.
-- `mac_format_price(352,42, EUR, raw comma-decimal)` returns `352.42`.
-- `mac_format_datetime(gallery_event, gallery_plain_compact, 39)` returns a visibly custom format driven by the child-theme filter.
+- `mac_core_get_post_type_label(galleries, singular)` returns `Gallery`.
+- `mac_core_get_post_type_label(galleries, plural)` returns `Galleries`.
+- `mac_core_get_taxonomy_label(gallery-cat, singular)` returns `Gallery Category`.
+- `mac_core_get_taxonomy_label(gallery-cat, plural)` returns `Gallery Categories`.
+- `mac_core_count_array_items(gallery_images, 39)` matches the raw ACF gallery count.
+- `mac_core_get_post_terms(39, gallery-cat, plain)` returns at least one assigned term.
+- `mac_core_get_post_terms(39, gallery-cat, links, name, term-list)` returns a wrapper `<ul>` that includes both `mac-core-terms` and `term-list`.
+- When the taxonomy is not actually linkable, the `links` format falls back to the no-link HTML variant instead of returning empty output or fake links.
+- `mac_core_format_datetime(gallery_event, plain, 39)` returns a readable date or date range.
+- `mac_core_format_datetime(gallery_event, plain_relative, 39)` returns either relative labels when applicable or a normal date string when not.
+- `mac_core_format_datetime(gallery_event, plain_with_timezone, 39)` appends the selected timezone value.
+- `mac_core_format_datetime(gallery_event, plain_relative_with_timezone, 39)` still appends the timezone.
+- `mac_core_format_datetime(gallery_event, plain_diff, 39)` returns lifecycle text such as `Starts in ...` or `Ended ... ago`.
+- `mac_core_format_datetime(gallery_event, html, 39)` returns escaped HTML markup using `mac-core-datetime*` classes.
+- `mac_core_format_datetime(gallery_event, html_with_timezone, 39)` returns escaped HTML markup including the timezone span and `mac-core-datetime*` classes.
+- `mac_core_format_datetime(gallery_event, html_diff, 39)` returns escaped HTML markup for lifecycle text using `mac-core-datetime__diff`.
+- `mac_core_format_price(1234.5, USD, html)` returns escaped HTML markup using `mac-core-price*` classes.
+- `mac_core_format_price(12,524.00, USD, raw)` returns `12524`.
+- `mac_core_format_price(352,42, EUR, raw comma-decimal)` returns `352.42`.
+- `mac_core_format_datetime(gallery_event, gallery_plain_compact, 39)` returns a visibly custom format driven by the child-theme filter.
 - In the optional mixed-source pass, start-side `*_datetime` data can combine cleanly with end-side separate date/time data.
 - In the optional mixed-source pass, same-day output can legitimately collapse the end side to time-only text.
 
@@ -665,9 +685,11 @@ echo ob_get_clean();
 
 - If `gallery_start_datetime` or `gallery_end_datetime` are populated, they override the separate date and time fields.
 - For ACF choice fields, keep the default value as one real selected value, not a combined `key : label` string.
-- The `class` argument on `mac_get_post_terms()` only affects the HTML formats (`links` and `spans`), not `plain`, and it is applied to the wrapper `<ul>`.
-- `mac_format_datetime()` HTML views always return classed `mac-core-datetime*` markup. There is no classless built-in HTML mode.
-- `mac_format_price()` defaults to plain text. Use `return => 'html'` for classed `mac-core-price*` markup and `return => 'raw'` for normalized numeric-string output.
+- The `class` argument on `mac_core_get_post_terms()` only affects the HTML formats (`links` and `spans`), not `plain`, and it is applied to the wrapper `<ul>`.
+- If `mac_core_get_post_terms()` is called with `links` for a taxonomy that is not publicly/queryably linkable, or if a term link cannot be generated, it falls back to the no-link HTML variant for that term output.
+- `mac_core_format_datetime()` HTML views always return classed `mac-core-datetime*` markup. There is no classless built-in HTML mode.
+- `mac_core_format_price()` defaults to plain text. Use `return => 'html'` for classed `mac-core-price*` markup and `return => 'raw'` for normalized numeric-string output.
+- The Bricks snippet reads saved helper settings and compares them to loaded wrappers, but it does not replace admin-side settings save checks.
 - Blank `plain_diff` output usually means the start date is missing or invalid, not that the helper failed.
 - The custom config filter in this runbook intentionally changes the default preset and view on the Home page only. Remove it after testing if you do not want that behavior on the test site.
 - Keep this runbook current whenever helper names, helper toggles, `FormatDatetime` filters, or the recommended QA flow change.

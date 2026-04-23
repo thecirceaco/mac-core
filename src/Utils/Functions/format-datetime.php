@@ -7,11 +7,11 @@
 
 declare(strict_types=1);
 
-if ( ! \function_exists( 'mac_format_datetime' ) ) {
+if ( ! \function_exists( 'mac_core_format_datetime' ) ) {
 	/**
 	 * Format a preset date/time value for templates or builders.
 	 */
-	function mac_format_datetime(
+	function mac_core_format_datetime(
 		?string $preset = null,
 		?string $view = null,
 		int|string|null $post_id = null

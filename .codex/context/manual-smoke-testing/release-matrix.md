@@ -57,6 +57,7 @@ Human QA is not required for:
   - use `runbook.md`
   - import `acf-import.json` if the test site does not already have the smoke fixture
 - If settings/admin changed:
+  - run the admin/settings part of `runbook.md`, not just the Bricks snippet
   - load the relevant admin page
   - save the affected settings
   - confirm persistence after refresh
@@ -88,6 +89,7 @@ Human QA is always required.
     - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\runbook.md`
     - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
 - If settings or admin IA changed:
+  - run the admin/settings part of `runbook.md`, not just the Bricks snippet
   - verify tab routing
   - verify save behavior
   - verify stored values survive refresh
@@ -119,6 +121,7 @@ Human QA is always required and must be broader than a minor release.
   - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
 - Licensing and update smoke when any release/install/update infrastructure changed.
 - Extra upgrade-preservation checks when settings/defaults/storage changed.
+- Do not treat the Bricks Home page snippet as a full settings test. It only validates frontend runtime against the saved state.
 
 ## How To Use The Smoke-Test Package
 
@@ -130,12 +133,15 @@ When the release requires builder/helper human QA:
    - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
 3. Follow:
    - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\runbook.md`
-4. Add the child-theme `functions.php` snippet from the runbook.
-5. Add the Bricks Home page code snippet from the runbook.
-6. Run both datetime passes:
+4. Run both parts of the runbook:
+   - the admin/settings checklist
+   - the frontend Bricks helper smoke
+5. Add the child-theme `functions.php` snippet from the runbook.
+6. Add the Bricks Home page code snippet from the runbook.
+7. Run both datetime passes:
    - separate date/time fields populated, combined datetime empty
    - combined datetime populated, separate date/time fields empty
-7. If `FormatDatetime` parsing or precedence changed, also run the optional mixed-source pass from the runbook:
+8. If `FormatDatetime` parsing or precedence changed, also run the optional mixed-source pass from the runbook:
    - one side from `*_datetime`
    - the other side from separate date/time fields
 
@@ -148,5 +154,6 @@ Before wrapping a release-prep task, explicitly tell the user:
 - why that requirement applies
 - which `.codex` files to use
 - the concrete WordPress testing steps when human QA is required
+- whether the Bricks snippet alone is sufficient; if settings/admin changed, explicitly say no
 
 Do not make the user infer the test burden from a vague “should probably test this” closeout.

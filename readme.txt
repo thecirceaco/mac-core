@@ -26,7 +26,7 @@ Features may evolve over time and are tailored to the agency’s development sta
 
 = 1.0.0 =
 * Marked `1.0.0` as the first stable baseline for the current MAC Core feature set.
-* Documented the supported public helper API around `mac_format_datetime()`, `mac_format_price()`, `mac_count_array_items()`, `mac_get_post_type_label()`, `mac_get_taxonomy_label()`, `mac_get_post_terms()`, `mac_get_plugin_status()`, and `mac_get_theme_status()`.
+* Documented the supported public helper API around `mac_core_format_datetime()`, `mac_core_format_price()`, `mac_core_count_array_items()`, `mac_core_get_post_type_label()`, `mac_core_get_taxonomy_label()`, `mac_core_get_post_terms()`, `mac_core_get_plugin_status()`, and `mac_core_get_theme_status()`.
 * Treated the documented `mac_core_*` hooks and `mac_core_format_datetime_*` filters as the supported extension surface for add-ons and site-specific overrides.
 * Split utility controls into a dedicated `Helpers` admin tab while keeping the existing `mac_core_settings['utils']` storage and upgrade path intact.
 * Clarified helper gating and frontend admin-bar setting copy, and kept multisite outside the supported scope for `1.0.0`.
@@ -34,7 +34,7 @@ Features may evolve over time and are tailored to the agency’s development sta
 
 = 0.8.0 =
 * Added a default-off `Utils` settings module so utility wrappers are only available when explicitly enabled.
-* Unified the public utility API around wrapper-first helpers including `mac_format_datetime()`, `mac_format_price()`, `mac_count_array_items()`, `mac_get_post_type_label()`, `mac_get_taxonomy_label()`, `mac_get_post_terms()`, `mac_get_plugin_status()`, and `mac_get_theme_status()`.
+* Unified the public utility API around wrapper-first helpers including `mac_core_format_datetime()`, `mac_core_format_price()`, `mac_core_count_array_items()`, `mac_core_get_post_type_label()`, `mac_core_get_taxonomy_label()`, `mac_core_get_post_terms()`, `mac_core_get_plugin_status()`, and `mac_core_get_theme_status()`.
 * Added the new generic `FormatPrice` utility helper.
 * Removed the older convenience wrappers in favor of the unified helper surface.
 * Added migration-focused coverage around the default-off utils loader and wrapper availability.

@@ -24,6 +24,10 @@ final class GetPostTerms
 
 	private const TEXT_CLASS = 'mac-core-terms__text';
 
+	private const SUPPORTED_FORMATS = [ 'plain', 'links', 'spans' ];
+
+	private const SUPPORTED_ATTRIBUTES = [ 'name', 'slug', 'term_id' ];
+
 	/**
 	 * Unified post terms output.
 	 *
@@ -61,15 +65,16 @@ final class GetPostTerms
 		$format = \strtolower( \trim( $format ) );
 		$attr   = \strtolower( \trim( $attr ) );
 
-		if ( ! \in_array( $format, [ 'plain', 'links', 'spans' ], true ) ) {
+		if ( ! \in_array( $format, self::SUPPORTED_FORMATS, true ) ) {
 			$format = 'plain';
 		}
 
-		if ( ! \in_array( $attr, [ 'name', 'slug', 'term_id' ], true ) ) {
+		if ( ! \in_array( $attr, self::SUPPORTED_ATTRIBUTES, true ) ) {
 			$attr = 'name';
 		}
 
 		$items = [];
+		$link_output_enabled = $format === 'links' && self::taxonomy_supports_term_links( $taxonomy );
 
 		foreach ( $terms as $term ) {
 			if ( ! $term instanceof WP_Term ) {
@@ -89,30 +94,16 @@ final class GetPostTerms
 				continue;
 			}
 
-			if ( $format === 'links' ) {
+			if ( $link_output_enabled ) {
 				$url = \get_term_link( $term );
 
-				if ( \is_wp_error( $url ) || ! \is_string( $url ) || $url === '' ) {
+				if ( ! \is_wp_error( $url ) && \is_string( $url ) && $url !== '' ) {
+					$items[] = self::render_link_item( $url, $value );
 					continue;
 				}
-
-				$items[] = \sprintf(
-					'<li class="%s"><a class="%s" href="%s" rel="tag">%s</a></li>',
-					\esc_attr( self::ITEM_CLASS ),
-					\esc_attr( self::LINK_CLASS ),
-					\esc_url( $url ),
-					\esc_html( $value )
-				);
-
-				continue;
 			}
 
-			$items[] = \sprintf(
-				'<li class="%s"><span class="%s">%s</span></li>',
-				\esc_attr( self::ITEM_CLASS ),
-				\esc_attr( self::TEXT_CLASS ),
-				\esc_html( $value )
-			);
+			$items[] = self::render_span_item( $value );
 		}
 
 		if ( $format === 'plain' ) {
@@ -131,5 +122,52 @@ final class GetPostTerms
 		}
 
 		return '<ul class="' . \esc_attr( \implode( ' ', $wrapper_classes ) ) . '">' . \implode( '', $items ) . '</ul>';
+	}
+
+	private static function taxonomy_supports_term_links( string $taxonomy ): bool
+	{
+		if ( ! \taxonomy_exists( $taxonomy ) ) {
+			return false;
+		}
+
+		$taxonomy_object = \get_taxonomy( $taxonomy );
+
+		if ( ! \is_object( $taxonomy_object ) ) {
+			return true;
+		}
+
+		if ( \property_exists( $taxonomy_object, 'publicly_queryable' ) && $taxonomy_object->publicly_queryable === false ) {
+			return false;
+		}
+
+		if ( \property_exists( $taxonomy_object, 'public' ) && $taxonomy_object->public === false ) {
+			return false;
+		}
+
+		$query_var = \property_exists( $taxonomy_object, 'query_var' ) ? $taxonomy_object->query_var : null;
+		$rewrite   = \property_exists( $taxonomy_object, 'rewrite' ) ? $taxonomy_object->rewrite : null;
+
+		return ! ( $query_var === false && $rewrite === false );
+	}
+
+	private static function render_link_item( string $url, string $value ): string
+	{
+		return \sprintf(
+			'<li class="%s"><a class="%s" href="%s" rel="tag">%s</a></li>',
+			\esc_attr( self::ITEM_CLASS ),
+			\esc_attr( self::LINK_CLASS ),
+			\esc_url( $url ),
+			\esc_html( $value )
+		);
+	}
+
+	private static function render_span_item( string $value ): string
+	{
+		return \sprintf(
+			'<li class="%s"><span class="%s">%s</span></li>',
+			\esc_attr( self::ITEM_CLASS ),
+			\esc_attr( self::TEXT_CLASS ),
+			\esc_html( $value )
+		);
 	}
 }

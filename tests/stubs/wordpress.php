@@ -117,6 +117,10 @@ if ( ! class_exists( 'WP_Taxonomy' ) ) {
 	class WP_Taxonomy
 	{
 		public string $name = '';
+		public bool $public = true;
+		public bool $publicly_queryable = true;
+		public string|bool $query_var = true;
+		public array|bool $rewrite = true;
 		public object $labels;
 
 		/**
@@ -143,6 +147,16 @@ if ( ! class_exists( 'WP_Taxonomy' ) ) {
 				}
 
 				if ( \property_exists( $this, (string) $key ) ) {
+					if ( \in_array( $key, [ 'public', 'publicly_queryable' ], true ) ) {
+						$this->{$key} = (bool) $value;
+						continue;
+					}
+
+					if ( \in_array( $key, [ 'query_var', 'rewrite' ], true ) ) {
+						$this->{$key} = \is_array( $value ) ? $value : ( \is_bool( $value ) ? $value : (string) $value );
+						continue;
+					}
+
 					$this->{$key} = (string) $value;
 				}
 			}

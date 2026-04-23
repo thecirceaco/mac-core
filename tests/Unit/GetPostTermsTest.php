@@ -100,6 +100,63 @@ final class GetPostTermsTest extends TestCase
 		);
 	}
 
+	public function test_link_format_falls_back_to_spans_for_non_linkable_taxonomy(): void
+	{
+		$GLOBALS['mac_core_test_taxonomies']['private_tax'] = new \WP_Taxonomy(
+			[
+				'name'               => 'private_tax',
+				'public'             => false,
+				'publicly_queryable' => false,
+				'query_var'          => false,
+				'rewrite'            => false,
+				'labels'             => [
+					'singular_name' => 'Private Tax',
+					'name'          => 'Private Taxonomies',
+				],
+			]
+		);
+		$GLOBALS['mac_core_test_terms'][123]['private_tax'] = [
+			new \WP_Term(
+				[
+					'term_id'  => 10,
+					'name'     => 'Internal',
+					'slug'     => 'internal',
+					'taxonomy' => 'private_tax',
+				]
+			),
+		];
+
+		$result = GetPostTerms::get( 123, 'private_tax', 'links', 'name', 'term-list' );
+
+		$this->assertSame(
+			'<ul class="mac-core-terms term-list"><li class="mac-core-terms__item"><span class="mac-core-terms__text">Internal</span></li></ul>',
+			$result
+		);
+	}
+
+	public function test_link_format_falls_back_to_spans_when_term_link_generation_fails(): void
+	{
+		$GLOBALS['mac_core_test_terms'][123]['category'] = [
+			new \WP_Term(
+				[
+					'term_id'  => 10,
+					'name'     => 'News',
+					'slug'     => 'news',
+					'taxonomy' => 'category',
+				]
+			),
+		];
+		$GLOBALS['mac_core_test_term_lookup'][10] = $GLOBALS['mac_core_test_terms'][123]['category'][0];
+		$GLOBALS['mac_core_test_term_links'][10]  = new \WP_Error( 'missing_term_link' );
+
+		$result = GetPostTerms::get( 123, 'category', 'links', 'name', 'term-list' );
+
+		$this->assertSame(
+			'<ul class="mac-core-terms term-list"><li class="mac-core-terms__item"><span class="mac-core-terms__text">News</span></li></ul>',
+			$result
+		);
+	}
+
 	public function test_span_format_can_use_term_id_attribute(): void
 	{
 		$GLOBALS['mac_core_test_terms'][123]['category'] = [

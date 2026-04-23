@@ -117,6 +117,13 @@ If helper or builder behavior is in scope, point them to:
 - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
 - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\runbook.md`
 
+## Post-Release Docs Follow-Up
+
+- After the MAC Core release is finalized for real, review `mac-docs` again even if the main MAC Core pages were already updated during implementation.
+- Use the relevant `mac-docs` repo skills/workflows there rather than improvising the docs process from this repo.
+- Create or update the matching `mac-docs` release-log entry for that version, for example the MAC Core `v1.0.0` entry under `log/`.
+- Follow the existing style and structure used by other product release/version entries in `mac-docs`.
+
 ## Release Flow
 
 1. Work and commit on `dev`.

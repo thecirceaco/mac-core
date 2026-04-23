@@ -21,7 +21,7 @@ Use this skill whenever a `MAC Core` change may require updates in the repo-loca
    - relevant files under `skills/`
    - `context/manual-smoke-testing/runbook.md`, `context/manual-smoke-testing/acf-import.json`, `context/manual-smoke-testing/release-matrix.md`, and `skills/manual-smoke-testing/SKILL.md` when helper behavior, `FormatDatetime`, or the WordPress smoke path changes
 3. Search `.codex` for stale behavior, routing, settings, or release references before finishing:
-   - `rg -n "MAC Core|mac-core|tab=|Helpers|Utils|mac_core_settings|MAC_CORE_VERSION|release.json|SureCart|multisite|mac_" D:\business\projects\mac-core\.codex`
+   - `rg -n "MAC Core|mac-core|tab=|Helpers|Utils|mac_core_settings|MAC_CORE_VERSION|release.json|SureCart|multisite|mac_core_" D:\business\projects\mac-core\.codex`
 4. Confirm repo-local AI docs and skills still live in the expected places:
    - repo-local AI docs and durable notes live under `.codex/`
    - repo-local skills use `.codex/skills/<skill-name>/SKILL.md`
