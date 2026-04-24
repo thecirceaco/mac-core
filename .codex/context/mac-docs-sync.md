@@ -5,23 +5,23 @@ Use this note whenever a `MAC Core` change may require updates in `mac-docs`.
 ## First Places To Check
 
 - Official product docs:
-  - `D:\business\projects\mac-docs\sources\doc\mac-core\`
+  - [`thecirceaco/mac-docs`](https://github.com/thecirceaco/mac-docs): `sources/doc/mac-core/`
 - Official release history:
-  - `D:\business\projects\mac-docs\sources\log\mac-core\`
+  - [`thecirceaco/mac-docs`](https://github.com/thecirceaco/mac-docs): `sources/log/mac-core/`
 - Starter integration docs:
-  - `D:\business\projects\mac-docs\sources\doc\mac-starter\plugins\mac-core\index.md`
+  - [`thecirceaco/mac-docs`](https://github.com/thecirceaco/mac-docs): `sources/doc/mac-starter/plugins/mac-core/index.md`
 - Starter behavior docs when the change affects default build conventions:
-  - `D:\business\projects\mac-docs\sources\doc\mac-starter\posts\`
+  - [`thecirceaco/mac-docs`](https://github.com/thecirceaco/mac-docs): `sources/doc/mac-starter/posts/`
 - Known ownership and duplicate-feature pages when the change overlaps other plugins:
-  - `D:\business\projects\mac-docs\sources\doc\mac-starter\plugins\perfmatters\index.md`
-  - `D:\business\projects\mac-docs\sources\doc\mac-starter\plugins\patchstack\index.md`
+  - [`thecirceaco/mac-docs`](https://github.com/thecirceaco/mac-docs): `sources/doc/mac-starter/plugins/perfmatters/index.md`
+  - [`thecirceaco/mac-docs`](https://github.com/thecirceaco/mac-docs): `sources/doc/mac-starter/plugins/patchstack/index.md`
 
 ## Search Command
 
 Use this repo search to find additional references before finishing the task:
 
 ```powershell
-rg -n "mac-core|MAC Core" D:\business\projects\mac-docs\sources
+rg -n "mac-core|MAC Core" sources
 ```
 
 ## When A Docs Review Is Usually Required

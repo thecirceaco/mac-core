@@ -1,8 +1,8 @@
 # MAC Governance Source
 
-`MAC Core` keeps its plugin-specific planning, research, and QA context locally, but shared cross-repo governance now lives in the sibling `mac` repo.
+`MAC Core` keeps its plugin-specific planning, research, and QA context locally, but shared cross-repo governance now lives in [`thecirceaco/mac`](https://github.com/thecirceaco/mac). If you also keep a local clone such as `D:\business\projects\mac`, treat that path as an example only.
 
-## Use The Sibling `mac` Repo For
+## Use The `mac` Repo For
 
 - shared repo-boundary rules
 - the local `.codex` ownership model
@@ -12,10 +12,10 @@
 
 ## Canonical References
 
-- `D:\business\projects\mac\governance\local-codex-model.md`
-- `D:\business\projects\mac\governance\docs-and-changelog.md`
-- `D:\business\projects\mac\governance\git-and-releases.md`
-- `D:\business\projects\mac\registry\products.json`
+- `governance/local-codex-model.md`
+- `governance/docs-and-changelog.md`
+- `governance/git-and-releases.md`
+- `registry/products.json`
 
 ## What Stays Local
 

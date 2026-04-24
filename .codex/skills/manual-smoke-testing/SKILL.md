@@ -13,9 +13,9 @@ Use this skill whenever a `MAC Core` change affects the helper surface, `FormatD
 ## Required Workflow
 
 1. Read the current runbook first:
-   - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\runbook.md`
-   - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
-   - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\release-matrix.md`
+   - `.codex/context/manual-smoke-testing/runbook.md`
+   - `.codex/context/manual-smoke-testing/acf-import.json`
+   - `.codex/context/manual-smoke-testing/release-matrix.md`
 2. Keep the runbook current when any of these change:
    - helper names or toggles
    - `FormatDatetime` field expectations
@@ -39,9 +39,9 @@ Use this skill whenever a `MAC Core` change affects the helper surface, `FormatD
    - minor: human QA always required
    - major: broader human QA always required
 7. Pair this with:
-   - `D:\business\projects\mac-core\.codex\skills\dev-zip-testing\SKILL.md` when building a local QA ZIP
-   - `D:\business\projects\mac-core\.codex\skills\ai-context-sync\SKILL.md` when repo-local context may also be stale
-   - `D:\business\projects\mac-core\.codex\skills\mac-docs-sync\SKILL.md` if the user-facing docs also need to describe the changed helper behavior
+   - `.codex/skills/dev-zip-testing/SKILL.md` when building a local QA ZIP
+   - `.codex/skills/ai-context-sync/SKILL.md` when repo-local context may also be stale
+   - `.codex/skills/mac-docs-sync/SKILL.md` if the user-facing docs also need to describe the changed helper behavior
 
 ## Important Rules
 

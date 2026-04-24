@@ -31,5 +31,5 @@ Use this skill when maintaining MAC Core's SureCart licensing integration.
 
 ## Before Finishing
 
-- If a licensing or update-flow change affects builder-visible behavior, release process, or local agent guidance, also run `D:\business\projects\mac-core\.codex\skills\ai-context-sync\SKILL.md`.
-- Pair that with `D:\business\projects\mac-core\.codex\skills\mac-docs-sync\SKILL.md` when the change is public-facing.
+- If a licensing or update-flow change affects builder-visible behavior, release process, or local agent guidance, also run `.codex/skills/ai-context-sync/SKILL.md`.
+- Pair that with `.codex/skills/mac-docs-sync/SKILL.md` when the change is public-facing.

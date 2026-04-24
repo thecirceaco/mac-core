@@ -41,11 +41,11 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 
 Read `AGENTS.md` first for always-needed repo guardrails, then read the relevant files in this directory before making implementation changes.
 
-For shared governance rules that should not be redefined per product repo, read the sibling source repo first:
+For shared governance rules that should not be redefined per product repo, use [`thecirceaco/mac`](https://github.com/thecirceaco/mac) first:
 
-- `D:\business\projects\mac\governance\local-codex-model.md`
-- `D:\business\projects\mac\governance\docs-and-changelog.md`
-- `D:\business\projects\mac\governance\git-and-releases.md`
+- `governance/local-codex-model.md`
+- `governance/docs-and-changelog.md`
+- `governance/git-and-releases.md`
 
 After plugin changes that affect admin IA, settings/storage behavior, public helpers/hooks, licensing/update flow, or release workflow, use the AI context sync skill to review `.codex` and update stale notes or skills in the same task. Pair it with the MAC Docs sync skill when the change is also public-facing.
 

@@ -9,7 +9,7 @@ The Bricks snippet is only for the frontend helper/runtime side. It supplements 
 
 For release-tier decisions and the minimum required QA scope, also read:
 
-- `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\release-matrix.md`
+- `.codex/context/manual-smoke-testing/release-matrix.md`
 
 ## Scope
 
@@ -114,7 +114,7 @@ Run the two required passes, plus one optional mixed-source pass when `FormatDat
 
 To avoid rebuilding this ACF setup by hand, keep the current import fixture here:
 
-- `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
+- `.codex/context/manual-smoke-testing/acf-import.json`
 
 That file currently includes:
 

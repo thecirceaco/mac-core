@@ -21,7 +21,7 @@ Run these for every shipped release unless the release is purely `.codex` or doc
 - Release archive contents/exclusion check.
 - Delete generated local artifacts from `dist/` before the real release/tag flow, even though `dist/` is gitignored and export-ignored.
 - AI context review:
-  - `D:\business\projects\mac-core\.codex\skills\ai-context-sync\SKILL.md`
+  - `.codex/skills/ai-context-sync/SKILL.md`
 
 ## Patch Release
 
@@ -86,8 +86,8 @@ Human QA is always required.
 - Targeted regression of the changed feature set.
 - If helpers, `FormatDatetime`, or builder-facing behavior changed:
   - use the full smoke-test package:
-    - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\runbook.md`
-    - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
+    - `.codex/context/manual-smoke-testing/runbook.md`
+    - `.codex/context/manual-smoke-testing/acf-import.json`
 - If settings or admin IA changed:
   - run the admin/settings part of `runbook.md`, not just the Bricks snippet
   - verify tab routing
@@ -117,8 +117,8 @@ Human QA is always required and must be broader than a minor release.
 - In-place upgrade from the latest released version you expect users to come from.
 - Full regression of all changed surfaces.
 - Full smoke-test package if helpers, builder behavior, or `FormatDatetime` are in scope:
-  - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\runbook.md`
-  - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
+  - `.codex/context/manual-smoke-testing/runbook.md`
+  - `.codex/context/manual-smoke-testing/acf-import.json`
 - Licensing and update smoke when any release/install/update infrastructure changed.
 - Extra upgrade-preservation checks when settings/defaults/storage changed.
 - Do not treat the Bricks Home page snippet as a full settings test. It only validates frontend runtime against the saved state.
@@ -128,11 +128,11 @@ Human QA is always required and must be broader than a minor release.
 When the release requires builder/helper human QA:
 
 1. Build a local QA ZIP from committed `HEAD`:
-   - `D:\business\projects\mac-core\.codex\skills\dev-zip-testing\SKILL.md`
+   - `.codex/skills/dev-zip-testing/SKILL.md`
 2. On the test site, import:
-   - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
+   - `.codex/context/manual-smoke-testing/acf-import.json`
 3. Follow:
-   - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\runbook.md`
+   - `.codex/context/manual-smoke-testing/runbook.md`
 4. Run both parts of the runbook:
    - the admin/settings checklist
    - the frontend Bricks helper smoke

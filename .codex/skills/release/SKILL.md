@@ -41,12 +41,12 @@ Also check platform compatibility metadata when relevant:
   - `rg -n 'Stable tag|Version:|MAC_CORE_VERSION|"version"|requires_php|requires|tested' mac-core.php inc readme.txt release.json`
 - Validate `release.json` parses as JSON.
 - Run the dedicated AI context sync review and update stale `.codex` docs or skills before tagging:
-  - `D:\business\projects\mac-core\.codex\skills\ai-context-sync\SKILL.md`
+  - `.codex/skills/ai-context-sync/SKILL.md`
 - Review the manual smoke-testing runbook and update stale setup steps or snippets before tagging:
-  - `D:\business\projects\mac-core\.codex\skills\manual-smoke-testing\SKILL.md`
-  - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\runbook.md`
-  - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
-  - `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\release-matrix.md`
+  - `.codex/skills/manual-smoke-testing/SKILL.md`
+  - `.codex/context/manual-smoke-testing/runbook.md`
+  - `.codex/context/manual-smoke-testing/acf-import.json`
+  - `.codex/context/manual-smoke-testing/release-matrix.md`
 - Confirm repo-local AI docs and skills still follow the expected structure before tagging:
   - only `AGENTS.md` lives at repo root
   - repo-local AI docs live under `.codex/`
@@ -93,7 +93,7 @@ Do not under-test a patch that touches high-risk areas. If the changed surface i
 
 Use the detailed matrix here:
 
-- `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\release-matrix.md`
+- `.codex/context/manual-smoke-testing/release-matrix.md`
 
 ## Dist Cleanup Rule
 
@@ -114,8 +114,8 @@ Before wrapping a release-prep task, explicitly tell the user:
 
 If helper or builder behavior is in scope, point them to:
 
-- `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\acf-import.json`
-- `D:\business\projects\mac-core\.codex\context\manual-smoke-testing\runbook.md`
+- `.codex/context/manual-smoke-testing/acf-import.json`
+- `.codex/context/manual-smoke-testing/runbook.md`
 
 ## Post-Release Docs Follow-Up
 

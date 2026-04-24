@@ -37,7 +37,7 @@ Use this skill whenever the user wants to test a plugin build locally before a r
 - Only use `-AllowDirty` when you intentionally want a ZIP from the last commit while ignoring current local edits.
 - This helper is for local testing only. It is not the real release flow.
 - Real releases still go through `dev` -> `main` -> tag -> GitHub Actions.
-- After building a QA ZIP, pair it with `D:\business\projects\mac-core\.codex\skills\manual-smoke-testing\SKILL.md`.
+- After building a QA ZIP, pair it with `.codex/skills/manual-smoke-testing/SKILL.md`.
 - If the release has required human QA, tell the user which `.codex` smoke-test files to use with the ZIP.
 - Before a real release or tag, delete the generated `dist/` artifacts even though `dist/` is gitignored.
 

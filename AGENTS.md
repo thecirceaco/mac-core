@@ -19,7 +19,7 @@ MAC Core must remain OOP. Do not port the procedural organization from the `mac-
 
 Detailed implementation plans, todos, skills, and working context live under `.codex/`. Start there before working on the alignment backlog.
 
-- Use `D:\business\projects\mac` as the source of truth for shared governance, repo-boundary rules, and the cross-repo `.codex` model.
+- Use [`thecirceaco/mac`](https://github.com/thecirceaco/mac) as the source of truth for shared governance, repo-boundary rules, and the cross-repo `.codex` model. If you also keep a local sibling clone, treat that local path as an environment-specific convenience, not the canonical identifier.
 - Keep repo-local AI docs, durable agent notes, and reusable skills under `.codex/`.
 - Use the standard Codex skill layout for repo-local skills: `.codex/skills/<skill-name>/SKILL.md`.
 - Do not create additional repo-local AI guidance files outside `.codex/`, except for this root `AGENTS.md` entrypoint.

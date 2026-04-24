@@ -10,7 +10,7 @@ Company standard WordPress functionality plugin.
 
 ## Governance Source
 
-Shared cross-repo governance now lives in the sibling `D:\business\projects\mac` repo.
+Shared cross-repo governance now lives in [`thecirceaco/mac`](https://github.com/thecirceaco/mac).
 
 `MAC Core` keeps plugin-specific architecture, research, QA, and release context under its local `.codex/`, but it should use `mac` as the source of truth for shared governance, product-boundary rules, and the ecosystem-wide `.codex` model.
 
