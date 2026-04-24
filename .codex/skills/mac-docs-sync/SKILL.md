@@ -14,18 +14,22 @@ Use this skill whenever a `MAC Core` change may require an update in `mac-docs`.
 
 1. Review the official `MAC Core` docs first:
    - `D:\business\projects\mac-docs\sources\doc\mac-core\`
-2. Review the starter integration page:
+2. Review the official `MAC Core` release history:
+   - `D:\business\projects\mac-docs\sources\log\mac-core\`
+3. Review the starter integration page:
    - `D:\business\projects\mac-docs\sources\doc\mac-starter\plugins\mac-core\index.md`
-3. If the change affects starter conventions, also review the related starter docs:
+4. If the change affects starter conventions, also review the related starter docs:
    - posts, plugins, themes, or settings pages tied to that behavior
-4. Search for additional references:
+5. Search for additional references:
    - `rg -n "mac-core|MAC Core" D:\business\projects\mac-docs\sources`
-5. Update `mac-docs` in the same task when the change is public-facing.
+6. Update `mac-docs` in the same task when the change is public-facing.
 
 ## Important Rules
 
 - Do not leave `mac-docs` stale when `MAC Core` public behavior changes.
 - Prefer updating the official product docs and the starter docs in the same change set.
+- Prefer updating the official product docs and release log in the same change set when the version is being shipped.
 - Pair this review with `D:\business\projects\mac-core\.codex\skills\ai-context-sync\SKILL.md` when repo-local agent guidance may also have drifted.
 - If a `MAC Core` change creates duplicate-feature ownership rules with another plugin, update the relevant starter plugin pages too.
 - Keep docs accurate to the current shipped or intended plugin behavior; do not leave stale version-specific messaging behind.
+- Keep `date` frontmatter present on every documented `MAC Core` version page.
