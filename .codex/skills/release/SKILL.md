@@ -123,6 +123,7 @@ If helper or builder behavior is in scope, point them to:
 - Use the relevant `mac-docs` repo skills/workflows there rather than improvising the docs process from this repo.
 - Create or update the matching `mac-docs` release-log entry for that version, for example the MAC Core `v1.0.0` entry under `log/`.
 - Follow the existing style and structure used by other product release/version entries in `mac-docs`.
+- Keep the `mac-docs` release-log sidebar newest-first, so a newer version page sits above the older one.
 
 ## Release Flow
 
