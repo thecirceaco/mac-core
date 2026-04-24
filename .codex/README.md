@@ -21,6 +21,7 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 - `context/surecart-sdk-provenance.md`: Source, tag, runtime-file path, and maintenance notes for the vendored SureCart WordPress SDK.
 - `context/etch-1.4.9-review.md`: Detailed notes from reviewing the Etch 1.4.9 plugin ZIP and how to adapt the useful patterns.
 - `context/acss-4.0.0-rc-1-review.md`: Automatic.css review notes for admin routing, settings storage, lifecycle timing, and extension seams.
+- `context/mac-governance-source.md`: Pointer map to the shared governance rules now authored in the sibling `mac` repo.
 - `context/mac-docs-sync.md`: Durable map of the main `mac-docs` touchpoints that should be reviewed when `MAC Core` changes.
 - `context/manual-smoke-testing/`: Grouped smoke-test package with the WordPress/Bricks runbook, reusable ACF import fixture, and release-type QA matrix for the `galleries` CPT.
 - `skills/wordpress-plugin-oop/SKILL.md`: MAC Core-specific implementation discipline for adding WordPress behavior through the plugin service architecture.
@@ -39,6 +40,12 @@ This directory stores repo-local context for agents working on MAC Core. Keep de
 ## Usage
 
 Read `AGENTS.md` first for always-needed repo guardrails, then read the relevant files in this directory before making implementation changes.
+
+For shared governance rules that should not be redefined per product repo, read the sibling source repo first:
+
+- `D:\business\projects\mac\governance\local-codex-model.md`
+- `D:\business\projects\mac\governance\docs-and-changelog.md`
+- `D:\business\projects\mac\governance\git-and-releases.md`
 
 After plugin changes that affect admin IA, settings/storage behavior, public helpers/hooks, licensing/update flow, or release workflow, use the AI context sync skill to review `.codex` and update stale notes or skills in the same task. Pair it with the MAC Docs sync skill when the change is also public-facing.
 
