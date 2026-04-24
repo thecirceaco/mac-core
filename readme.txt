@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,10 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 1.0.1 =
+* Aligned repo-local governance pointers with the canonical `mac` governance source.
+* Kept the plugin runtime and supported public helper surface unchanged from `1.0.0`.
 
 = 1.0.0 =
 * Marked `1.0.0` as the first stable baseline for the current MAC Core feature set.
