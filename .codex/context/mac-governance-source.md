@@ -1,6 +1,6 @@
 # MAC Governance Source
 
-`MAC Core` keeps its plugin-specific planning, research, and QA context locally, but shared cross-repo governance now lives in [`thecirceaco/mac`](https://github.com/thecirceaco/mac). If you also keep a local clone such as `D:\business\projects\mac`, treat that path as an example only.
+`MAC Core` keeps its plugin-specific planning, research, and QA context locally, but shared cross-repo governance now lives in [`thecirceaco/mac`](https://github.com/thecirceaco/mac). If you also keep a local clone such as `D:\business\products\mac`, treat that path as an example only.
 
 ## Use The `mac` Repo For
 

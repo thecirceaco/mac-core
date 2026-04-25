@@ -5,7 +5,7 @@ Branch reviewed: `dev`
 
 ## Source
 
-Generated from the ownership-map skill output under [ownership-map-out](D:/business/projects/mac-core/.codex/reports/ownership-map-out) using the repo history on `dev`.
+Generated from the ownership-map skill output under [ownership-map-out](D:/business/products/mac-core/.codex/reports/ownership-map-out) using the repo history on `dev`.
 
 ## Key Stats
 
@@ -16,7 +16,7 @@ Generated from the ownership-map skill output under [ownership-map-out](D:/busin
 - Hidden owners: `0`
 - Bus-factor hotspots reported by the default rules: `0`
 
-Source: [summary.json](D:/business/projects/mac-core/.codex/reports/ownership-map-out/summary.json)
+Source: [summary.json](D:/business/products/mac-core/.codex/reports/ownership-map-out/summary.json)
 
 ## Interpretation
 

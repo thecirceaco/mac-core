@@ -27,8 +27,8 @@ Before this pass, the release and quality workflows used floating tags such as `
 
 Fixed in:
 
-- [release.yml](D:/business/projects/mac-core/.github/workflows/release.yml)
-- [quality.yml](D:/business/projects/mac-core/.github/workflows/quality.yml)
+- [release.yml](D:/business/products/mac-core/.github/workflows/release.yml)
+- [quality.yml](D:/business/products/mac-core/.github/workflows/quality.yml)
 
 Pinned actions:
 
@@ -47,7 +47,7 @@ The vendored SureCart SDK in `inc/Vendor/SureCart/Licensing/` remains part of th
 
 This means:
 
-- the integration points in [LicensingService.php](D:/business/projects/mac-core/src/Licensing/LicensingService.php) remain in scope
+- the integration points in [LicensingService.php](D:/business/products/mac-core/src/Licensing/LicensingService.php) remain in scope
 - the vendored SDK internals are documented as inherited surface
 - any issue there should normally be handled by upstream monitoring, version bumps, or a deliberate vendor override only if necessary
 
@@ -62,36 +62,36 @@ The ownership map shows one contributor across the full repo:
 - `files: 124`
 - `commits: 85`
 
-Source: [summary.json](D:/business/projects/mac-core/.codex/reports/ownership-map-out/summary.json)
+Source: [summary.json](D:/business/products/mac-core/.codex/reports/ownership-map-out/summary.json)
 
 This is a real release and continuity risk, but not a code defect. It is documented as an accepted constraint for now.
 
 ## Positive Security Posture
 
-- [SettingsController.php](D:/business/projects/mac-core/src/Settings/SettingsController.php) enforces both `manage_options` and a nonce before saving settings.
-- [AdminPage.php](D:/business/projects/mac-core/src/Admin/AdminPage.php) registers the top-level admin UI behind `manage_options`.
-- [FormatDatetime.php](D:/business/projects/mac-core/src/Utils/FormatDatetime.php) escapes plain output parts before returning them.
-- [GetPostTerms.php](D:/business/projects/mac-core/src/Utils/GetPostTerms.php) escapes plain output values and separators.
-- [uninstall.php](D:/business/projects/mac-core/uninstall.php) only deletes local data when the explicit opt-in setting is enabled.
+- [SettingsController.php](D:/business/products/mac-core/src/Settings/SettingsController.php) enforces both `manage_options` and a nonce before saving settings.
+- [AdminPage.php](D:/business/products/mac-core/src/Admin/AdminPage.php) registers the top-level admin UI behind `manage_options`.
+- [FormatDatetime.php](D:/business/products/mac-core/src/Utils/FormatDatetime.php) escapes plain output parts before returning them.
+- [GetPostTerms.php](D:/business/products/mac-core/src/Utils/GetPostTerms.php) escapes plain output values and separators.
+- [uninstall.php](D:/business/products/mac-core/uninstall.php) only deletes local data when the explicit opt-in setting is enabled.
 - Repo-wide grep did not find plugin-owned `register_rest_route`, `wp_ajax_`, `admin_post_`, `eval`, `unserialize`, shell execution, or upload-file handlers in MAC Core-owned code.
 
 ## Verification Performed
 
 - Reviewed:
-  - [AdminPage.php](D:/business/projects/mac-core/src/Admin/AdminPage.php)
-  - [SettingsController.php](D:/business/projects/mac-core/src/Settings/SettingsController.php)
-  - [LicensingService.php](D:/business/projects/mac-core/src/Licensing/LicensingService.php)
-  - [DisableAdminBar.php](D:/business/projects/mac-core/src/Policies/Core/DisableAdminBar.php)
-  - [uninstall.php](D:/business/projects/mac-core/uninstall.php)
-  - [release.yml](D:/business/projects/mac-core/.github/workflows/release.yml)
-  - [quality.yml](D:/business/projects/mac-core/.github/workflows/quality.yml)
+  - [AdminPage.php](D:/business/products/mac-core/src/Admin/AdminPage.php)
+  - [SettingsController.php](D:/business/products/mac-core/src/Settings/SettingsController.php)
+  - [LicensingService.php](D:/business/products/mac-core/src/Licensing/LicensingService.php)
+  - [DisableAdminBar.php](D:/business/products/mac-core/src/Policies/Core/DisableAdminBar.php)
+  - [uninstall.php](D:/business/products/mac-core/uninstall.php)
+  - [release.yml](D:/business/products/mac-core/.github/workflows/release.yml)
+  - [quality.yml](D:/business/products/mac-core/.github/workflows/quality.yml)
 - Ran repo-wide searches for:
   - public entry points
   - dangerous PHP primitives
   - remote requests
   - option/transient mutation
   - update hooks
-- Generated ownership artifacts under [ownership-map-out](D:/business/projects/mac-core/.codex/reports/ownership-map-out)
+- Generated ownership artifacts under [ownership-map-out](D:/business/products/mac-core/.codex/reports/ownership-map-out)
 
 ## Recommended Follow-Up
 
