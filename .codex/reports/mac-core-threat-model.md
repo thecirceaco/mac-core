@@ -37,13 +37,13 @@ Open questions that would materially change the risk ranking:
 ## System model
 ### Primary components
 
-- `mac-core.php` bootstraps the plugin and hands control to [Kernel.php](D:/business/products/mac-core/src/Kernel.php).
-- Admin UI is handled by [AdminPage.php](D:/business/products/mac-core/src/Admin/AdminPage.php).
-- Settings writes are handled by [SettingsController.php](D:/business/products/mac-core/src/Settings/SettingsController.php) and persisted through the settings repository.
+- `mac-core.php` bootstraps the plugin and hands control to [Kernel.php](D:/business/workspace/products/mac-core/src/Kernel.php).
+- Admin UI is handled by [AdminPage.php](D:/business/workspace/products/mac-core/src/Admin/AdminPage.php).
+- Settings writes are handled by [SettingsController.php](D:/business/workspace/products/mac-core/src/Settings/SettingsController.php) and persisted through the settings repository.
 - Policy services under `src/Policies/` change WordPress behavior based on stored settings.
 - Helper functions under `src/Utils/` produce frontend/template-facing output.
-- [LicensingService.php](D:/business/products/mac-core/src/Licensing/LicensingService.php) loads the vendored SureCart SDK and exposes the license view.
-- The vendored updater in [Updater.php](D:/business/products/mac-core/inc/Vendor/SureCart/Licensing/Updater.php) injects licensed plugin update data into WordPress.
+- [LicensingService.php](D:/business/workspace/products/mac-core/src/Licensing/LicensingService.php) loads the vendored SureCart SDK and exposes the license view.
+- The vendored updater in [Updater.php](D:/business/workspace/products/mac-core/inc/Vendor/SureCart/Licensing/Updater.php) injects licensed plugin update data into WordPress.
 - GitHub Actions builds release artifacts, and SureCart serves the current release package to licensed sites.
 
 ### Data flows and trust boundaries
@@ -166,16 +166,16 @@ Examples for this repo:
 
 | Path | Why it matters | Related Threat IDs |
 | --- | --- | --- |
-| `D:/business/products/mac-core/.github/workflows/release.yml` | Builds the authoritative ZIP later uploaded to SureCart | TM-001, TM-002 |
-| `D:/business/products/mac-core/.github/workflows/quality.yml` | Controls CI trust and third-party action execution in PR/push checks | TM-001 |
-| `D:/business/products/mac-core/src/Settings/SettingsController.php` | Admin-side option mutation boundary with authz and nonce checks | TM-004 |
-| `D:/business/products/mac-core/src/Admin/AdminPage.php` | Main admin routing and rendering surface | TM-004 |
-| `D:/business/products/mac-core/src/Licensing/LicensingService.php` | MAC Core-owned bridge into the vendored SDK | TM-002, TM-005 |
-| `D:/business/products/mac-core/inc/Vendor/SureCart/Licensing/Updater.php` | Inherited update metadata injection path | TM-002, TM-005 |
-| `D:/business/products/mac-core/src/Utils/FormatDatetime.php` | Frontend/template-facing helper output | TM-003 |
-| `D:/business/products/mac-core/src/Utils/GetPostTerms.php` | Frontend/template-facing helper output | TM-003 |
-| `D:/business/products/mac-core/uninstall.php` | Plugin-owned data deletion boundary | TM-004 |
-| `D:/business/products/mac-core/release.json` | Release metadata consumed in update flows and plugin details | TM-001, TM-002 |
+| `D:/business/workspace/products/mac-core/.github/workflows/release.yml` | Builds the authoritative ZIP later uploaded to SureCart | TM-001, TM-002 |
+| `D:/business/workspace/products/mac-core/.github/workflows/quality.yml` | Controls CI trust and third-party action execution in PR/push checks | TM-001 |
+| `D:/business/workspace/products/mac-core/src/Settings/SettingsController.php` | Admin-side option mutation boundary with authz and nonce checks | TM-004 |
+| `D:/business/workspace/products/mac-core/src/Admin/AdminPage.php` | Main admin routing and rendering surface | TM-004 |
+| `D:/business/workspace/products/mac-core/src/Licensing/LicensingService.php` | MAC Core-owned bridge into the vendored SDK | TM-002, TM-005 |
+| `D:/business/workspace/products/mac-core/inc/Vendor/SureCart/Licensing/Updater.php` | Inherited update metadata injection path | TM-002, TM-005 |
+| `D:/business/workspace/products/mac-core/src/Utils/FormatDatetime.php` | Frontend/template-facing helper output | TM-003 |
+| `D:/business/workspace/products/mac-core/src/Utils/GetPostTerms.php` | Frontend/template-facing helper output | TM-003 |
+| `D:/business/workspace/products/mac-core/uninstall.php` | Plugin-owned data deletion boundary | TM-004 |
+| `D:/business/workspace/products/mac-core/release.json` | Release metadata consumed in update flows and plugin details | TM-001, TM-002 |
 
 ## Notes on use
 
