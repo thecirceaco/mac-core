@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,11 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 1.0.2 =
+* Updated `mac_core_format_datetime()` event presets to prefer `event_start` and `event_end` while keeping `event_start_datetime` and `event_end_datetime` as fallbacks.
+* Added timezone-aware parsing and rendering for valid IANA `event_timezone` values, with site-timezone fallback for missing, blank, or invalid values.
+* Updated `attr` and HTML `<time datetime="">` output to use timezone-aware PHP `c` values when a time is present and `Y-m-d` for date-only values.
 
 = 1.0.1 =
 * Aligned repo-local governance pointers with the canonical `mac` governance source.
