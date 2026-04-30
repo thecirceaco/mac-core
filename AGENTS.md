@@ -1,29 +1,19 @@
 # MAC Core Agent Notes
 
-## Scope
-
 These instructions apply to the entire `mac-core` repository.
 
-## Architecture Guardrail
+`mac-core` is an installable WordPress plugin. Keep the current source tree limited to this root `AGENTS.md` AI entrypoint; do not restore repo-local `.codex/` context or skills unless the human explicitly asks for that exception.
 
-MAC Core must remain OOP. Do not port the procedural organization from the `mac-bricks` or `mac-etch` child themes into this plugin.
+Use `thecirceaco/mac` for shared governance and `thecirceaco/mac-codex` for installable WordPress product workflow guidance and compact repo profiles.
 
-- Keep plugin code under the `MacCore` namespace.
-- Keep `mac-core.php` as a minimal bootstrap: plugin metadata, `declare(strict_types=1)`, the `ABSPATH` guard, includes for `inc/constants.php` and `inc/autoload.php`, and `\MacCore\Kernel::boot()`.
-- Keep `src/Kernel.php` responsible for service loading.
-- Keep `MacCore\Contracts\Service` as the service contract for hook-registering services.
-- Add WordPress behavior as service classes inside the module folders under `src/` such as `src/Admin`, `src/Licensing`, and `src/Policies/...`; each service must implement `MacCore\Contracts\Service`, register hooks inside `register()`, and be added to the Kernel service list.
-- Add shared pure helpers under `src/Utils/...` when they do not need to register hooks.
+## Guardrails
 
-## Agent Context
+- Work on `dev`.
+- Do not merge, tag, release, upload a SureCart ZIP, bump versions, or add public changelog entries without fresh explicit approval for `mac-core`.
+- AI-only cleanup stays on `dev` and does not trigger a product release.
+- Preserve the OOP plugin architecture under the `MacCore` namespace.
+- Keep `mac-core.php` as a minimal bootstrap that loads constants, autoloading, and `\MacCore\Kernel::boot()`.
+- Keep hook-registering behavior in service classes implementing `MacCore\Contracts\Service`, registered from `src/Kernel.php`.
+- Treat `inc/Vendor/SureCart/Licensing/` as vendored runtime code unless a vendor patch is explicitly requested.
 
-Detailed implementation plans, todos, skills, and working context live under `.codex/`. Start there before working on the alignment backlog.
-
-- Use [`thecirceaco/mac`](https://github.com/thecirceaco/mac) as the source of truth for shared governance, repo-boundary rules, and the cross-repo `.codex` model. If you also keep a local sibling clone, treat that local path as an environment-specific convenience, not the canonical identifier.
-- Keep repo-local AI docs, durable agent notes, and reusable skills under `.codex/`.
-- Use the standard Codex skill layout for repo-local skills: `.codex/skills/<skill-name>/SKILL.md`.
-- Do not create additional repo-local AI guidance files outside `.codex/`, except for this root `AGENTS.md` entrypoint.
-
-## Editing Discipline
-
-Before editing implementation files, check `git status` and preserve user changes. If `LICENSE`, `README.md`, `mac-core.php`, or `readme.txt` contain uncommitted edits, build on them instead of replacing them.
+Before editing, check `git status` and preserve user changes.
