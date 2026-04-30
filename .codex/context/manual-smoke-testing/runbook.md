@@ -67,8 +67,8 @@ For the recommended extension test, add these fields to the `galleries` post typ
   - Tests same-day and end-time output.
 - `gallery_timezone`
   - Type: ACF Text, Select, or Button Group
-  - Return value: plain string is recommended for this smoke test
-  - Tests timezone display output.
+  - Return value: IANA timezone string such as `America/New_York`
+  - Tests timezone-aware parsing, display output, and machine attributes.
 - `gallery_start_datetime`
   - Type: ACF Date Time Picker
   - Return format: `Y-m-d H:i:s`
@@ -95,7 +95,7 @@ Populate the gallery post with values that exercise both single-day and range be
 - `gallery_end_date`: `2026-05-03`
 - `gallery_start_time`: `18:30`
 - `gallery_end_time`: `21:00`
-- `gallery_timezone`: a real button-group choice such as `UTC`
+- `gallery_timezone`: a real IANA timezone choice such as `America/New_York`, `Europe/Bucharest`, or `UTC`
 - `gallery_images`: at least 3 images
 - `gallery-cat`: at least 1 assigned term
 
@@ -124,10 +124,11 @@ That file currently includes:
 - `gallery_images`
 - all `gallery_*` datetime fields
 - the final timezone choices:
-  - `Eastern Time`
-  - `Central Time`
-  - `Mountain Time`
-  - `Pacific Time`
+  - `America/New_York`
+  - `America/Chicago`
+  - `America/Denver`
+  - `America/Los_Angeles`
+  - `Europe/Bucharest`
   - `UTC`
 
 If the smoke-test field names, return formats, or timezone choices change, update that JSON fixture in the same task.
@@ -142,8 +143,8 @@ add_filter(
 	'mac_core_format_datetime_presets',
 	static function ( array $presets ): array {
 		$presets['gallery_event'] = [
-			'start_datetime'   => 'gallery_start_datetime',
-			'end_datetime'     => 'gallery_end_datetime',
+			'start_datetime'   => [ 'gallery_start', 'gallery_start_datetime' ],
+			'end_datetime'     => [ 'gallery_end', 'gallery_end_datetime' ],
 			'start_date'       => 'gallery_start_date',
 			'end_date'         => 'gallery_end_date',
 			'start_time'       => 'gallery_start_time',
@@ -183,6 +184,8 @@ add_filter(
 	}
 );
 ```
+
+The `gallery_start` and `gallery_end` aliases are optional preferred fields for local testing. The stored ACF fixture still includes `gallery_start_datetime` and `gallery_end_datetime`, so the snippet also verifies ordered fallback aliases.
 
 ## Bricks Code Snippet
 
@@ -627,7 +630,7 @@ echo ob_get_clean();
    - at least 3 gallery images
    - at least 1 `gallery-cat` term
    - gallery dates and times
-   - a real `gallery_timezone` choice
+   - a real IANA `gallery_timezone` choice
 8. Add the child-theme filter snippet to the active child theme `functions.php`.
 9. Add the Bricks Code element to the Home page and enable PHP execution.
 10. Load the Home page while logged in and confirm the output tables render.
@@ -668,7 +671,7 @@ echo ob_get_clean();
 - When the taxonomy is not actually linkable, the `links` format falls back to the no-link HTML variant instead of returning empty output or fake links.
 - `mac_core_format_datetime(gallery_event, plain, 39)` returns a readable date or date range.
 - `mac_core_format_datetime(gallery_event, plain_relative, 39)` returns either relative labels when applicable or a normal date string when not.
-- `mac_core_format_datetime(gallery_event, plain_with_timezone, 39)` appends the selected timezone value.
+- `mac_core_format_datetime(gallery_event, plain_with_timezone, 39)` appends the selected IANA timezone value.
 - `mac_core_format_datetime(gallery_event, plain_relative_with_timezone, 39)` still appends the timezone.
 - `mac_core_format_datetime(gallery_event, plain_diff, 39)` returns lifecycle text such as `Starts in ...` or `Ended ... ago`.
 - `mac_core_format_datetime(gallery_event, html, 39)` returns escaped HTML markup using `mac-core-datetime*` classes.
@@ -680,11 +683,13 @@ echo ob_get_clean();
 - `mac_core_format_datetime(gallery_event, gallery_plain_compact, 39)` returns a visibly custom format driven by the child-theme filter.
 - In the optional mixed-source pass, start-side `*_datetime` data can combine cleanly with end-side separate date/time data.
 - In the optional mixed-source pass, same-day output can legitimately collapse the end side to time-only text.
+- `mac_core_format_datetime(gallery_event, attr, 39)` uses `Y-m-d` for date-only values and PHP `c` with a timezone offset for values that include time.
 
 ## Notes
 
 - If `gallery_start_datetime` or `gallery_end_datetime` are populated, they override the separate date and time fields.
 - For ACF choice fields, keep the default value as one real selected value, not a combined `key : label` string.
+- Timezone fields must store valid IANA timezone IDs such as `America/New_York`; friendly labels like `Eastern Time` are display labels only and are not valid machine timezone values.
 - The `class` argument on `mac_core_get_post_terms()` only affects the HTML formats (`links` and `spans`), not `plain`, and it is applied to the wrapper `<ul>`.
 - If `mac_core_get_post_terms()` is called with `links` for a taxonomy that is not publicly/queryably linkable, or if a term link cannot be generated, it falls back to the no-link HTML variant for that term output.
 - `mac_core_format_datetime()` HTML views always return classed `mac-core-datetime*` markup. There is no classless built-in HTML mode.

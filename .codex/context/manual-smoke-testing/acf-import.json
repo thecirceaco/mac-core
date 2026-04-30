@@ -162,10 +162,11 @@
           "id": ""
         },
         "choices": {
-          "Eastern Time": "Eastern Time",
-          "Central Time": "Central Time",
-          "Mountain Time": "Mountain Time",
-          "Pacific Time": "Pacific Time",
+          "America/New_York": "Eastern Time (America/New_York)",
+          "America/Chicago": "Central Time (America/Chicago)",
+          "America/Denver": "Mountain Time (America/Denver)",
+          "America/Los_Angeles": "Pacific Time (America/Los_Angeles)",
+          "Europe/Bucharest": "Bucharest Time (Europe/Bucharest)",
           "UTC": "UTC"
         },
         "default_value": "UTC",

@@ -300,6 +300,7 @@ function mac_core_tests_reset_wp_state(): void
 		'time_format' => 'g:i a',
 		'active_plugins' => [],
 	];
+	$GLOBALS['mac_core_test_timezone_string'] = 'UTC';
 	$GLOBALS['mac_core_test_site_options']    = [
 		'active_sitewide_plugins' => [],
 	];
@@ -578,24 +579,31 @@ if ( ! function_exists( 'esc_url_raw' ) ) {
 if ( ! function_exists( 'wp_timezone' ) ) {
 	function wp_timezone(): DateTimeZone
 	{
-		return new DateTimeZone( 'UTC' );
+		$timezone_string = (string) ( $GLOBALS['mac_core_test_timezone_string'] ?? 'UTC' );
+
+		try {
+			return new DateTimeZone( $timezone_string );
+		} catch ( Exception $exception ) {
+			return new DateTimeZone( 'UTC' );
+		}
 	}
 }
 
 if ( ! function_exists( 'wp_timezone_string' ) ) {
 	function wp_timezone_string(): string
 	{
-		return 'UTC';
+		return (string) ( $GLOBALS['mac_core_test_timezone_string'] ?? 'UTC' );
 	}
 }
 
 if ( ! function_exists( 'wp_date' ) ) {
-	function wp_date( string $format, ?int $timestamp = null ): string
+	function wp_date( string $format, ?int $timestamp = null, ?DateTimeZone $timezone = null ): string
 	{
 		$timestamp ??= (int) ( $GLOBALS['mac_core_test_current_time'] ?? time() );
+		$timezone ??= wp_timezone();
 
 		return ( new DateTimeImmutable( '@' . $timestamp ) )
-			->setTimezone( wp_timezone() )
+			->setTimezone( $timezone )
 			->format( $format );
 	}
 }

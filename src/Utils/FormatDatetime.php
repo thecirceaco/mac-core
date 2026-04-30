@@ -45,7 +45,7 @@ final class FormatDatetime
      * - show_timezone: append the configured timezone field or site timezone.
      * - relative: use Today, Tomorrow, and Yesterday labels.
      * - show_year_now: force the year even when the output date format omits it.
-     * - diff: return lifecycle text like "Starts in 3 days"; ignores timezone.
+     * - diff: return lifecycle text like "Starts in 3 days"; omits timezone labels.
      * - timezone_display: label or value for ACF choice-field arrays.
      * - output_datetime_format, output_date_format, output_time_format:
      *   override the preset output formats for this view.
@@ -107,14 +107,18 @@ final class FormatDatetime
      *
      * Input formats describe ACF or post meta return values.
      * Output formats describe display values; null uses WordPress General Settings.
+     * Field names may be strings or ordered string arrays.
+     * timezone accepts valid IANA timezone identifiers and affects parsing,
+     * display, and machine attributes. Invalid or blank values fall back to the
+     * site timezone.
      * timezone_display accepts label or value for ACF choice-field arrays.
      *
      * @var array<string,array<string,mixed>>
      */
     public static array $presets = [
         'event' => [
-            'start_datetime'   => 'event_start_datetime',
-            'end_datetime'     => 'event_end_datetime',
+            'start_datetime'   => ['event_start', 'event_start_datetime'],
+            'end_datetime'     => ['event_end', 'event_end_datetime'],
             'start_date'       => 'event_start_date',
             'end_date'         => 'event_end_date',
             'start_time'       => 'event_start_time',
@@ -282,8 +286,12 @@ final class FormatDatetime
             : 'label';
         $timezoneDisplay = \in_array($timezoneDisplay, ['label', 'value'], true) ? $timezoneDisplay : 'label';
 
-        $start = self::resolvePoint($presetConfig, 'start', $postId);
-        $end   = self::resolvePoint($presetConfig, 'end', $postId);
+        $timezoneValue  = self::getFirstFieldValue($presetConfig['timezone'], $postId);
+        $eventTimezone  = self::validTimezone($timezoneValue);
+        $renderTimezone = $eventTimezone ?? self::timezone();
+
+        $start = self::resolvePoint($presetConfig, 'start', $postId, $renderTimezone);
+        $end   = self::resolvePoint($presetConfig, 'end', $postId, $renderTimezone);
 
         if ($start['invalid'] || $end['invalid'] || ! $start['timestamp']) {
             return '';
@@ -301,14 +309,14 @@ final class FormatDatetime
             return self::escHtml($diffText);
         }
 
-        $startDateKey   = self::formatTimestamp('Y-m-d', $start['timestamp']);
-        $endDateKey     = $end['timestamp'] ? self::formatTimestamp('Y-m-d', $end['timestamp']) : '';
+        $startDateKey   = self::formatTimestamp('Y-m-d', $start['timestamp'], $renderTimezone);
+        $endDateKey     = $end['timestamp'] ? self::formatTimestamp('Y-m-d', $end['timestamp'], $renderTimezone) : '';
         $sameDayRange   = $end['timestamp'] && $startDateKey === $endDateKey;
         $crossYearRange = $end['timestamp']
-            && self::formatTimestamp('Y', $start['timestamp']) !== self::formatTimestamp('Y', $end['timestamp']);
+            && self::formatTimestamp('Y', $start['timestamp'], $renderTimezone) !== self::formatTimestamp('Y', $end['timestamp'], $renderTimezone);
 
         if ($return === 'attr') {
-            return self::attrFromPoint($start);
+            return self::attrFromPoint($start, $renderTimezone);
         }
 
         $startDate = self::dateLabel(
@@ -317,46 +325,38 @@ final class FormatDatetime
             $relative,
             $showYearNow,
             $crossYearRange,
-            $dateLabels
+            $dateLabels,
+            $renderTimezone
         );
         $endDate = $end['timestamp']
-            ? self::dateLabel($end['timestamp'], $dateFormat, false, $showYearNow, $crossYearRange, $dateLabels)
+            ? self::dateLabel($end['timestamp'], $dateFormat, false, $showYearNow, $crossYearRange, $dateLabels, $renderTimezone)
             : '';
-        $startTime = $start['has_time'] ? self::formatTimestamp($timeFormat, $start['timestamp']) : '';
-        $endTime   = $end['timestamp'] && $end['has_time'] ? self::formatTimestamp($timeFormat, $end['timestamp']) : '';
+        $startTime = $start['has_time'] ? self::formatTimestamp($timeFormat, $start['timestamp'], $renderTimezone) : '';
+        $endTime   = $end['timestamp'] && $end['has_time'] ? self::formatTimestamp($timeFormat, $end['timestamp'], $renderTimezone) : '';
 
         if (! $relative && $datetimeFormat !== '') {
             if ($startTime !== '') {
-                $startDate = self::formatTimestamp($datetimeFormat, $start['timestamp']);
+                $startDate = self::formatTimestamp($datetimeFormat, $start['timestamp'], $renderTimezone);
                 $startTime = '';
             }
 
             if ($endTime !== '' && ! $sameDayRange) {
-                $endDate = self::formatTimestamp($datetimeFormat, $end['timestamp']);
+                $endDate = self::formatTimestamp($datetimeFormat, $end['timestamp'], $renderTimezone);
                 $endTime = '';
             }
         }
 
-        $timezone = '';
+        $timezoneLabel = '';
 
         if ($showTimezone) {
-            $timezoneField = (string) $presetConfig['timezone'];
-            $timezoneValue = $timezoneField !== ''
-                ? self::getFieldValue($timezoneField, $postId)
-                : null;
-
-            $timezone = self::displayValue($timezoneValue, $timezoneDisplay);
-
-            if ($timezone === '') {
-                $timezone = self::timezoneLabel();
-            }
+            $timezoneLabel = self::timezoneOutputLabel($timezoneValue, $timezoneDisplay, $eventTimezone, $renderTimezone);
         }
 
         if ($return === 'plain') {
-            return self::plainOutput($startDate, $startTime, $end, $endDate, $endTime, $sameDayRange, $timezone);
+            return self::plainOutput($startDate, $startTime, $end, $endDate, $endTime, $sameDayRange, $timezoneLabel);
         }
 
-        return self::htmlOutput($start, $startDate, $startTime, $end, $endDate, $endTime, $sameDayRange, $timezone);
+        return self::htmlOutput($start, $startDate, $startTime, $end, $endDate, $endTime, $sameDayRange, $timezoneLabel, $renderTimezone);
     }
 
     /**
@@ -474,8 +474,12 @@ final class FormatDatetime
         return new DateTimeZone(\date_default_timezone_get());
     }
 
-    private static function timezoneLabel(): string
+    private static function timezoneLabel(?DateTimeZone $timezone = null): string
     {
+        if ($timezone instanceof DateTimeZone) {
+            return $timezone->getName();
+        }
+
         if (\function_exists('wp_timezone_string')) {
             $timezoneString = (string) \wp_timezone_string();
 
@@ -492,11 +496,13 @@ final class FormatDatetime
         return \time();
     }
 
-    private static function formatTimestamp(string $format, int $timestamp): string
+    private static function formatTimestamp(string $format, int $timestamp, ?DateTimeZone $timezone = null): string
     {
+        $timezone ??= self::timezone();
+
         return \function_exists('wp_date')
-            ? \wp_date($format, $timestamp)
-            : (new DateTimeImmutable('@' . $timestamp))->setTimezone(self::timezone())->format($format);
+            ? \wp_date($format, $timestamp, $timezone)
+            : (new DateTimeImmutable('@' . $timestamp))->setTimezone($timezone)->format($format);
     }
 
     private static function wpOptionFormat(string $optionName, string $fallback): string
@@ -572,6 +578,51 @@ final class FormatDatetime
         return null;
     }
 
+    /**
+     * @return string[]
+     */
+    private static function fieldNames(mixed $fieldNames): array
+    {
+        if (\is_string($fieldNames) || $fieldNames instanceof Stringable || \is_int($fieldNames)) {
+            $fieldName = \trim((string) $fieldNames);
+
+            return $fieldName !== '' ? [$fieldName] : [];
+        }
+
+        if (! \is_array($fieldNames)) {
+            return [];
+        }
+
+        $names = [];
+
+        foreach ($fieldNames as $fieldName) {
+            if (! \is_string($fieldName) && ! $fieldName instanceof Stringable && ! \is_int($fieldName)) {
+                continue;
+            }
+
+            $fieldName = \trim((string) $fieldName);
+
+            if ($fieldName !== '' && ! \in_array($fieldName, $names, true)) {
+                $names[] = $fieldName;
+            }
+        }
+
+        return $names;
+    }
+
+    private static function getFirstFieldValue(mixed $fieldNames, int|string $postId): mixed
+    {
+        foreach (self::fieldNames($fieldNames) as $fieldName) {
+            $value = self::getFieldValue($fieldName, $postId);
+
+            if (! self::isBlank($value)) {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+
     private static function displayValue(mixed $value, string $preferredKey = 'label'): string
     {
         if (self::isBlank($value)) {
@@ -609,6 +660,79 @@ final class FormatDatetime
         return '';
     }
 
+    private static function timezoneIdentifier(mixed $value): string
+    {
+        if (self::isBlank($value)) {
+            return '';
+        }
+
+        if (\is_array($value)) {
+            foreach (['value', 'label'] as $key) {
+                if (isset($value[$key]) && (\is_scalar($value[$key]) || $value[$key] instanceof Stringable)) {
+                    $identifier = \trim((string) $value[$key]);
+
+                    if ($identifier !== '') {
+                        return $identifier;
+                    }
+                }
+            }
+
+            return '';
+        }
+
+        if (\is_scalar($value) || $value instanceof Stringable) {
+            return \trim((string) $value);
+        }
+
+        return '';
+    }
+
+    /**
+     * @return string[]
+     */
+    private static function validTimezoneIdentifiers(): array
+    {
+        static $identifiers = null;
+
+        if ($identifiers === null) {
+            $identifiers = \array_fill_keys(DateTimeZone::listIdentifiers(), true);
+        }
+
+        return \array_keys($identifiers);
+    }
+
+    private static function validTimezone(mixed $value): ?DateTimeZone
+    {
+        $identifier = self::timezoneIdentifier($value);
+
+        if ($identifier === '' || ! \in_array($identifier, self::validTimezoneIdentifiers(), true)) {
+            return null;
+        }
+
+        try {
+            return new DateTimeZone($identifier);
+        } catch (Exception $exception) {
+            return null;
+        }
+    }
+
+    private static function timezoneOutputLabel(
+        mixed $value,
+        string $preferredKey,
+        ?DateTimeZone $eventTimezone,
+        DateTimeZone $fallbackTimezone
+    ): string {
+        if ($eventTimezone instanceof DateTimeZone) {
+            $displayValue = self::displayValue($value, $preferredKey);
+
+            return $displayValue !== ''
+                ? $displayValue
+                : self::timezoneLabel($eventTimezone);
+        }
+
+        return self::timezoneLabel($fallbackTimezone);
+    }
+
     /**
      * @param array<string,mixed> $preset
      * @param string[]            $fallback
@@ -632,7 +756,7 @@ final class FormatDatetime
         return $formats;
     }
 
-    private static function parseByFormat(string $value, string $format): int|false
+    private static function parseByFormat(string $value, string $format, DateTimeZone $timezone): int|false
     {
         if ($format === '') {
             return false;
@@ -647,7 +771,7 @@ final class FormatDatetime
         $datetime = DateTimeImmutable::createFromFormat(
             $parseFormat,
             $value,
-            self::timezone()
+            $timezone
         );
 
         $errors = DateTimeImmutable::getLastErrors();
@@ -668,7 +792,7 @@ final class FormatDatetime
     /**
      * @param string[] $formats
      */
-    private static function parseValue(mixed $value, array $formats): int|false|null
+    private static function parseValue(mixed $value, array $formats, DateTimeZone $timezone): int|false|null
     {
         if (self::isBlank($value)) {
             return null;
@@ -689,7 +813,7 @@ final class FormatDatetime
         $value = \trim((string) $value);
 
         foreach ($formats as $format) {
-            $timestamp = self::parseByFormat($value, $format);
+            $timestamp = self::parseByFormat($value, $format, $timezone);
 
             if ($timestamp !== false) {
                 return $timestamp;
@@ -702,7 +826,7 @@ final class FormatDatetime
         }
 
         try {
-            $datetime = new DateTimeImmutable($value, self::timezone());
+            $datetime = new DateTimeImmutable($value, $timezone);
         } catch (Exception $exception) {
             return false;
         }
@@ -710,6 +834,106 @@ final class FormatDatetime
         $timestamp = $datetime->getTimestamp();
 
         return $timestamp > 0 ? $timestamp : false;
+    }
+
+    private static function formatHasTime(string $format): bool
+    {
+        return (bool) \preg_match('/(?<!\\\\)[HhGgisuaAB]/', $format);
+    }
+
+    private static function valueLooksDateOnly(string $value): bool
+    {
+        return (bool) \preg_match('/^[A-Za-z]{3,9}\s+\d{1,2},\s+\d{4}$/', $value)
+            || (bool) \preg_match('/^\d{4}[-\/]?\d{2}[-\/]?\d{2}$/', $value)
+            || (bool) \preg_match('/^\d{1,2}\/\d{1,2}\/\d{4}$/', $value);
+    }
+
+    /**
+     * @param string[] $datetimeFormats
+     * @param string[] $dateFormats
+     * @return array{timestamp:int|null,has_time:bool,invalid:bool}
+     */
+    private static function parsePointValue(
+        mixed $value,
+        array $datetimeFormats,
+        array $dateFormats,
+        DateTimeZone $timezone
+    ): array {
+        if (self::isBlank($value)) {
+            return [
+                'timestamp' => null,
+                'has_time'  => false,
+                'invalid'   => false,
+            ];
+        }
+
+        if (\is_int($value)) {
+            return [
+                'timestamp' => $value > 0 ? $value : null,
+                'has_time'  => $value > 0,
+                'invalid'   => $value <= 0,
+            ];
+        }
+
+        if (\is_float($value)) {
+            $timestamp = (int) $value;
+
+            return [
+                'timestamp' => $timestamp > 0 ? $timestamp : null,
+                'has_time'  => $timestamp > 0,
+                'invalid'   => $timestamp <= 0,
+            ];
+        }
+
+        if (! \is_string($value)) {
+            return [
+                'timestamp' => null,
+                'has_time'  => false,
+                'invalid'   => true,
+            ];
+        }
+
+        $value = \trim((string) $value);
+
+        foreach (\array_merge($datetimeFormats, $dateFormats) as $format) {
+            $timestamp = self::parseByFormat($value, $format, $timezone);
+
+            if ($timestamp !== false) {
+                return [
+                    'timestamp' => $timestamp,
+                    'has_time'  => self::formatHasTime($format),
+                    'invalid'   => false,
+                ];
+            }
+        }
+
+        if (\preg_match('/^\d{10,}$/', $value)) {
+            $timestamp = (int) $value;
+
+            return [
+                'timestamp' => $timestamp > 0 ? $timestamp : null,
+                'has_time'  => $timestamp > 0,
+                'invalid'   => $timestamp <= 0,
+            ];
+        }
+
+        try {
+            $datetime = new DateTimeImmutable($value, $timezone);
+        } catch (Exception $exception) {
+            return [
+                'timestamp' => null,
+                'has_time'  => false,
+                'invalid'   => true,
+            ];
+        }
+
+        $timestamp = $datetime->getTimestamp();
+
+        return [
+            'timestamp' => $timestamp > 0 ? $timestamp : null,
+            'has_time'  => $timestamp > 0 && ! self::valueLooksDateOnly($value),
+            'invalid'   => $timestamp <= 0,
+        ];
     }
 
     /**
@@ -720,20 +944,33 @@ final class FormatDatetime
         mixed $dateValue,
         mixed $timeValue,
         array $dateFormats,
-        array $timeFormats
-    ): int|false {
+        array $timeFormats,
+        DateTimeZone $timezone
+    ): array {
         if (! \is_int($dateValue) && ! \is_string($dateValue)) {
-            return false;
+            return [
+                'timestamp' => null,
+                'has_time'  => false,
+                'invalid'   => true,
+            ];
         }
 
         if (! self::isBlank($timeValue) && ! \is_int($timeValue) && ! \is_string($timeValue)) {
-            return false;
+            return [
+                'timestamp' => null,
+                'has_time'  => false,
+                'invalid'   => true,
+            ];
         }
 
         if (self::isBlank($timeValue)) {
-            $timestamp = self::parseValue($dateValue, $dateFormats);
+            $timestamp = self::parseValue($dateValue, $dateFormats, $timezone);
 
-            return \is_int($timestamp) ? $timestamp : false;
+            return [
+                'timestamp' => \is_int($timestamp) ? $timestamp : null,
+                'has_time'  => false,
+                'invalid'   => $timestamp === false,
+            ];
         }
 
         $datetimeValue = \trim((string) $dateValue) . ' ' . \trim((string) $timeValue);
@@ -742,16 +979,25 @@ final class FormatDatetime
             foreach ($timeFormats as $timeFormat) {
                 $timestamp = self::parseByFormat(
                     $datetimeValue,
-                    $dateFormat . ' ' . $timeFormat
+                    $dateFormat . ' ' . $timeFormat,
+                    $timezone
                 );
 
                 if ($timestamp !== false) {
-                    return $timestamp;
+                    return [
+                        'timestamp' => $timestamp,
+                        'has_time'  => true,
+                        'invalid'   => false,
+                    ];
                 }
             }
         }
 
-        return false;
+        return [
+            'timestamp' => null,
+            'has_time'  => false,
+            'invalid'   => true,
+        ];
     }
 
     /**
@@ -761,7 +1007,8 @@ final class FormatDatetime
     private static function resolvePoint(
         array $preset,
         string $prefix,
-        int|string $postId
+        int|string $postId,
+        DateTimeZone $timezone
     ): array {
         $datetimeFormats = self::formatList(
             $preset,
@@ -779,33 +1026,18 @@ final class FormatDatetime
             ['H:i', 'H:i:s', 'g:i a', 'h:i a', 'g:i A', 'h:i A']
         );
 
-        $datetimeField = (string) ($preset[$prefix . '_datetime'] ?? '');
+        $datetimeField = $preset[$prefix . '_datetime'] ?? '';
 
-        if ($datetimeField !== '') {
-            $datetimeValue = self::getFieldValue($datetimeField, $postId);
+        foreach (self::fieldNames($datetimeField) as $fieldName) {
+            $datetimeValue = self::getFieldValue($fieldName, $postId);
 
             if (! self::isBlank($datetimeValue)) {
-                $timestamp = self::parseValue($datetimeValue, $datetimeFormats);
-
-                return [
-                    'timestamp' => \is_int($timestamp) ? $timestamp : null,
-                    'has_time'  => \is_int($timestamp),
-                    'invalid'   => $timestamp === false,
-                ];
+                return self::parsePointValue($datetimeValue, $datetimeFormats, $dateFormats, $timezone);
             }
         }
 
-        $dateField = (string) ($preset[$prefix . '_date'] ?? '');
-
-        if ($dateField === '') {
-            return [
-                'timestamp' => null,
-                'has_time'  => false,
-                'invalid'   => false,
-            ];
-        }
-
-        $dateValue = self::getFieldValue($dateField, $postId);
+        $dateField = $preset[$prefix . '_date'] ?? '';
+        $dateValue = self::getFirstFieldValue($dateField, $postId);
 
         if (self::isBlank($dateValue)) {
             return [
@@ -815,18 +1047,10 @@ final class FormatDatetime
             ];
         }
 
-        $timeField = (string) ($preset[$prefix . '_time'] ?? '');
-        $timeValue = $timeField !== ''
-            ? self::getFieldValue($timeField, $postId)
-            : null;
+        $timeField = $preset[$prefix . '_time'] ?? '';
+        $timeValue = self::getFirstFieldValue($timeField, $postId);
 
-        $timestamp = self::parseSeparate($dateValue, $timeValue, $dateFormats, $timeFormats);
-
-        return [
-            'timestamp' => $timestamp !== false ? $timestamp : null,
-            'has_time'  => $timestamp !== false && ! self::isBlank($timeValue),
-            'invalid'   => $timestamp === false,
-        ];
+        return self::parseSeparate($dateValue, $timeValue, $dateFormats, $timeFormats, $timezone);
     }
 
     private static function formatHasYear(string $format): bool
@@ -843,25 +1067,27 @@ final class FormatDatetime
         bool $relative,
         bool $forceYear,
         bool $rangeCrossYear,
-        array $labelOverrides = []
+        array $labelOverrides = [],
+        ?DateTimeZone $timezone = null
     ): string {
+        $timezone ??= self::timezone();
         $labels = \array_merge(self::$dateLabels, $labelOverrides);
 
         if ($relative) {
             $now   = self::now();
             $day   = \defined('DAY_IN_SECONDS') ? \DAY_IN_SECONDS : 86400;
-            $today = self::formatTimestamp('Ymd', $now);
-            $date  = self::formatTimestamp('Ymd', $timestamp);
+            $today = self::formatTimestamp('Ymd', $now, $timezone);
+            $date  = self::formatTimestamp('Ymd', $timestamp, $timezone);
 
             if ($date === $today) {
                 return (string) $labels['today'];
             }
 
-            if ($date === self::formatTimestamp('Ymd', $now + $day)) {
+            if ($date === self::formatTimestamp('Ymd', $now + $day, $timezone)) {
                 return (string) $labels['tomorrow'];
             }
 
-            if ($date === self::formatTimestamp('Ymd', $now - $day)) {
+            if ($date === self::formatTimestamp('Ymd', $now - $day, $timezone)) {
                 return (string) $labels['yesterday'];
             }
         }
@@ -873,13 +1099,13 @@ final class FormatDatetime
             (
                 $forceYear ||
                 $rangeCrossYear ||
-                self::formatTimestamp('Y', $timestamp) !== self::formatTimestamp('Y', self::now())
+                self::formatTimestamp('Y', $timestamp, $timezone) !== self::formatTimestamp('Y', self::now(), $timezone)
             )
         ) {
             $format .= ' Y';
         }
 
-        return self::formatTimestamp($format, $timestamp);
+        return self::formatTimestamp($format, $timestamp, $timezone);
     }
 
     /**
@@ -951,15 +1177,15 @@ final class FormatDatetime
     /**
      * @param array{timestamp:int|null,has_time:bool,invalid:bool} $point
      */
-    private static function attrFromPoint(array $point): string
+    private static function attrFromPoint(array $point, DateTimeZone $timezone): string
     {
         if (! $point['timestamp']) {
             return '';
         }
 
-        $format = $point['has_time'] ? 'Y-m-d\TH:i:s' : 'Y-m-d';
+        $format = $point['has_time'] ? 'c' : 'Y-m-d';
 
-        return self::escAttr(self::formatTimestamp($format, $point['timestamp']));
+        return self::escAttr(self::formatTimestamp($format, $point['timestamp'], $timezone));
     }
 
     /**
@@ -971,9 +1197,10 @@ final class FormatDatetime
         string $dateClass,
         string $timePartClass,
         string $dateLabel,
-        string $timeLabel
+        string $timeLabel,
+        DateTimeZone $timezone
     ): string {
-        $datetime = self::attrFromPoint($point);
+        $datetime = self::attrFromPoint($point, $timezone);
 
         if ($datetime === '' || ($dateLabel === '' && $timeLabel === '')) {
             return '';
@@ -1054,7 +1281,8 @@ final class FormatDatetime
         string $endDate,
         string $endTime,
         bool $sameDayRange,
-        string $timezone
+        string $timezone,
+        DateTimeZone $renderTimezone
     ): string {
         $out  = '<span class="' . self::escAttr(self::className('wrapper')) . '">';
         $out .= self::timeHtml(
@@ -1063,7 +1291,8 @@ final class FormatDatetime
             self::className('start_date'),
             self::className('start_time'),
             $startDate,
-            $startTime
+            $startTime,
+            $renderTimezone
         );
 
         if ($end['timestamp']) {
@@ -1076,7 +1305,8 @@ final class FormatDatetime
                         self::className('end_date'),
                         self::className('end_time'),
                         '',
-                        $endTime
+                        $endTime,
+                        $renderTimezone
                     );
                 }
             } else {
@@ -1087,7 +1317,8 @@ final class FormatDatetime
                     self::className('end_date'),
                     self::className('end_time'),
                     $endDate,
-                    $endTime
+                    $endTime,
+                    $renderTimezone
                 );
             }
         }
