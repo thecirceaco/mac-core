@@ -1,2 +1,0 @@
-person_id,name,email,first_seen,last_seen,commit_count,touches,sensitive_touches,primary_tz_offset,primary_tz_minutes,timezone_offsets
-mihai@circea.co,Mihai Circea,mihai@circea.co,2026-01-23T04:27:04+02:00,2026-04-09T20:24:02+03:00,85,373,0.00,+02:00,120,+02:00:54;+03:00:31

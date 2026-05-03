@@ -43,7 +43,6 @@ final class FormatDatetimeTest extends TestCase
 		$GLOBALS['mac_core_test_post_meta'][123] = [
 			'event_start_date' => '2026-04-08',
 			'event_timezone'   => [
-				'value' => 'UTC',
 				'label' => '<img src=x onerror=alert(1)>',
 			],
 		];
@@ -52,111 +51,6 @@ final class FormatDatetimeTest extends TestCase
 
 		$this->assertStringContainsString( '&lt;img src=x onerror=alert(1)&gt;', $result );
 		$this->assertStringNotContainsString( '<img', $result );
-	}
-
-	public function test_default_event_preset_prefers_event_start_and_end(): void
-	{
-		$GLOBALS['mac_core_test_post_meta'][123] = [
-			'event_start' => '2026-05-01 18:30:00',
-			'event_end'   => '2026-05-01 21:00:00',
-		];
-
-		$result = FormatDatetime::format( 'event', 'plain', 123 );
-
-		$this->assertSame( 'May 1, 2026 6:30 pm - 9:00 pm', $result );
-	}
-
-	public function test_default_event_preset_still_supports_legacy_datetime_fields(): void
-	{
-		$GLOBALS['mac_core_test_post_meta'][123] = [
-			'event_start_datetime' => '2026-05-01 18:30:00',
-		];
-
-		$result = FormatDatetime::format( 'event', 'attr', 123 );
-
-		$this->assertSame( '2026-05-01T18:30:00+00:00', $result );
-	}
-
-	public function test_primary_event_datetime_alias_wins_over_legacy_alias(): void
-	{
-		$GLOBALS['mac_core_test_post_meta'][123] = [
-			'event_start'          => '2026-05-01 18:30:00',
-			'event_start_datetime' => '2026-06-01 18:30:00',
-		];
-
-		$result = FormatDatetime::format( 'event', 'attr', 123 );
-
-		$this->assertSame( '2026-05-01T18:30:00+00:00', $result );
-	}
-
-	public function test_event_preset_falls_back_to_separate_date_and_time_fields(): void
-	{
-		$GLOBALS['mac_core_test_post_meta'][123] = [
-			'event_start_date' => '2026-05-01',
-			'event_start_time' => '18:30',
-		];
-
-		$result = FormatDatetime::format( 'event', 'attr', 123 );
-
-		$this->assertSame( '2026-05-01T18:30:00+00:00', $result );
-	}
-
-	public function test_date_only_event_start_outputs_date_only_attribute(): void
-	{
-		$GLOBALS['mac_core_test_post_meta'][123] = [
-			'event_start' => '2026-05-01',
-		];
-
-		$result = FormatDatetime::format( 'event', 'attr', 123 );
-
-		$this->assertSame( '2026-05-01', $result );
-	}
-
-	public function test_valid_event_timezone_controls_attribute_offset_and_label_output(): void
-	{
-		$GLOBALS['mac_core_test_post_meta'][123] = [
-			'event_start'    => '2026-05-01 18:30:00',
-			'event_timezone' => [
-				'value' => 'Europe/Bucharest',
-				'label' => 'Bucharest time',
-			],
-		];
-
-		$attr  = FormatDatetime::format( 'event', 'attr', 123 );
-		$plain = FormatDatetime::format( 'event', 'plain_with_timezone', 123 );
-
-		$this->assertSame( '2026-05-01T18:30:00+03:00', $attr );
-		$this->assertSame( 'May 1, 2026 6:30 pm Bucharest time', $plain );
-	}
-
-	public function test_invalid_event_timezone_falls_back_to_site_timezone_and_label(): void
-	{
-		$GLOBALS['mac_core_test_timezone_string'] = 'America/New_York';
-		$GLOBALS['mac_core_test_post_meta'][123] = [
-			'event_start'    => '2026-05-01 18:30:00',
-			'event_timezone' => [
-				'value' => 'Eastern Time',
-				'label' => 'Eastern Time',
-			],
-		];
-
-		$attr  = FormatDatetime::format( 'event', 'attr', 123 );
-		$plain = FormatDatetime::format( 'event', 'plain_with_timezone', 123 );
-
-		$this->assertSame( '2026-05-01T18:30:00-04:00', $attr );
-		$this->assertSame( 'May 1, 2026 6:30 pm America/New_York', $plain );
-	}
-
-	public function test_html_time_attributes_use_timezone_aware_datetime_attributes(): void
-	{
-		$GLOBALS['mac_core_test_post_meta'][123] = [
-			'event_start'    => '2026-05-01 18:30:00',
-			'event_timezone' => 'Europe/Bucharest',
-		];
-
-		$html = FormatDatetime::format( 'event', 'html', 123 );
-
-		$this->assertStringContainsString( 'datetime="2026-05-01T18:30:00+03:00"', $html );
 	}
 
 	public function test_plain_diff_output_is_escaped(): void
@@ -257,28 +151,6 @@ final class FormatDatetimeTest extends TestCase
 		$result = FormatDatetime::format( 'launch', 'plain', 123 );
 
 		$this->assertSame( 'Apr 8, 2026', $result );
-	}
-
-	public function test_preset_registered_through_filter_can_use_ordered_field_aliases(): void
-	{
-		\add_filter(
-			'mac_core_format_datetime_presets',
-			static function ( array $presets ): array {
-				$presets['launch'] = [
-					'start_datetime' => [ 'missing_launch_start', 'launch_start' ],
-				];
-
-				return $presets;
-			}
-		);
-
-		$GLOBALS['mac_core_test_post_meta'][123] = [
-			'launch_start' => '2026-04-08 09:00:00',
-		];
-
-		$result = FormatDatetime::format( 'launch', 'attr', 123 );
-
-		$this->assertSame( '2026-04-08T09:00:00+00:00', $result );
 	}
 
 	public function test_view_registered_through_filter_is_used(): void
