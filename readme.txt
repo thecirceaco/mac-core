@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,13 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 1.1.0 =
+* Updated `mac_core_format_datetime()` so the built-in `event` preset prefers `event_start` and `event_end` while preserving `event_start_datetime` and `event_end_datetime` as fallback aliases.
+* Added IANA timezone handling for `event_timezone`, including fallback to the WordPress site timezone when event timezone data is missing, blank, or invalid.
+* Added timezone-aware machine datetime output for `attr` and HTML `<time datetime="">` values, using PHP `c` for time-bearing values and `Y-m-d` for date-only values.
+* Added ACF choice array label/value handling for timezone display in timezone-enabled views.
+* Added unit coverage for alias precedence, timezone fallback, date-only attributes, and timezone-aware HTML datetime attributes.
 
 = 1.0.0 =
 * Marked `1.0.0` as the first stable baseline for the current MAC Core feature set.
