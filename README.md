@@ -4,9 +4,10 @@ Company standard WordPress functionality plugin.
 
 ## Workflow
 
-- `dev` is the default development branch
-- `main` will track stable releases
-- Releases are created from `main`
+- `main` is the trunk and default work branch.
+- Use short-lived branches only when a change needs isolation.
+- Releases are created from version tags on `main`.
+- Maintenance commits on `main` are not product releases by themselves.
 
 ## License
 
