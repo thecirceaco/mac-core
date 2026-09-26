@@ -33,8 +33,9 @@ interface SettingsRepositoryInterface
 	/**
 	 * Save submitted settings and return the normalized result.
 	 *
-	 * @param array<string,mixed> $submitted Submitted settings.
+	 * @param array<string,mixed>    $submitted Submitted settings.
+	 * @param array<int,string>|null $modules   Modules to save from the submission; the others keep their stored values. Null saves every module.
 	 * @return array<string,array<string,mixed>>
 	 */
-	public function save( array $submitted ): array;
+	public function save( array $submitted, ?array $modules = null ): array;
 }

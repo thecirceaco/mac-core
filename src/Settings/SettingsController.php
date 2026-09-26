@@ -14,7 +14,8 @@ use MacCore\Contracts\Service;
 final class SettingsController implements Service
 {
 	public function __construct(
-		private readonly SettingsRepositoryInterface $settings
+		private readonly SettingsRepositoryInterface $settings,
+		private readonly SettingsSchema $schema
 	) {
 	}
 
@@ -78,7 +79,7 @@ final class SettingsController implements Service
 			? \wp_unslash( $_POST['mac_core_settings'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Repository sanitizes the full nested payload.
 			: [];
 
-		$this->settings->save( $submitted );
+		$this->settings->save( $submitted, $this->schema->get_tab_modules( $tab ) );
 
 		\add_settings_error( 'mac_core_settings', 'saved', 'MAC Core settings saved.', 'success' );
 	}

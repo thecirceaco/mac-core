@@ -119,6 +119,44 @@ final class SettingsRepositoryTest extends TestCase
 		$this->assertSame( $settings, $GLOBALS['mac_core_test_options']['mac_core_settings'] );
 	}
 
+	public function test_save_keeps_stored_values_for_modules_outside_the_submission(): void
+	{
+		$repository = new WordPressSettingsRepository( new SettingsSchema() );
+		$repository->save(
+			[
+				'core'  => [
+					'comment_control_enabled' => '1',
+				],
+				'media' => [
+					'block_video_uploads' => '1',
+				],
+				'utils' => [
+					'utils_enabled'        => '1',
+					'format_price_enabled' => '1',
+				],
+			]
+		);
+
+		$settings = $repository->save(
+			[
+				'core'  => [],
+				'utils' => [
+					'utils_enabled'      => '1',
+					'post_terms_enabled' => '1',
+				],
+			],
+			['utils']
+		);
+
+		$this->assertTrue( $settings['core']['comment_control_enabled'] );
+		$this->assertTrue( $settings['media']['block_video_uploads'] );
+		$this->assertTrue( $settings['utils']['post_terms_enabled'] );
+		$this->assertFalse( $settings['utils']['format_price_enabled'] );
+		$this->assertSame( ['core', 'media'], ( new SettingsSchema() )->get_tab_modules( 'settings' ) );
+		$this->assertSame( ['utils'], ( new SettingsSchema() )->get_tab_modules( 'helpers' ) );
+		$this->assertSame( [], ( new SettingsSchema() )->get_tab_modules( 'license' ) );
+	}
+
 	public function test_key_field_can_fallback_to_default_when_saved_empty(): void
 	{
 		$repository = new WordPressSettingsRepository( new SettingsSchema() );

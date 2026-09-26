@@ -83,7 +83,7 @@ final class Kernel
         $licensing = new LicensingService();
 
 		$services = [
-			new SettingsController( $settings ),
+			new SettingsController( $settings, $schema ),
 			new AdminPage( $settings, $schema, $licensing ),
 			new PluginListingLinks(),
 			$licensing,

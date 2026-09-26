@@ -76,13 +76,28 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save( array $submitted ): array
+	public function save( array $submitted, ?array $modules = null ): array
 	{
 		$current  = $this->all();
+		$stored   = \get_option( \MAC_CORE_SETTINGS_OPTION, [] );
+		$stored   = \is_array( $stored ) ? $stored : [];
 		$saved    = [];
 		$sections = $this->schema->get_sections();
 
 		foreach ( $sections as $module => $section ) {
+			if ( null !== $modules && ! \in_array( $module, $modules, true ) ) {
+				// Modules outside the submitted form keep their stored values.
+				$stored_values    = $stored[ $module ] ?? [];
+				$saved[ $module ] = $this->normalize_module(
+					$module,
+					\is_array( $stored_values ) ? $stored_values : [],
+					[],
+					false
+				);
+
+				continue;
+			}
+
 			$module_values = $submitted[ $module ] ?? [];
 			$saved[ $module ] = $this->normalize_module(
 				$module,

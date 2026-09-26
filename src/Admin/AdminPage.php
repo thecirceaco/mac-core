@@ -136,7 +136,7 @@ final class AdminPage implements Service
 	 */
 	public function render_settings(): void
 	{
-		$this->render_settings_modules( $this->settings_tab_modules() );
+		$this->render_settings_modules( $this->schema->get_tab_modules( 'settings' ) );
 	}
 
 	/**
@@ -144,7 +144,7 @@ final class AdminPage implements Service
 	 */
 	public function render_helpers(): void
 	{
-		$this->render_settings_modules( ['utils'] );
+		$this->render_settings_modules( $this->schema->get_tab_modules( 'helpers' ) );
 	}
 
 	/**
@@ -341,21 +341,6 @@ final class AdminPage implements Service
 
 		\submit_button( 'Save Settings' );
 		echo '</form>';
-	}
-
-	/**
-	 * Return settings modules shown on the main settings tab.
-	 *
-	 * @return array<int,string>
-	 */
-	private function settings_tab_modules(): array
-	{
-		return \array_values(
-			\array_filter(
-				$this->module_keys(),
-				static fn ( string $module ): bool => $module !== 'utils'
-			)
-		);
 	}
 
 	/**

@@ -350,6 +350,24 @@ final class SettingsSchema
 	}
 
 	/**
+	 * Return the module keys edited on one admin tab.
+	 *
+	 * The Helpers tab edits `utils`; the Settings tab edits every other module.
+	 *
+	 * @return array<int,string>
+	 */
+	public function get_tab_modules( string $tab ): array
+	{
+		$modules = \array_keys( $this->get_sections() );
+
+		return match ( $tab ) {
+			'settings' => \array_values( \array_diff( $modules, ['utils'] ) ),
+			'helpers'  => \array_values( \array_intersect( $modules, ['utils'] ) ),
+			default    => [],
+		};
+	}
+
+	/**
 	 * Normalize filtered section data.
 	 *
 	 * @param array<string,mixed> $sections Section data.
