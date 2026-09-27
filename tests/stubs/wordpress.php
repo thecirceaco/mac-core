@@ -282,6 +282,24 @@ function mac_core_tests_make_taxonomy( string $name, string $singular_label, str
 	);
 }
 
+/**
+ * Build a canned response for the wp_remote_request() stub.
+ *
+ * @param array<mixed>|string $body Response body. Arrays are JSON encoded.
+ * @return array{headers:array<string,string>,body:string,response:array{code:int,message:string}}
+ */
+function mac_core_tests_http_response( int $code, array|string $body = '' ): array
+{
+	return [
+		'headers'  => [],
+		'body'     => is_array( $body ) ? (string) json_encode( $body ) : $body,
+		'response' => [
+			'code'    => $code,
+			'message' => '',
+		],
+	];
+}
+
 function mac_core_tests_reset_wp_state(): void
 {
 	$GLOBALS['mac_core_test_actions']         = [];
@@ -341,6 +359,8 @@ function mac_core_tests_reset_wp_state(): void
 	);
 	$GLOBALS['mac_core_test_is_multisite']    = false;
 	$GLOBALS['mac_core_test_transients']      = [];
+	$GLOBALS['mac_core_test_http_responses']  = [];
+	$GLOBALS['mac_core_test_http_requests']   = [];
 	$GLOBALS['mac_core_test_redirect_to']     = null;
 	$GLOBALS['mac_core_test_is_admin']        = true;
 	$GLOBALS['mac_core_test_is_admin_bar_showing'] = true;
@@ -999,5 +1019,106 @@ if ( ! function_exists( 'date_i18n' ) ) {
 	function date_i18n( string $format, int $timestamp ): string
 	{
 		return gmdate( $format, $timestamp );
+	}
+}
+
+if ( ! function_exists( 'trailingslashit' ) ) {
+	function trailingslashit( string $value ): string
+	{
+		return rtrim( $value, '/\\' ) . '/';
+	}
+}
+
+if ( ! function_exists( 'add_query_arg' ) ) {
+	/**
+	 * Supports the add_query_arg( array $args, string $url ) form only.
+	 *
+	 * @param array<string,mixed> $args Query arguments.
+	 */
+	function add_query_arg( array $args, string $url ): string
+	{
+		return $url . ( str_contains( $url, '?' ) ? '&' : '?' ) . http_build_query( $args );
+	}
+}
+
+if ( ! function_exists( 'wp_parse_args' ) ) {
+	/**
+	 * @param array<string,mixed> $args     Arguments.
+	 * @param array<string,mixed> $defaults Defaults.
+	 * @return array<string,mixed>
+	 */
+	function wp_parse_args( array $args, array $defaults = [] ): array
+	{
+		return array_merge( $defaults, $args );
+	}
+}
+
+if ( ! function_exists( 'get_site_url' ) ) {
+	function get_site_url(): string
+	{
+		return 'https://example.test';
+	}
+}
+
+if ( ! function_exists( 'get_bloginfo' ) ) {
+	function get_bloginfo( string $show = '' ): string
+	{
+		return in_array( $show, [ '', 'name' ], true ) ? 'Example Site' : '';
+	}
+}
+
+if ( ! function_exists( 'wp_remote_request' ) ) {
+	/**
+	 * Record the request and return a canned response. Nothing leaves the process.
+	 *
+	 * Register responses in $GLOBALS['mac_core_test_http_responses'], keyed by
+	 * "METHOD URL" with the query string left off. A request without a canned
+	 * response fails like a network error.
+	 *
+	 * @param array<string,mixed> $args Request arguments.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	function wp_remote_request( string $url, array $args = [] ): array|WP_Error
+	{
+		$method = strtoupper( (string) ( $args['method'] ?? 'GET' ) );
+
+		$GLOBALS['mac_core_test_http_requests'][] = [
+			'method' => $method,
+			'url'    => $url,
+			'args'   => $args,
+		];
+
+		$key = $method . ' ' . explode( '?', $url, 2 )[0];
+
+		return $GLOBALS['mac_core_test_http_responses'][ $key ]
+			?? new WP_Error( 'http_request_failed', 'No canned response for ' . $key );
+	}
+}
+
+if ( ! function_exists( 'wp_remote_retrieve_response_code' ) ) {
+	/**
+	 * @param array<string,mixed>|WP_Error $response HTTP response.
+	 */
+	function wp_remote_retrieve_response_code( array|WP_Error $response ): int|string
+	{
+		if ( is_wp_error( $response ) || ! isset( $response['response']['code'] ) ) {
+			return '';
+		}
+
+		return (int) $response['response']['code'];
+	}
+}
+
+if ( ! function_exists( 'wp_remote_retrieve_body' ) ) {
+	/**
+	 * @param array<string,mixed>|WP_Error $response HTTP response.
+	 */
+	function wp_remote_retrieve_body( array|WP_Error $response ): string
+	{
+		if ( is_wp_error( $response ) || ! isset( $response['body'] ) ) {
+			return '';
+		}
+
+		return (string) $response['body'];
 	}
 }
