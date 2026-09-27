@@ -5,75 +5,216 @@ on:
     tags:
       - 'v*'
 
-permissions:
-  contents: write
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
-  build:
+  verify:
+    name: Verify release
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
-      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
-      - name: Prepare release directory
+      - name: Check tag, branch and versions
+        env:
+          TAG: ${{ github.ref_name }}
         run: |
-          mkdir -p dist/mac-core
-          rsync -av \
-            --exclude='/composer.lock' \
-            --exclude='/vendor' \
-            --exclude='node_modules' \
-            --exclude='/.env' \
-            --exclude='/.env.local' \
-            --exclude='.git*' \
-            --exclude='.github' \
-            --exclude='.codex' \
-            --exclude='.vscode' \
-            --exclude='.ddev' \
-            --exclude='/AGENTS.md' \
-            --exclude='/README.md' \
-            --exclude='/readme.txt' \
-            --exclude='/composer.json' \
-            --exclude='/phpcs.xml.dist' \
-            --exclude='/phpunit.xml.dist' \
-            --exclude='/tests' \
-            --exclude='/bin/install-wp-tests.sh' \
-            --exclude='/bin/build-dev-zip.ps1' \
-            --exclude='coverage' \
-            --exclude='.phpunit.cache' \
-            --exclude='.phpunit.result.cache' \
-            --exclude='.phpcs-cache' \
-            --exclude='dist' \
-            ./ dist/mac-core/
+          fail() { echo "::error::$*"; exit 1; }
 
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail "Tag $TAG is not in the form vX.Y.Z."
+
+          commit=$(git rev-parse --verify --quiet "refs/tags/$TAG^{commit}") || fail "Tag $TAG was not found."
+          [ "$commit" = "$GITHUB_SHA" ] && [ "$(git rev-parse HEAD)" = "$GITHUB_SHA" ] ||
+            fail "Tag $TAG points to $commit, but this run is for $GITHUB_SHA."
+
+          git merge-base --is-ancestor "$commit" refs/remotes/origin/main ||
+            fail "Tag $TAG points to $commit, which is not on origin/main."
+
+          # Every version carrier must match the tag. The plugin header is read the way
+          # WordPress reads it: first match, trailing */ or ?> removed.
+          version=${TAG#v}
+          header=$(grep -m 1 -i -E '^([[:blank:]]*<\?php)?[[:blank:]/*#@]*Version:' mac-core.php |
+            sed -E 's/^[^:]*:[[:blank:]]*//; s/[[:space:]]*(\*\/|\?>).*$//; s/[[:space:]]+$//' || true)
+          constant=$(grep -m 1 -E "^[[:blank:]]*define\([[:blank:]]*'MAC_CORE_VERSION'" inc/constants.php |
+            sed -n -E "s/^[^,]*,[[:blank:]]*'([^']*)'.*$/\1/p" || true)
+          stable_tag=$(grep -m 1 -i -E '^[[:blank:]]*Stable tag:' readme.txt |
+            sed -E 's/^[^:]*:[[:blank:]]*//; s/[[:space:]]+$//' || true)
+          json=$(jq -r '.version // empty' release.json || true)
+
+          errors=0
+          check() {
+            if [ "$2" != "$version" ]; then
+              echo "::error::$1 is '$2', expected '$version'."
+              errors=$((errors + 1))
+            fi
+          }
+          check 'mac-core.php Version' "$header"
+          check 'inc/constants.php MAC_CORE_VERSION' "$constant"
+          check 'readme.txt Stable tag' "$stable_tag"
+          check 'release.json version' "$json"
+          [ "$errors" -eq 0 ] || exit 1
+
+          echo "Releasing $TAG from $commit."
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run coding standards
+        run: composer lint
+
+      - name: Run tests
+        run: composer test
+
+  build:
+    name: Build ZIP
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    env:
+      TAG: ${{ github.ref_name }}
+      ZIP: mac-core-${{ github.ref_name }}.zip
+    outputs:
+      sha256: ${{ steps.checksum.outputs.sha256 }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # .gitattributes (export-ignore) is the only list of files kept out of the ZIP.
       - name: Create ZIP
         run: |
-          cd dist
-          zip -r mac-core-${GITHUB_REF_NAME}.zip mac-core
+          mkdir dist
+          git archive --format=zip --prefix=mac-core/ --output="dist/$ZIP" "$GITHUB_SHA"
 
-      - name: Generate checksum and provenance
+      - name: Check ZIP contents
         run: |
-          cd dist
-          sha256sum mac-core-${GITHUB_REF_NAME}.zip > mac-core-${GITHUB_REF_NAME}.zip.sha256
-          checksum=$(cut -d' ' -f1 mac-core-${GITHUB_REF_NAME}.zip.sha256)
-          built_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          cat > mac-core-${GITHUB_REF_NAME}.provenance.json <<EOF
-          {
-            "tag": "${GITHUB_REF_NAME}",
-            "commit": "${GITHUB_SHA}",
-            "repository": "${GITHUB_REPOSITORY}",
-            "workflow": "${GITHUB_WORKFLOW}",
-            "run_id": "${GITHUB_RUN_ID}",
-            "run_attempt": "${GITHUB_RUN_ATTEMPT}",
-            "built_at_utc": "${built_at}",
-            "zip_file": "mac-core-${GITHUB_REF_NAME}.zip",
-            "sha256": "${checksum}"
-          }
-          EOF
+          zipinfo -1 "dist/$ZIP" > "$RUNNER_TEMP/entries.txt"
 
-      - name: Upload release asset
-        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
+          if grep -v '^mac-core/' "$RUNNER_TEMP/entries.txt"; then
+            echo "::error::The paths above are outside the mac-core/ folder."
+            exit 1
+          fi
+
+          # Folder entries carry no content (bin/ stays as an empty folder, as in
+          # earlier releases), so the checks below look at files only.
+          grep -v '/$' "$RUNNER_TEMP/entries.txt" > "$RUNNER_TEMP/files.txt" || true
+
+          # To ship a new top-level path, add it here; to keep a file out, use .gitattributes.
+          expected='LICENSE assets inc index.php mac-core.php release.json src uninstall.php'
+          actual=$(sed -n -E 's#^mac-core/([^/]+).*#\1#p' "$RUNNER_TEMP/files.txt" | LC_ALL=C sort -u | paste -s -d ' ' -)
+          if [ "$actual" != "$expected" ]; then
+            echo "::error::The ZIP ships '$actual' at the top level, expected '$expected'."
+            exit 1
+          fi
+
+          # Every file must be PHP, an SVG in assets/, LICENSE, release.json or the
+          # vendored SureCart SDK README, and no path may be hidden.
+          if grep -v -E \
+            -e '^mac-core/(LICENSE|release\.json)$' \
+            -e '^mac-core/([^./][^/]*/)*[^./][^/]*\.php$' \
+            -e '^mac-core/assets/([^./][^/]*/)*[^./][^/]*\.svg$' \
+            -e '^mac-core/inc/Vendor/SureCart/Licensing/README\.md$' \
+            "$RUNNER_TEMP/files.txt"; then
+            echo "::error::The files above would ship. Keep them out with .gitattributes, or allow them in this step."
+            exit 1
+          fi
+
+      # The .sha256 and .provenance.json assets keep the format of earlier releases.
+      - name: Write checksum and provenance
+        id: checksum
+        working-directory: dist
+        run: |
+          sha256sum "$ZIP" > "$ZIP.sha256"
+          sha256=$(cut -d ' ' -f 1 "$ZIP.sha256")
+          jq -n \
+            --arg tag "$TAG" \
+            --arg commit "$GITHUB_SHA" \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg workflow "$GITHUB_WORKFLOW" \
+            --arg run_id "$GITHUB_RUN_ID" \
+            --arg run_attempt "$GITHUB_RUN_ATTEMPT" \
+            --arg built_at_utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg zip_file "$ZIP" \
+            --arg sha256 "$sha256" \
+            '$ARGS.named' > "mac-core-$TAG.provenance.json"
+
+          echo "sha256=$sha256" >> "$GITHUB_OUTPUT"
+          echo "SHA-256 of \`$ZIP\`: \`$sha256\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          files: |
-            dist/mac-core-${{ github.ref_name }}.zip
-            dist/mac-core-${{ github.ref_name }}.zip.sha256
-            dist/mac-core-${{ github.ref_name }}.provenance.json
+          subject-path: dist/${{ env.ZIP }}
+
+      - name: Upload release files
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-files
+          path: |
+            dist/${{ env.ZIP }}
+            dist/${{ env.ZIP }}.sha256
+            dist/mac-core-${{ env.TAG }}.provenance.json
+          if-no-files-found: error
+
+  publish:
+    name: Publish release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ github.ref_name }}
+      ZIP: mac-core-${{ github.ref_name }}.zip
+      SHA256: ${{ needs.build.outputs.sha256 }}
+
+    steps:
+      - name: Download release files
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-files
+          path: dist
+
+      - name: Verify SHA-256
+        working-directory: dist
+        run: |
+          echo "$SHA256  $ZIP" | sha256sum --check --strict
+          sha256sum --check --strict "$ZIP.sha256"
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tagged=$(gh api "repos/$GITHUB_REPOSITORY/commits/refs/tags/$TAG" --jq .sha)
+          if [ "$tagged" != "$GITHUB_SHA" ]; then
+            echo "::error::Tag $TAG now points to $tagged, but $GITHUB_SHA was built."
+            exit 1
+          fi
+
+          {
+            echo "SHA-256 of \`$ZIP\`: \`$SHA256\`"
+            echo
+            echo "Check its build provenance with \`gh attestation verify $ZIP --repo $GITHUB_REPOSITORY\`."
+          } > "$RUNNER_TEMP/notes.md"
+
+          gh release create "$TAG" "dist/$ZIP" "dist/$ZIP.sha256" "dist/mac-core-$TAG.provenance.json" \
+            --repo "$GITHUB_REPOSITORY" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" --verify-tag
