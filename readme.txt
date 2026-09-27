@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,11 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 1.1.1 =
+* Fixed saving one admin tab (`Settings` or `Helpers`) switching off every checkbox on the other tab. Each tab now saves only its own settings, and the other tab keeps its stored values.
+* Added regression tests that save each tab and check that the other tab keeps its values.
+* Settings switched off by the earlier behavior aren't restored automatically, so re-check both tabs after updating.
 
 = 1.1.0 =
 * Updated `mac_core_format_datetime()` so the built-in `event` preset prefers `event_start` and `event_end` while preserving `event_start_datetime` and `event_end_datetime` as fallback aliases.
