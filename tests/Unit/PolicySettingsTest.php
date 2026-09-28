@@ -428,10 +428,68 @@ final class PolicySettingsTest extends TestCase
 
 		$policy = new ControlComments( $this->settings );
 
-		$this->assertTrue( $policy->filter_comments_open( false, 12 ) );
-		$this->assertTrue( $policy->filter_comments_open( false, 14 ) );
+		$this->assertTrue( $policy->filter_comments_open( true, 12 ) );
+		$this->assertTrue( $policy->filter_comments_open( true, 14 ) );
 		$this->assertSame( ['existing'], $policy->filter_comments_array( ['existing'], 12 ) );
 		$this->assertSame( ['existing'], $policy->filter_comments_array( ['existing'], 14 ) );
+	}
+
+	public function test_comment_policy_keeps_comments_and_pings_closed_by_wordpress(): void
+	{
+		$GLOBALS['mac_core_test_post_type_map'] = [
+			12 => 'post',
+			14 => 'page',
+		];
+
+		$this->settings->save(
+			[
+				'core' => [
+					'comment_control_enabled' => '1',
+					'comments_enabled'        => '1',
+					'comments_posts_enabled'  => '1',
+					'comments_pages_enabled'  => '1',
+				],
+			]
+		);
+
+		$policy = new ControlComments( $this->settings );
+		$policy->register();
+
+		// Closed on the post itself, or by "close comments on old posts": the toggles never reopen them.
+		$this->assertFalse( $policy->filter_comments_open( false, 12 ) );
+		$this->assertFalse( $policy->filter_comments_open( false, 14 ) );
+		$this->assertFalse( \apply_filters( 'comments_open', false, 12 ) );
+		$this->assertFalse( \apply_filters( 'pings_open', false, 12 ) );
+		$this->assertTrue( \apply_filters( 'comments_open', true, 12 ) );
+		$this->assertTrue( \apply_filters( 'pings_open', true, 14 ) );
+	}
+
+	public function test_comment_policy_closes_open_comments_and_pings_on_disallowed_post_types(): void
+	{
+		$GLOBALS['mac_core_test_post_type_map'] = [
+			12 => 'post',
+			14 => 'page',
+		];
+
+		$this->settings->save(
+			[
+				'core' => [
+					'comment_control_enabled' => '1',
+					'comments_enabled'        => '1',
+					'comments_posts_enabled'  => '',
+					'comments_pages_enabled'  => '1',
+				],
+			]
+		);
+
+		$policy = new ControlComments( $this->settings );
+		$policy->register();
+
+		$this->assertFalse( $policy->filter_comments_open( true, 12 ) );
+		$this->assertFalse( \apply_filters( 'pings_open', true, 12 ) );
+		$this->assertTrue( $policy->filter_comments_open( true, 14 ) );
+		$this->assertTrue( \apply_filters( 'pings_open', true, 14 ) );
+		$this->assertFalse( $policy->filter_comments_open( true, 0 ) );
 	}
 
 	public function test_image_compression_policy_forces_quality_to_one_hundred_when_enabled(): void

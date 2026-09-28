@@ -68,22 +68,22 @@ final class SettingsSchema
 					'comments_enabled'                 => [
 						'type'        => 'checkbox',
 						'group'       => 'Comments',
-						'label'       => 'Enable comments globally',
-						'description' => 'Turns comment support back on for allowed post types.',
+						'label'       => 'Allow comments globally',
+						'description' => 'When off, comments and pings are closed on every post type. When on, MAC Core only limits them: each post keeps its own discussion settings, and WordPress still closes comments on old posts.',
 						'default'     => true,
 					],
 					'comments_posts_enabled'           => [
 						'type'        => 'checkbox',
 						'group'       => 'Comments',
-						'label'       => 'Enable comments for posts',
-						'description' => 'Only applies when comments are enabled globally.',
+						'label'       => 'Allow comments on posts',
+						'description' => 'Only applies when comments are allowed globally. Never reopens comments closed on a post.',
 						'default'     => true,
 					],
 					'comments_pages_enabled'           => [
 						'type'        => 'checkbox',
 						'group'       => 'Comments',
-						'label'       => 'Enable comments for pages',
-						'description' => 'Only applies when comments are enabled globally.',
+						'label'       => 'Allow comments on pages',
+						'description' => 'Only applies when comments are allowed globally. Never reopens comments closed on a page.',
 						'default'     => true,
 					],
 					'disable_native_posts'            => [
