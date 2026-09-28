@@ -96,6 +96,7 @@ final class AdminPageTest extends TestCase
 		$this->assertStringContainsString( 'Height is automatic and aspect ratio is preserved.', $output );
 		$this->assertStringContainsString( 'Applies to both intermediate and advanced image sizes.', $output );
 		$this->assertStringContainsString( 'Disables WordPress image compression for JPEG, WebP, and AVIF uploads.', $output );
+		$this->assertStringContainsString( 'Stops every automatic update, including WordPress core security releases,', $output );
 		$this->assertStringContainsString( 'page=mac-core&tab=helpers', $output );
 		$this->assertStringNotContainsString( 'name="mac_core_settings[utils][utils_enabled]"', $output );
 		$this->assertLessThan(

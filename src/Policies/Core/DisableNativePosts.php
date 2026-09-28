@@ -3,7 +3,8 @@
  * Disable native Posts admin entry points.
  *
  * This policy intentionally does not unregister the built-in `post` type or
- * change frontend behavior. It only hides and blocks native Posts in admin.
+ * change frontend behavior. It only hides native Posts in the admin UI and
+ * redirects their admin screens; posts stay reachable through the REST API.
  *
  * @package mac-core
  */

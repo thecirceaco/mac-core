@@ -69,7 +69,7 @@ final class SettingsSchema
 						'type'        => 'checkbox',
 						'group'       => 'Comments',
 						'label'       => 'Allow comments globally',
-						'description' => 'When off, comments and pings are closed on every post type. When on, MAC Core only limits them: each post keeps its own discussion settings, and WordPress still closes comments on old posts.',
+						'description' => 'When off, comments and pings are closed on every post type, and MAC Core hides the Comments menu and toolbar item, redirects the Comments screen to the Dashboard, and hides existing comments in themes that use the classic comments template. Comments are not deleted: block themes, the dashboard Activity widget and the REST API can still show them. When on, MAC Core only limits comments: each post keeps its own discussion settings, and WordPress still closes comments on old posts.',
 						'default'     => true,
 					],
 					'comments_posts_enabled'           => [
@@ -89,8 +89,8 @@ final class SettingsSchema
 					'disable_native_posts'            => [
 						'type'        => 'checkbox',
 						'group'       => 'Content Types',
-						'label'       => 'Disable native Posts in admin',
-						'description' => 'Hides and blocks native Posts in WordPress admin while leaving the built-in post type registered for compatibility.',
+						'label'       => 'Hide native Posts in admin',
+						'description' => 'Hides native Posts in the admin menu, toolbar and dashboard, and redirects the Posts list, Add New and edit screens to the Dashboard. Only the admin UI changes: the post type stays registered, and posts can still be created and edited in other ways, for example through the REST API.',
 						'default'     => false,
 					],
 					'disable_frontend_admin_bar'       => [
@@ -112,14 +112,14 @@ final class SettingsSchema
 						'type'        => 'checkbox',
 						'group'       => 'Updates',
 						'label'       => 'Disable automatic updates',
-						'description' => 'Leaves plugin and core updates as manual admin actions.',
+						'description' => 'Stops every automatic update, including WordPress core security releases, plugins, themes and translations. Every update then has to be installed by hand.',
 						'default'     => false,
 					],
 					'disable_site_health'              => [
 						'type'        => 'checkbox',
 						'group'       => 'Admin',
-						'label'       => 'Disable Site Health UI',
-						'description' => 'Removes the Site Health screens and dashboard widget.',
+						'label'       => 'Hide Site Health',
+						'description' => 'Hides the Site Health menu item and dashboard widget, and redirects the Site Health screens to the Dashboard. Only the admin UI changes: Site Health checks still run in the background.',
 						'default'     => false,
 					],
 					'remove_dashboard_clutter'         => [
@@ -149,7 +149,7 @@ final class SettingsSchema
 						'type'        => 'checkbox',
 						'group'       => 'Admin',
 						'label'       => 'Show last login column',
-						'description' => 'Adds and maintains the user list table last login column.',
+						'description' => 'Adds a sortable Last login column to the Users list. It records logins through a login form while this setting is on, so it is not a complete security log: logins with application passwords, for example, are not recorded.',
 						'default'     => false,
 					],
 				],
@@ -216,7 +216,7 @@ final class SettingsSchema
 						'type'        => 'checkbox',
 						'group'       => 'Uploads',
 						'label'       => 'Block common video uploads',
-						'description' => 'Prevents common video file formats from being uploaded to the media library.',
+						'description' => 'Removes MP4, M4V, MOV, WebM, AVI, MKV and WMV from the file types WordPress accepts for upload. Other video formats, and files added outside WordPress uploads such as over FTP, are not blocked.',
 						'default'     => false,
 					],
 					'disable_image_compression'  => [
