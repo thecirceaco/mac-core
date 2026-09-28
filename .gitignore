@@ -1,6 +1,9 @@
 .vscode/launch.json
 .vscode/tasks.json
 
+.codex/
+AGENTS.md
+
 .DS_Store
 Thumbs.db
 *~
