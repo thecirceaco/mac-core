@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,16 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 1.2.0 =
+* Comment settings now only close comments: they never reopen comments closed on a post or page, or closed by WordPress on older posts. Before, they forced comments and pings open.
+* `mac_core_format_price()` escapes its plain output for HTML, accepts only three-letter currency codes (others fall back to USD), caps `decimals` at 10 and ignores separators longer than 8 bytes.
+* MAC Core now starts at the beginning of `plugins_loaded`, so add-ons that load after it keep their stored settings. Call `mac_core_*` helpers from hooks or templates, not directly from another plugin's main file.
+* Add-on settings gain a `secret` field type that is never shown again in the form, a `sanitize_callback` option and size limits for list fields.
+* The descriptions for automatic updates, native Posts, Site Health, the last login column and video uploads now say exactly what each setting covers. Two labels changed: `Hide native Posts in admin` and `Hide Site Health`.
+* The License tab requires `manage_options`, and PHP files return nothing when opened directly.
+* `Update URI` points to a Circea host, so no other updater plugin can supply MAC Core. Updates still come from SureCart.
+* If a site relied on comments being forced open, reopen discussion on the posts that need it after updating.
 
 = 1.1.2 =
 * Updated the bundled SureCart licensing SDK to v1.2.1. The license key and activation now stay stored when SureCart can't be reached or returns an error, so the site keeps receiving MAC Core updates. Before, any API error removed them until the key was entered again.
