@@ -14,6 +14,10 @@ use DateTimeZone;
 use Exception;
 use Stringable;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
+
 /**
  * Format preset-based date and time fields.
  */

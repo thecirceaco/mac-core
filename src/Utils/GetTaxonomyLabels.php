@@ -12,6 +12,10 @@ namespace MacCore\Utils;
 use WP_Taxonomy;
 use WP_Term;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Taxonomy label helpers.
  */

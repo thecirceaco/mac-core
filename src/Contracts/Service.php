@@ -12,6 +12,10 @@ declare(strict_types=1);
 
 namespace MacCore\Contracts;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
+
 /**
  * Interface Service
  */

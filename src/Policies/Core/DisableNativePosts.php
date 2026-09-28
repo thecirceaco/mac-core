@@ -17,6 +17,10 @@ use MacCore\Contracts\Service;
 use MacCore\Settings\SettingsRepositoryInterface;
 use WP_Admin_Bar;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class DisableNativePosts implements Service
 {
 	public function __construct(

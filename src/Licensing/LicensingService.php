@@ -11,6 +11,10 @@ namespace MacCore\Licensing;
 
 use MacCore\Contracts\Service;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class LicensingService implements Service
 {
 	/**

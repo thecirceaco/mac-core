@@ -11,6 +11,10 @@ namespace MacCore\Utils;
 
 use WP_Theme;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Theme status helpers.
  */

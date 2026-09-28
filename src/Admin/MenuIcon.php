@@ -9,6 +9,10 @@ declare(strict_types=1);
 
 namespace MacCore\Admin;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class MenuIcon
 {
 	/**

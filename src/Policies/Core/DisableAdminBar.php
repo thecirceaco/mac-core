@@ -12,6 +12,10 @@ namespace MacCore\Policies\Core;
 use MacCore\Contracts\Service;
 use MacCore\Settings\SettingsRepositoryInterface;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class DisableAdminBar implements Service
 {
 	public function __construct(

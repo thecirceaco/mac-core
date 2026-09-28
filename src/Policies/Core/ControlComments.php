@@ -14,6 +14,10 @@ use MacCore\Settings\SettingsRepositoryInterface;
 use WP_Admin_Bar;
 use WP_Post;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class ControlComments implements Service
 {
 	public function __construct(

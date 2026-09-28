@@ -14,6 +14,10 @@ use MacCore\Licensing\LicensingService;
 use MacCore\Settings\SettingsRepositoryInterface;
 use MacCore\Settings\SettingsSchema;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class AdminPage implements Service
 {
 	public function __construct(

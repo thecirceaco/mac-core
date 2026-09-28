@@ -12,6 +12,10 @@ namespace MacCore\Utils;
 use MacCore\Contracts\Service;
 use MacCore\Settings\SettingsRepositoryInterface;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class UtilsLoader implements Service
 {
 	/**

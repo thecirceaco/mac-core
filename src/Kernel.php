@@ -34,6 +34,10 @@ use MacCore\Settings\SettingsSchema;
 use MacCore\Settings\WordPressSettingsRepository;
 use MacCore\Utils\UtilsLoader;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
+
 final class Kernel
 {
     /**
