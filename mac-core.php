@@ -13,7 +13,7 @@
  * Version:           1.1.2
  * Author:            Circea
  * Author URI:        https://circea.co
- * Update URI:        https://github.com/thecirceaco/mac-core
+ * Update URI:        https://updates.circea.co/mac-core/
  * Requires PHP:      8.3
  * Requires at least: 6.9
  * License:           GPL v3 or later
