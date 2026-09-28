@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,11 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 1.1.2 =
+* Updated the bundled SureCart licensing SDK to v1.2.1. The license key and activation now stay stored when SureCart can't be reached or returns an error, so the site keeps receiving MAC Core updates. Before, any API error removed them until the key was entered again.
+* Documented the bundled SDK and its two local changes in `inc/Vendor/SureCart/Licensing/README.md`.
+* Releases are now verified and built by GitHub before publishing: the tag must be on `main`, with matching versions and passing tests, and each release ships a SHA-256 checksum and a build provenance attestation.
 
 = 1.1.1 =
 * Fixed saving one admin tab (`Settings` or `Helpers`) switching off every checkbox on the other tab. Each tab now saves only its own settings, and the other tab keeps its stored values.
