@@ -44,6 +44,9 @@ final class Kernel
     /**
      * Bootstrap all plugin services.
      *
+     * mac-core.php calls this at the start of `plugins_loaded` (priority 0), after
+     * every active plugin file has loaded.
+     *
      * @return void
      */
     public static function boot(): void
@@ -111,7 +114,9 @@ final class Kernel
         /**
          * Filter the runtime service list for MAC Core.
          *
-         * Future add-ons should append instantiated service objects here.
+         * Future add-ons should append instantiated service objects here. The kernel
+         * boots at the start of `plugins_loaded`, so add this filter when the add-on's
+         * plugin file loads.
          *
          * @param array<int,Service> $services Service instances.
          */

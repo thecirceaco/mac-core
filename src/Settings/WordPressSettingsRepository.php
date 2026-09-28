@@ -18,6 +18,13 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	 */
 	private ?array $settings = null;
 
+	/**
+	 * Field definitions of each module the cached settings were built from.
+	 *
+	 * @var array<string,array<string,array<string,mixed>>>
+	 */
+	private array $cached_fields = [];
+
 	public function __construct(
 		private readonly SettingsSchema $schema
 	) {
@@ -25,30 +32,19 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * Add-ons can register sections after the settings were first read, so the cache
+	 * is rebuilt whenever the registered fields differ from the cached ones.
 	 */
 	public function all(): array
 	{
-		if ( null !== $this->settings ) {
-			return $this->settings;
+		$sections = $this->schema->get_sections();
+		$fields   = $this->field_definitions( $sections );
+
+		if ( null === $this->settings || $fields !== $this->cached_fields ) {
+			$this->settings      = $this->normalize_stored( $sections, $this->stored() );
+			$this->cached_fields = $fields;
 		}
-
-		$stored = \get_option( \MAC_CORE_SETTINGS_OPTION, [] );
-		$stored = \is_array( $stored ) ? $stored : [];
-
-		$normalized = [];
-		$sections   = $this->schema->get_sections();
-
-		foreach ( $sections as $module => $section ) {
-			$module_settings = $stored[ $module ] ?? [];
-			$normalized[ $module ] = $this->normalize_module(
-				$module,
-				\is_array( $module_settings ) ? $module_settings : [],
-				[],
-				false
-			);
-		}
-
-		$this->settings = $normalized;
 
 		return $this->settings;
 	}
@@ -58,9 +54,7 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	 */
 	public function get_module( string $module ): array
 	{
-		$settings = $this->all();
-
-		return $settings[ $module ] ?? [];
+		return $this->all()[ $module ] ?? [];
 	}
 
 	/**
@@ -68,9 +62,12 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	 */
 	public function get( string $module, string $key ): mixed
 	{
-		$module_settings = $this->get_module( $module );
+		if ( ! isset( $this->settings[ $module ] ) || ! \array_key_exists( $key, $this->settings[ $module ] ) ) {
+			// Not cached yet, or registered after the cache was built.
+			$this->all();
+		}
 
-		return $module_settings[ $key ] ?? null;
+		return $this->settings[ $module ][ $key ] ?? null;
 	}
 
 	/**
@@ -78,34 +75,35 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	 */
 	public function save( array $submitted, ?array $modules = null ): array
 	{
-		$current  = $this->all();
-		$stored   = \get_option( \MAC_CORE_SETTINGS_OPTION, [] );
-		$stored   = \is_array( $stored ) ? $stored : [];
-		$saved    = [];
 		$sections = $this->schema->get_sections();
+		$stored   = $this->stored();
+		$current  = $this->normalize_stored( $sections, $stored );
+		$saved    = [];
 
 		foreach ( $sections as $module => $section ) {
 			if ( null !== $modules && ! \in_array( $module, $modules, true ) ) {
 				// Modules outside the submitted form keep their stored values.
-				$stored_values    = $stored[ $module ] ?? [];
+				$saved[ $module ] = $current[ $module ];
+			} else {
+				$module_values    = $submitted[ $module ] ?? [];
 				$saved[ $module ] = $this->normalize_module(
-					$module,
-					\is_array( $stored_values ) ? $stored_values : [],
-					[],
-					false
+					$section['fields'],
+					\is_array( $module_values ) ? $module_values : [],
+					$current[ $module ],
+					true
 				);
-
-				continue;
 			}
 
-			$module_values = $submitted[ $module ] ?? [];
-			$saved[ $module ] = $this->normalize_module(
-				$module,
-				\is_array( $module_values ) ? $module_values : [],
-				$current[ $module ] ?? [],
-				true
-			);
+			// Keep stored fields that no section registers in this request, such as an add-on's.
+			$stored_module = $stored[ $module ] ?? [];
+
+			if ( \is_array( $stored_module ) ) {
+				$saved[ $module ] += \array_diff_key( $stored_module, $section['fields'] );
+			}
 		}
+
+		// Keep stored modules that no section registers in this request.
+		$saved += \array_diff_key( $stored, $sections );
 
 		\update_option( \MAC_CORE_SETTINGS_OPTION, $saved );
 
@@ -115,17 +113,67 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	}
 
 	/**
-	 * Normalize one module's settings.
+	 * Return the stored option value.
 	 *
-	 * @param array<string,mixed> $values Submitted or stored values.
-	 * @param array<string,mixed> $current Current normalized values.
-	 * @param bool                $for_save Whether this is a save operation.
 	 * @return array<string,mixed>
 	 */
-	private function normalize_module( string $module, array $values, array $current, bool $for_save ): array
+	private function stored(): array
+	{
+		$stored = \get_option( \MAC_CORE_SETTINGS_OPTION, [] );
+
+		return \is_array( $stored ) ? $stored : [];
+	}
+
+	/**
+	 * Normalize the stored values of every registered module.
+	 *
+	 * @param array<string,array<string,mixed>> $sections Settings sections.
+	 * @param array<string,mixed>               $stored   Stored option value.
+	 * @return array<string,array<string,mixed>>
+	 */
+	private function normalize_stored( array $sections, array $stored ): array
 	{
 		$normalized = [];
-		$fields     = $this->schema->get_sections()[ $module ]['fields'] ?? [];
+
+		foreach ( $sections as $module => $section ) {
+			$module_settings       = $stored[ $module ] ?? [];
+			$normalized[ $module ] = $this->normalize_module(
+				$section['fields'],
+				\is_array( $module_settings ) ? $module_settings : [],
+				[],
+				false
+			);
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Return the field definitions of each module.
+	 *
+	 * @param array<string,array<string,mixed>> $sections Settings sections.
+	 * @return array<string,array<string,array<string,mixed>>>
+	 */
+	private function field_definitions( array $sections ): array
+	{
+		return \array_map(
+			static fn ( array $section ): array => $section['fields'],
+			$sections
+		);
+	}
+
+	/**
+	 * Normalize one module's settings.
+	 *
+	 * @param array<string,array<string,mixed>> $fields   Module field configs.
+	 * @param array<string,mixed>               $values   Submitted or stored values.
+	 * @param array<string,mixed>               $current  Current normalized values.
+	 * @param bool                              $for_save Whether this is a save operation.
+	 * @return array<string,mixed>
+	 */
+	private function normalize_module( array $fields, array $values, array $current, bool $for_save ): array
+	{
+		$normalized = [];
 
 		foreach ( $fields as $field => $config ) {
 			$default = $config['default'] ?? null;

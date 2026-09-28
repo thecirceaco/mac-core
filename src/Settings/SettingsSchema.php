@@ -306,6 +306,11 @@ final class SettingsSchema
 		 * `title`, `description`, and `fields`, where each field contains
 		 * `type`, `label`, `description`, and `default`.
 		 *
+		 * Add this filter when the add-on's plugin file loads. A section or field
+		 * registered later still shows its stored values in the form, and saving
+		 * keeps stored values that no section registers. Edits are only saved for
+		 * sections registered before the form is saved on `admin_init`.
+		 *
 		 * @param array<string,array<string,mixed>> $sections Settings sections.
 		 */
 		$sections = \apply_filters( 'mac_core_settings_sections', $sections );
