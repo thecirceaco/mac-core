@@ -40,15 +40,33 @@ final class FormatPrice
 	];
 
 	/**
+	 * Currency used when the given code is not three letters.
+	 */
+	private const DEFAULT_CURRENCY = 'USD';
+
+	/**
+	 * Highest accepted `decimals` value.
+	 */
+	private const MAX_DECIMALS = 10;
+
+	/**
+	 * Longest accepted separator, in bytes. Longer separators fall back to the default.
+	 */
+	private const MAX_SEPARATOR_LENGTH = 8;
+
+	/**
 	 * Format a numeric amount as a price string.
+	 *
+	 * Plain and HTML output are escaped for HTML. A currency that is not a three-letter
+	 * code falls back to USD, `decimals` is capped to 0-10, and a separator longer than
+	 * 8 bytes falls back to its default.
 	 *
 	 * @param int|float|string     $amount   Raw amount.
 	 * @param array<string,mixed>  $args     Formatting overrides, including `return => plain|html|raw`.
 	 */
 	public static function format( int|float|string $amount, string $currency = 'USD', array $args = [] ): string
 	{
-		$currency = \strtoupper( \trim( $currency ) );
-		$currency = $currency !== '' ? $currency : 'USD';
+		$currency = self::normalize_currency( $currency );
 
 		$defaults = [
 			'symbol'                => self::symbol_for_currency( $currency ),
@@ -90,13 +108,7 @@ final class FormatPrice
 			return self::html_output( $prefix, $symbol, $formatted_amount, $symbol_position, $space_between );
 		}
 
-		$glue = $space_between && $symbol !== '' ? ' ' : '';
-
-		if ( $symbol_position === 'after' ) {
-			return $prefix . $formatted_amount . $glue . $symbol;
-		}
-
-		return $prefix . $symbol . $glue . $formatted_amount;
+		return self::plain_output( $prefix, $symbol, $formatted_amount, $symbol_position, $space_between );
 	}
 
 	private static function normalize_amount( int|float|string $amount, string $decimal_separator = '.', string $thousands_separator = ',' ): ?float
@@ -126,6 +138,13 @@ final class FormatPrice
 		return \is_numeric( $amount ) ? (float) $amount : null;
 	}
 
+	private static function normalize_currency( string $currency ): string
+	{
+		$currency = \strtoupper( \trim( $currency ) );
+
+		return \preg_match( '/^[A-Z]{3}$/', $currency ) === 1 ? $currency : self::DEFAULT_CURRENCY;
+	}
+
 	private static function symbol_for_currency( string $currency ): string
 	{
 		return self::SYMBOLS[ $currency ] ?? $currency;
@@ -137,7 +156,7 @@ final class FormatPrice
 			return 2;
 		}
 
-		return \max( 0, (int) $value );
+		return \min( self::MAX_DECIMALS, \max( 0, (int) $value ) );
 	}
 
 	private static function normalize_separator( mixed $value, string $fallback, bool $allow_empty = false ): string
@@ -152,7 +171,7 @@ final class FormatPrice
 			return $allow_empty ? '' : $fallback;
 		}
 
-		return $separator;
+		return \strlen( $separator ) <= self::MAX_SEPARATOR_LENGTH ? $separator : $fallback;
 	}
 
 	private static function normalize_return( mixed $value ): string
@@ -229,6 +248,22 @@ final class FormatPrice
 		$out .= '</span>';
 
 		return $out;
+	}
+
+	private static function plain_output(
+		string $prefix,
+		string $symbol,
+		string $formatted_amount,
+		string $symbol_position,
+		bool $space_between
+	): string {
+		$glue = $space_between && $symbol !== '' ? ' ' : '';
+
+		if ( $symbol_position === 'after' ) {
+			return \esc_html( $prefix ) . \esc_html( $formatted_amount ) . $glue . \esc_html( $symbol );
+		}
+
+		return \esc_html( $prefix ) . \esc_html( $symbol ) . $glue . \esc_html( $formatted_amount );
 	}
 
 	private static function normalize_symbol_position( mixed $value ): string
