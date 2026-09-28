@@ -14,6 +14,10 @@ use MacCore\Licensing\LicensingService;
 use MacCore\Settings\SettingsRepositoryInterface;
 use MacCore\Settings\SettingsSchema;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class AdminPage implements Service
 {
 	public function __construct(
@@ -280,6 +284,18 @@ final class AdminPage implements Service
 				echo '<input class="regular-text" type="url" id="' . \esc_attr( $field_id ) . '" name="' . \esc_attr( $field_name ) . '" value="' . \esc_attr( (string) $current ) . '">';
 				if ( $config['description'] !== '' ) {
 					echo '<p class="description">' . \esc_html( $config['description'] ) . '</p>';
+				}
+				break;
+
+			case 'secret':
+				// Never print the stored secret. A blank submission keeps it, so password
+				// managers are asked not to fill the field in.
+				echo '<input class="regular-text" type="password" id="' . \esc_attr( $field_id ) . '" name="' . \esc_attr( $field_name ) . '" value="" autocomplete="new-password" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore>';
+				if ( $config['description'] !== '' ) {
+					echo '<p class="description">' . \esc_html( $config['description'] ) . '</p>';
+				}
+				if ( \is_string( $current ) && $current !== '' ) {
+					echo '<p class="description">A value is saved. Leave this field blank to keep it.</p>';
 				}
 				break;
 

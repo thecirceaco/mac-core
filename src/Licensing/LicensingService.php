@@ -11,8 +11,17 @@ namespace MacCore\Licensing;
 
 use MacCore\Contracts\Service;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class LicensingService implements Service
 {
+	/**
+	 * Capability needed to view and change the license.
+	 */
+	private const CAPABILITY = 'manage_options';
+
 	/**
 	 * Cached SureCart client.
 	 */
@@ -58,7 +67,7 @@ final class LicensingService implements Service
 				'type'                 => 'menu',
 				'page_title'           => 'MAC Core License',
 				'menu_title'           => 'MAC Core',
-				'capability'           => 'manage_options',
+				'capability'           => self::CAPABILITY,
 				'menu_slug'            => \MAC_CORE_ADMIN_SLUG,
 				'icon_url'             => '',
 				'position'             => null,
@@ -71,9 +80,20 @@ final class LicensingService implements Service
 
 	/**
 	 * Render the licensing admin view.
+	 *
+	 * The SDK handles a submitted license form while it renders the view, so the
+	 * capability is checked before the SDK runs.
 	 */
 	public function render_view(): void
 	{
+		if ( ! \current_user_can( self::CAPABILITY ) ) {
+			echo '<div class="notice notice-error inline"><p>' . \esc_html__(
+				'You do not have permission to manage the MAC Core license.',
+				'mac-core'
+			) . '</p></div>';
+			return;
+		}
+
 		if ( null === $this->client ) {
 			echo '<div class="notice notice-warning inline"><p>' . \esc_html__(
 				'MAC Core licensing is not available yet. Confirm the public token and SDK bundle are configured correctly.',

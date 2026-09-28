@@ -11,6 +11,10 @@ namespace MacCore\Utils;
 
 use WP_Term;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Post terms helpers.
  */

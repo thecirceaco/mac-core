@@ -11,6 +11,10 @@ namespace MacCore\Admin;
 
 use MacCore\Contracts\Service;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class PluginListingLinks implements Service
 {
 	private const DOCS_URL = 'https://docs.circea.co/';

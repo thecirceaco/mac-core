@@ -11,6 +11,10 @@ namespace MacCore\Utils;
 
 use WP_Post_Type;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Post type label helpers.
  */

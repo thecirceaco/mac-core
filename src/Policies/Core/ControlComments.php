@@ -14,6 +14,10 @@ use MacCore\Settings\SettingsRepositoryInterface;
 use WP_Admin_Bar;
 use WP_Post;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class ControlComments implements Service
 {
 	public function __construct(
@@ -34,22 +38,21 @@ final class ControlComments implements Service
 		\add_action( 'load-edit-comments.php', [ $this, 'block_comments_screen' ] );
 	}
 
+	/**
+	 * Limit comments and pings to the post types the settings allow.
+	 *
+	 * Runs on `comments_open` and `pings_open`. It can only close discussion, so a
+	 * post closed on its own or by "close comments on old posts" stays closed.
+	 */
 	public function filter_comments_open( bool $open, int|WP_Post|null $post ): bool
 	{
 		if ( ! $this->comment_control_enabled() ) {
 			return $open;
 		}
 
-		if ( ! $this->comments_enabled() ) {
-			return false;
-		}
-
 		$post_id = \is_object( $post ) ? (int) $post->ID : (int) $post;
-		if ( $post_id <= 0 ) {
-			return false;
-		}
 
-		return $this->is_allowed_for_post( $post_id );
+		return $open && $post_id > 0 && $this->is_allowed_for_post( $post_id );
 	}
 
 	public function filter_comments_array( array $comments, int $post_id ): array

@@ -9,6 +9,10 @@ declare(strict_types=1);
 
 namespace MacCore\Utils;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Count array values stored in post meta.
  */

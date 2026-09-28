@@ -9,8 +9,22 @@ declare(strict_types=1);
 
 namespace MacCore\Settings;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class SettingsSchema
 {
+	/**
+	 * Default `max_items` for list fields.
+	 */
+	public const DEFAULT_MAX_ITEMS = 500;
+
+	/**
+	 * Default `max_item_length` for list fields, in characters.
+	 */
+	public const DEFAULT_MAX_ITEM_LENGTH = 200;
+
 	/**
 	 * Return all settings sections.
 	 *
@@ -68,29 +82,29 @@ final class SettingsSchema
 					'comments_enabled'                 => [
 						'type'        => 'checkbox',
 						'group'       => 'Comments',
-						'label'       => 'Enable comments globally',
-						'description' => 'Turns comment support back on for allowed post types.',
+						'label'       => 'Allow comments globally',
+						'description' => 'When off, comments and pings are closed on every post type, and MAC Core hides the Comments menu and toolbar item, redirects the Comments screen to the Dashboard, and hides existing comments in themes that use the classic comments template. Comments are not deleted: block themes, the dashboard Activity widget and the REST API can still show them. When on, MAC Core only limits comments: each post keeps its own discussion settings, and WordPress still closes comments on old posts.',
 						'default'     => true,
 					],
 					'comments_posts_enabled'           => [
 						'type'        => 'checkbox',
 						'group'       => 'Comments',
-						'label'       => 'Enable comments for posts',
-						'description' => 'Only applies when comments are enabled globally.',
+						'label'       => 'Allow comments on posts',
+						'description' => 'Only applies when comments are allowed globally. Never reopens comments closed on a post.',
 						'default'     => true,
 					],
 					'comments_pages_enabled'           => [
 						'type'        => 'checkbox',
 						'group'       => 'Comments',
-						'label'       => 'Enable comments for pages',
-						'description' => 'Only applies when comments are enabled globally.',
+						'label'       => 'Allow comments on pages',
+						'description' => 'Only applies when comments are allowed globally. Never reopens comments closed on a page.',
 						'default'     => true,
 					],
 					'disable_native_posts'            => [
 						'type'        => 'checkbox',
 						'group'       => 'Content Types',
-						'label'       => 'Disable native Posts in admin',
-						'description' => 'Hides and blocks native Posts in WordPress admin while leaving the built-in post type registered for compatibility.',
+						'label'       => 'Hide native Posts in admin',
+						'description' => 'Hides native Posts in the admin menu, toolbar and dashboard, and redirects the Posts list, Add New and edit screens to the Dashboard. Only the admin UI changes: the post type stays registered, and posts can still be created and edited in other ways, for example through the REST API.',
 						'default'     => false,
 					],
 					'disable_frontend_admin_bar'       => [
@@ -112,14 +126,14 @@ final class SettingsSchema
 						'type'        => 'checkbox',
 						'group'       => 'Updates',
 						'label'       => 'Disable automatic updates',
-						'description' => 'Leaves plugin and core updates as manual admin actions.',
+						'description' => 'Stops every automatic update, including WordPress core security releases, plugins, themes and translations. Every update then has to be installed by hand.',
 						'default'     => false,
 					],
 					'disable_site_health'              => [
 						'type'        => 'checkbox',
 						'group'       => 'Admin',
-						'label'       => 'Disable Site Health UI',
-						'description' => 'Removes the Site Health screens and dashboard widget.',
+						'label'       => 'Hide Site Health',
+						'description' => 'Hides the Site Health menu item and dashboard widget, and redirects the Site Health screens to the Dashboard. Only the admin UI changes: Site Health checks still run in the background.',
 						'default'     => false,
 					],
 					'remove_dashboard_clutter'         => [
@@ -149,7 +163,7 @@ final class SettingsSchema
 						'type'        => 'checkbox',
 						'group'       => 'Admin',
 						'label'       => 'Show last login column',
-						'description' => 'Adds and maintains the user list table last login column.',
+						'description' => 'Adds a sortable Last login column to the Users list. It records logins through a login form while this setting is on, so it is not a complete security log: logins with application passwords, for example, are not recorded.',
 						'default'     => false,
 					],
 				],
@@ -216,7 +230,7 @@ final class SettingsSchema
 						'type'        => 'checkbox',
 						'group'       => 'Uploads',
 						'label'       => 'Block common video uploads',
-						'description' => 'Prevents common video file formats from being uploaded to the media library.',
+						'description' => 'Removes MP4, M4V, MOV, WebM, AVI, MKV and WMV from the file types WordPress accepts for upload. Other video formats, and files added outside WordPress uploads such as over FTP, are not blocked.',
 						'default'     => false,
 					],
 					'disable_image_compression'  => [
@@ -304,7 +318,42 @@ final class SettingsSchema
 		 *
 		 * Add-ons should add new modules using the same array shape:
 		 * `title`, `description`, and `fields`, where each field contains
-		 * `type`, `label`, `description`, and `default`.
+		 * `type`, `label`, `description`, and `default`, and can set `group`
+		 * to render under a subheading.
+		 *
+		 * Field types:
+		 * - `checkbox`: true or false. An unchecked box is saved as false.
+		 * - `text`: one line of text, saved with sanitize_text_field(). Unknown
+		 *   types are treated as `text`.
+		 * - `url`: a URL, saved with esc_url_raw(). An empty or invalid URL saves
+		 *   `default`.
+		 * - `key`: a role, capability or similar key, saved with sanitize_key().
+		 *   With `fallback_on_empty`, an empty result saves `default`.
+		 * - `integer`: a whole number, clamped to the optional `min` and `max`.
+		 * - `csv_int`: a list of positive whole numbers.
+		 * - `csv_string`: a list of lowercase tokens (a-z, 0-9, `_` and `-`).
+		 * - `secret`: an API key, password or other secret. The form never prints
+		 *   the stored value, and a blank submission keeps it. Secrets are
+		 *   trimmed and stripped of control characters, and otherwise saved as
+		 *   entered.
+		 *
+		 * List fields are entered one item per line or comma-separated. Set
+		 * `control` to `textarea` to render them in a textarea `rows` lines high
+		 * (default 5). When a list is submitted, `max_items` (default 500) limits
+		 * how many unique items it keeps, and `max_item_length` (default 200
+		 * characters) drops longer items. Stored lists are read as they are.
+		 *
+		 * Any field can set `sanitize_callback`, a callable that receives the
+		 * submitted value on save (a string, or a bool for a checkbox) and returns
+		 * the value to save. It is called with loose typing, as WordPress calls
+		 * sanitize callbacks, and runs before the type's own sanitizing, which
+		 * still applies to its result. A null return keeps the stored value. It
+		 * does not run when settings are read, or for a blank `secret` submission.
+		 *
+		 * Add this filter when the add-on's plugin file loads. A section or field
+		 * registered later still shows its stored values in the form, and saving
+		 * keeps stored values that no section registers. Edits are only saved for
+		 * sections registered before the form is saved on `admin_init`.
 		 *
 		 * @param array<string,array<string,mixed>> $sections Settings sections.
 		 */
@@ -406,6 +455,9 @@ final class SettingsSchema
 					'rows'        => isset( $config['rows'] ) ? \max( 2, (int) $config['rows'] ) : 5,
 					'min'         => isset( $config['min'] ) ? (int) $config['min'] : null,
 					'max'         => isset( $config['max'] ) ? (int) $config['max'] : null,
+					'max_items'   => isset( $config['max_items'] ) ? \max( 1, (int) $config['max_items'] ) : self::DEFAULT_MAX_ITEMS,
+					'max_item_length'   => isset( $config['max_item_length'] ) ? \max( 1, (int) $config['max_item_length'] ) : self::DEFAULT_MAX_ITEM_LENGTH,
+					'sanitize_callback' => isset( $config['sanitize_callback'] ) && \is_callable( $config['sanitize_callback'] ) ? $config['sanitize_callback'] : null,
 				];
 			}
 

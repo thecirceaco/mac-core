@@ -219,6 +219,190 @@ final class SettingsRepositoryTest extends TestCase
 		$this->assertSame( 'https://api.example.test/v1', $saved['addon']['api_base'] );
 	}
 
+	public function test_section_registered_after_the_first_read_returns_stored_values(): void
+	{
+		$GLOBALS['mac_core_test_options']['mac_core_settings'] = [
+			'addon' => [
+				'enabled'  => false,
+				'api_base' => 'https://stored.example.test',
+			],
+		];
+
+		$repository = new WordPressSettingsRepository( new SettingsSchema() );
+
+		// The kernel reads settings when it boots, before a late add-on registers its section.
+		$this->assertFalse( $repository->get( 'utils', 'utils_enabled' ) );
+		$this->assertArrayNotHasKey( 'addon', $repository->all() );
+
+		$this->add_addon_section();
+
+		$this->assertSame( 'https://stored.example.test', $repository->get( 'addon', 'api_base' ) );
+		$this->assertSame(
+			[
+				'enabled'  => false,
+				'api_base' => 'https://stored.example.test',
+			],
+			$repository->all()['addon']
+		);
+	}
+
+	public function test_field_added_to_a_cached_module_returns_its_stored_value(): void
+	{
+		$GLOBALS['mac_core_test_options']['mac_core_settings'] = [
+			'core' => [
+				'addon_notice' => 'Stored notice',
+			],
+		];
+
+		$repository = new WordPressSettingsRepository( new SettingsSchema() );
+
+		$this->assertSame( 40, $repository->get( 'core', 'excerpt_length' ) );
+
+		\add_filter(
+			'mac_core_settings_sections',
+			static function ( array $sections ): array {
+				$sections['core']['fields']['addon_notice'] = [
+					'type'    => 'text',
+					'label'   => 'Notice',
+					'default' => 'Default notice',
+				];
+
+				return $sections;
+			}
+		);
+
+		// get_module() checks the registered fields itself, without a get() first.
+		$this->assertSame( 'Stored notice', $repository->get_module( 'core' )['addon_notice'] );
+		$this->assertSame( 'Stored notice', $repository->get( 'core', 'addon_notice' ) );
+	}
+
+	public function test_missing_field_added_after_the_first_read_is_found_by_get(): void
+	{
+		$repository = new WordPressSettingsRepository( new SettingsSchema() );
+
+		$this->assertSame( 40, $repository->get( 'core', 'excerpt_length' ) );
+
+		\add_filter(
+			'mac_core_settings_sections',
+			static function ( array $sections ): array {
+				$sections['core']['fields']['addon_notice'] = [
+					'type'    => 'text',
+					'label'   => 'Notice',
+					'default' => 'Default notice',
+				];
+
+				return $sections;
+			}
+		);
+
+		$this->assertSame( 'Default notice', $repository->get( 'core', 'addon_notice' ) );
+	}
+
+	public function test_changed_field_definition_rebuilds_the_cache(): void
+	{
+		$repository = new WordPressSettingsRepository( new SettingsSchema() );
+
+		$this->assertSame( 40, $repository->all()['core']['excerpt_length'] );
+
+		\add_filter(
+			'mac_core_settings_sections',
+			static function ( array $sections ): array {
+				$sections['core']['fields']['excerpt_length']['default'] = 55;
+
+				return $sections;
+			}
+		);
+
+		$this->assertSame( 55, $repository->all()['core']['excerpt_length'] );
+		$this->assertSame( 55, $repository->get( 'core', 'excerpt_length' ) );
+	}
+
+	public function test_save_keeps_stored_fields_that_are_not_registered(): void
+	{
+		$GLOBALS['mac_core_test_options']['mac_core_settings'] = [
+			'core'  => [
+				'excerpt_length' => 55,
+				'addon_notice'   => 'Stored notice',
+			],
+			'utils' => [
+				'addon_helper_enabled' => true,
+			],
+		];
+
+		// The add-on that added these fields is inactive, or registers after this save runs.
+		$repository = new WordPressSettingsRepository( new SettingsSchema() );
+		$repository->save( [ 'utils' => [ 'utils_enabled' => '1' ] ], ['utils'] );
+		$repository->save( [ 'core' => [ 'excerpt_length' => '60' ] ], ['core', 'media'] );
+
+		$stored = $GLOBALS['mac_core_test_options']['mac_core_settings'];
+
+		$this->assertSame( 60, $stored['core']['excerpt_length'] );
+		$this->assertSame( 'Stored notice', $stored['core']['addon_notice'] );
+		$this->assertTrue( $stored['utils']['utils_enabled'] );
+		$this->assertTrue( $stored['utils']['addon_helper_enabled'] );
+		$this->assertArrayNotHasKey( 'addon_notice', $repository->get_module( 'core' ) );
+	}
+
+	public function test_save_keeps_stored_modules_that_are_not_registered(): void
+	{
+		$GLOBALS['mac_core_test_options']['mac_core_settings'] = [
+			'addon' => [
+				'enabled'  => false,
+				'api_base' => 'https://stored.example.test',
+			],
+		];
+
+		// The add-on is inactive, or registers its section after this save runs.
+		$repository = new WordPressSettingsRepository( new SettingsSchema() );
+		$saved      = $repository->save(
+			[
+				'core' => [
+					'excerpt_length' => '55',
+				],
+			],
+			['core', 'media']
+		);
+
+		$this->assertArrayNotHasKey( 'addon', $saved );
+		$this->assertSame( 55, $GLOBALS['mac_core_test_options']['mac_core_settings']['core']['excerpt_length'] );
+		$this->assertSame(
+			[
+				'enabled'  => false,
+				'api_base' => 'https://stored.example.test',
+			],
+			$GLOBALS['mac_core_test_options']['mac_core_settings']['addon']
+		);
+	}
+
+	/**
+	 * Register the `addon` module used by the late-registration tests.
+	 */
+	private function add_addon_section(): void
+	{
+		\add_filter(
+			'mac_core_settings_sections',
+			static function ( array $sections ): array {
+				$sections['addon'] = [
+					'title'  => 'Addon',
+					'fields' => [
+						'enabled'  => [
+							'type'    => 'checkbox',
+							'label'   => 'Enabled',
+							'default' => true,
+						],
+						'api_base' => [
+							'type'    => 'url',
+							'label'   => 'API base',
+							'default' => 'https://default.example.test',
+						],
+					],
+				];
+
+				return $sections;
+			}
+		);
+	}
+
 	private function define_constants(): void
 	{
 		if ( ! \defined( 'MAC_CORE_SETTINGS_OPTION' ) ) {

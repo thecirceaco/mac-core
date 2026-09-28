@@ -303,6 +303,7 @@ function mac_core_tests_http_response( int $code, array|string $body = '' ): arr
 function mac_core_tests_reset_wp_state(): void
 {
 	$GLOBALS['mac_core_test_actions']         = [];
+	$GLOBALS['mac_core_test_did_actions']     = [];
 	$GLOBALS['mac_core_test_filters']         = [];
 	$GLOBALS['mac_core_test_filter_returns']  = [];
 	$GLOBALS['mac_core_test_menu_pages']      = [];
@@ -379,6 +380,32 @@ if ( ! function_exists( 'add_action' ) ) {
 		];
 
 		return true;
+	}
+}
+
+if ( ! function_exists( 'do_action' ) ) {
+	/**
+	 * Run the callbacks added with add_action(), in priority order.
+	 */
+	function do_action( string $hook_name, mixed ...$args ): void
+	{
+		$GLOBALS['mac_core_test_did_actions'][ $hook_name ] = ( $GLOBALS['mac_core_test_did_actions'][ $hook_name ] ?? 0 ) + 1;
+
+		$registrations = $GLOBALS['mac_core_test_actions'][ $hook_name ] ?? [];
+		usort( $registrations, static fn ( array $a, array $b ): int => $a['priority'] <=> $b['priority'] );
+
+		foreach ( $registrations as $registration ) {
+			if ( is_callable( $registration['callback'] ) ) {
+				call_user_func_array( $registration['callback'], array_slice( $args, 0, $registration['accepted_args'] ) );
+			}
+		}
+	}
+}
+
+if ( ! function_exists( 'did_action' ) ) {
+	function did_action( string $hook_name ): int
+	{
+		return (int) ( $GLOBALS['mac_core_test_did_actions'][ $hook_name ] ?? 0 );
 	}
 }
 

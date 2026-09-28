@@ -96,6 +96,7 @@ final class AdminPageTest extends TestCase
 		$this->assertStringContainsString( 'Height is automatic and aspect ratio is preserved.', $output );
 		$this->assertStringContainsString( 'Applies to both intermediate and advanced image sizes.', $output );
 		$this->assertStringContainsString( 'Disables WordPress image compression for JPEG, WebP, and AVIF uploads.', $output );
+		$this->assertStringContainsString( 'Stops every automatic update, including WordPress core security releases,', $output );
 		$this->assertStringContainsString( 'page=mac-core&tab=helpers', $output );
 		$this->assertStringNotContainsString( 'name="mac_core_settings[utils][utils_enabled]"', $output );
 		$this->assertLessThan(
@@ -124,6 +125,7 @@ final class AdminPageTest extends TestCase
 
 	public function test_render_license_view_outputs_license_content(): void
 	{
+		$GLOBALS['mac_core_test_user_caps']['manage_options'] = true;
 		$_GET = ['page' => 'mac-core', 'tab' => 'license'];
 
 		ob_start();

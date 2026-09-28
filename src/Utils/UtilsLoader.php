@@ -12,6 +12,10 @@ namespace MacCore\Utils;
 use MacCore\Contracts\Service;
 use MacCore\Settings\SettingsRepositoryInterface;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class UtilsLoader implements Service
 {
 	/**
@@ -36,7 +40,7 @@ final class UtilsLoader implements Service
 	}
 
 	/**
-	 * Register enabled wrapper files immediately during plugin bootstrap.
+	 * Load the enabled wrapper files when the kernel boots, at the start of `plugins_loaded`.
 	 */
 	public function register(): void
 	{

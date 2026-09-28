@@ -13,6 +13,10 @@ use MacCore\Contracts\Service;
 use MacCore\Settings\SettingsRepositoryInterface;
 use WP_User_Query;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class AddLastLoginColumn implements Service
 {
 	private const META_KEY = 'mac_core_last_login';

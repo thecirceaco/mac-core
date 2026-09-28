@@ -11,6 +11,10 @@ namespace MacCore\Settings;
 
 use MacCore\Contracts\Service;
 
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 final class SettingsController implements Service
 {
 	public function __construct(

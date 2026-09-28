@@ -7,6 +7,10 @@
 
 declare(strict_types=1);
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 if ( ! \function_exists( 'mac_core_format_datetime' ) ) {
 	/**
 	 * Format a preset date/time value for templates or builders.

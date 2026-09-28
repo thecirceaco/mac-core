@@ -7,6 +7,10 @@
 
 declare(strict_types=1);
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 if ( ! \function_exists( 'mac_core_get_taxonomy_label' ) ) {
 	/**
 	 * Get a singular or plural taxonomy label.

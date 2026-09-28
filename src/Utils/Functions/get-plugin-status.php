@@ -7,6 +7,10 @@
 
 declare(strict_types=1);
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 if ( ! \function_exists( 'mac_core_get_plugin_status' ) ) {
 	/**
 	 * Check whether a supported plugin stack entry is active.

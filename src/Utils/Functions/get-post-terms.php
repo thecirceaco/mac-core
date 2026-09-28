@@ -7,6 +7,10 @@
 
 declare(strict_types=1);
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 if ( ! \function_exists( 'mac_core_get_post_terms' ) ) {
 	/**
 	 * Get post terms in plain, link-list, or span-list form.

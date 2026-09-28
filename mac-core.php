@@ -29,4 +29,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once __DIR__ . '/inc/constants.php';
 require_once __DIR__ . '/inc/autoload.php';
 
-\MacCore\Kernel::boot();
+// Boot at the start of plugins_loaded, once every active plugin file has loaded, so
+// add-ons that WordPress loads after MAC Core can still add services and settings
+// sections when their files load.
+if ( did_action( 'plugins_loaded' ) ) {
+	\MacCore\Kernel::boot();
+} else {
+	add_action( 'plugins_loaded', [ \MacCore\Kernel::class, 'boot' ], 0 );
+}
