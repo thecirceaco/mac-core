@@ -16,6 +16,16 @@ if ( ! \defined( 'ABSPATH' ) ) {
 final class SettingsSchema
 {
 	/**
+	 * Default `max_items` for list fields.
+	 */
+	public const DEFAULT_MAX_ITEMS = 500;
+
+	/**
+	 * Default `max_item_length` for list fields, in characters.
+	 */
+	public const DEFAULT_MAX_ITEM_LENGTH = 200;
+
+	/**
 	 * Return all settings sections.
 	 *
 	 * @return array<string,array<string,mixed>>
@@ -308,7 +318,37 @@ final class SettingsSchema
 		 *
 		 * Add-ons should add new modules using the same array shape:
 		 * `title`, `description`, and `fields`, where each field contains
-		 * `type`, `label`, `description`, and `default`.
+		 * `type`, `label`, `description`, and `default`, and can set `group`
+		 * to render under a subheading.
+		 *
+		 * Field types:
+		 * - `checkbox`: true or false. An unchecked box is saved as false.
+		 * - `text`: one line of text, saved with sanitize_text_field(). Unknown
+		 *   types are treated as `text`.
+		 * - `url`: a URL, saved with esc_url_raw(). An empty or invalid URL saves
+		 *   `default`.
+		 * - `key`: a role, capability or similar key, saved with sanitize_key().
+		 *   With `fallback_on_empty`, an empty result saves `default`.
+		 * - `integer`: a whole number, clamped to the optional `min` and `max`.
+		 * - `csv_int`: a list of positive whole numbers.
+		 * - `csv_string`: a list of lowercase tokens (a-z, 0-9, `_` and `-`).
+		 * - `secret`: an API key, password or other secret. The form never prints
+		 *   the stored value, and a blank submission keeps it. Secrets are
+		 *   trimmed and stripped of control characters, and otherwise saved as
+		 *   entered.
+		 *
+		 * List fields are entered one item per line or comma-separated. Set
+		 * `control` to `textarea` to render them in a textarea `rows` lines high
+		 * (default 5). When a list is submitted, `max_items` (default 500) limits
+		 * how many unique items it keeps, and `max_item_length` (default 200
+		 * characters) drops longer items. Stored lists are read as they are.
+		 *
+		 * Any field can set `sanitize_callback`, a callable that receives the
+		 * submitted value on save (a string, or a bool for a checkbox) and returns
+		 * the value to save. It is called with loose typing, as WordPress calls
+		 * sanitize callbacks, and runs before the type's own sanitizing, which
+		 * still applies to its result. A null return keeps the stored value. It
+		 * does not run when settings are read, or for a blank `secret` submission.
 		 *
 		 * Add this filter when the add-on's plugin file loads. A section or field
 		 * registered later still shows its stored values in the form, and saving
@@ -415,6 +455,9 @@ final class SettingsSchema
 					'rows'        => isset( $config['rows'] ) ? \max( 2, (int) $config['rows'] ) : 5,
 					'min'         => isset( $config['min'] ) ? (int) $config['min'] : null,
 					'max'         => isset( $config['max'] ) ? (int) $config['max'] : null,
+					'max_items'   => isset( $config['max_items'] ) ? \max( 1, (int) $config['max_items'] ) : self::DEFAULT_MAX_ITEMS,
+					'max_item_length'   => isset( $config['max_item_length'] ) ? \max( 1, (int) $config['max_item_length'] ) : self::DEFAULT_MAX_ITEM_LENGTH,
+					'sanitize_callback' => isset( $config['sanitize_callback'] ) && \is_callable( $config['sanitize_callback'] ) ? $config['sanitize_callback'] : null,
 				];
 			}
 

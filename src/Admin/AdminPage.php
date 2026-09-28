@@ -287,6 +287,18 @@ final class AdminPage implements Service
 				}
 				break;
 
+			case 'secret':
+				// Never print the stored secret. A blank submission keeps it, so password
+				// managers are asked not to fill the field in.
+				echo '<input class="regular-text" type="password" id="' . \esc_attr( $field_id ) . '" name="' . \esc_attr( $field_name ) . '" value="" autocomplete="new-password" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore>';
+				if ( $config['description'] !== '' ) {
+					echo '<p class="description">' . \esc_html( $config['description'] ) . '</p>';
+				}
+				if ( \is_string( $current ) && $current !== '' ) {
+					echo '<p class="description">A value is saved. Leave this field blank to keep it.</p>';
+				}
+				break;
+
 			case 'text':
 			default:
 				echo '<input class="regular-text" type="text" id="' . \esc_attr( $field_id ) . '" name="' . \esc_attr( $field_name ) . '" value="' . \esc_attr( (string) $current ) . '">';

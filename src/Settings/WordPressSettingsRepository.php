@@ -161,7 +161,11 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	private function field_definitions( array $sections ): array
 	{
 		return \array_map(
-			static fn ( array $section ): array => $section['fields'],
+			// Callbacks only run on save, and can be new closures on every call.
+			static fn ( array $section ): array => \array_map(
+				static fn ( array $field ): array => \array_diff_key( $field, [ 'sanitize_callback' => true ] ),
+				$section['fields']
+			),
 			$sections
 		);
 	}
@@ -180,23 +184,34 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 		$normalized = [];
 
 		foreach ( $fields as $field => $config ) {
-			$default = $config['default'] ?? null;
+			$default       = $config['default'] ?? null;
+			$current_value = \array_key_exists( $field, $current ) ? $current[ $field ] : $default;
+			$submitted     = false;
 
-			if ( $for_save ) {
-				if ( $config['type'] === 'checkbox' ) {
-					$value = ! empty( $values[ $field ] );
-				} elseif ( \array_key_exists( $field, $values ) ) {
-					$value = $values[ $field ];
-				} elseif ( \array_key_exists( $field, $current ) ) {
-					$value = $current[ $field ];
-				} else {
-					$value = $default;
-				}
-			} else {
+			if ( ! $for_save ) {
 				$value = \array_key_exists( $field, $values ) ? $values[ $field ] : $default;
+			} elseif ( $config['type'] !== 'checkbox' && ! \array_key_exists( $field, $values ) ) {
+				$value = $current_value;
+			} elseif ( $config['type'] === 'secret' && $this->sanitize_secret( $values[ $field ] ) === '' ) {
+				// The form never prints a stored secret, so a blank submission keeps it.
+				$value = $current_value;
+			} else {
+				// Unchecked boxes are left out of the submission.
+				$value     = $config['type'] === 'checkbox' ? ! empty( $values[ $field ] ) : $values[ $field ];
+				$submitted = true;
+
+				if ( \is_callable( $config['sanitize_callback'] ?? null ) ) {
+					$value = SanitizeCallback::run( $config['sanitize_callback'], $value );
+
+					if ( null === $value ) {
+						// The callback rejected the value, so the current one is kept.
+						$value     = $current_value;
+						$submitted = false;
+					}
+				}
 			}
 
-			$normalized[ $field ] = $this->sanitize_value( $config, $value );
+			$normalized[ $field ] = $this->sanitize_value( $config, $value, $submitted );
 		}
 
 		return $normalized;
@@ -205,10 +220,16 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	/**
 	 * Sanitize one field value.
 	 *
-	 * @param array<string,mixed> $config Field config.
+	 * List limits apply to submitted values only, so stored lists are read and kept
+	 * as they are.
+	 *
+	 * @param array<string,mixed> $config    Field config.
+	 * @param bool                $submitted Whether the value was submitted in this save.
 	 */
-	private function sanitize_value( array $config, mixed $value ): mixed
+	private function sanitize_value( array $config, mixed $value, bool $submitted = false ): mixed
 	{
+		[ $max_items, $max_item_length ] = $submitted ? $this->list_limits( $config ) : [ \PHP_INT_MAX, \PHP_INT_MAX ];
+
 		return match ( $config['type'] ) {
 			'checkbox'   => (bool) $value,
 			'key'        => $this->sanitize_key_value(
@@ -218,10 +239,29 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 			),
 			'url'        => $this->sanitize_url( $value, (string) $config['default'] ),
 			'integer'    => $this->sanitize_integer( $value, $config ),
-			'csv_int'    => $this->sanitize_csv_int( $value ),
-			'csv_string' => $this->sanitize_csv_string( $value ),
+			'csv_int'    => $this->sanitize_csv_int( $value, $max_items, $max_item_length ),
+			'csv_string' => $this->sanitize_csv_string( $value, $max_items, $max_item_length ),
+			'secret'     => $this->sanitize_secret( $value ),
 			default      => $this->sanitize_text( $value, (string) $config['default'] ),
 		};
+	}
+
+	/**
+	 * Sanitize a secret such as an API key.
+	 *
+	 * Secrets are trimmed and lose control characters, but are otherwise kept as
+	 * entered: sanitize_text_field() would strip tags and percent-encoded octets.
+	 * Invalid UTF-8 is not stored.
+	 */
+	private function sanitize_secret( mixed $value ): string
+	{
+		if ( ! \is_scalar( $value ) ) {
+			return '';
+		}
+
+		$secret = (string) \preg_replace( '/[\x00-\x1F\x7F]/', '', \trim( (string) $value ) );
+
+		return \preg_match( '//u', $secret ) === 1 ? $secret : '';
 	}
 
 	/**
@@ -299,58 +339,97 @@ final class WordPressSettingsRepository implements SettingsRepositoryInterface
 	/**
 	 * Sanitize comma-separated integer lists.
 	 *
+	 * Keeps the first `$max_items` unique values and drops items longer than
+	 * `$max_item_length` characters.
+	 *
 	 * @return array<int,int>
 	 */
-	private function sanitize_csv_int( mixed $value ): array
+	private function sanitize_csv_int( mixed $value, int $max_items, int $max_item_length ): array
 	{
-		$items = $this->split_list_input( $value );
-		$ints  = [];
+		$ints = [];
+		$seen = [];
 
-		foreach ( $items as $item ) {
+		foreach ( $this->split_list_input( $value ) as $item ) {
 			if ( ! \is_scalar( $item ) ) {
 				continue;
 			}
 
 			$item = \trim( (string) $item );
 
-			if ( $item === '' || ! \is_numeric( $item ) ) {
+			if ( $item === '' || \mb_strlen( $item ) > $max_item_length || ! \is_numeric( $item ) ) {
 				continue;
 			}
 
 			$int = (int) $item;
 
-			if ( $int > 0 ) {
-				$ints[] = $int;
+			if ( $int <= 0 || isset( $seen[ $int ] ) ) {
+				continue;
+			}
+
+			$seen[ $int ] = true;
+			$ints[]       = $int;
+
+			if ( \count( $ints ) >= $max_items ) {
+				break;
 			}
 		}
 
-		return \array_values( \array_unique( $ints ) );
+		return $ints;
 	}
 
 	/**
 	 * Sanitize comma-separated string tokens.
 	 *
+	 * Keeps the first `$max_items` unique tokens and drops items longer than
+	 * `$max_item_length` characters.
+	 *
 	 * @return array<int,string>
 	 */
-	private function sanitize_csv_string( mixed $value ): array
+	private function sanitize_csv_string( mixed $value, int $max_items, int $max_item_length ): array
 	{
-		$items  = $this->split_list_input( $value );
 		$tokens = [];
+		$seen   = [];
 
-		foreach ( $items as $item ) {
+		foreach ( $this->split_list_input( $value ) as $item ) {
 			if ( ! \is_scalar( $item ) ) {
 				continue;
 			}
 
-			$token = \strtolower( \trim( (string) $item ) );
-			$token = (string) \preg_replace( '/[^a-z0-9_-]/', '', $token );
+			$item = \trim( (string) $item );
 
-			if ( $token !== '' ) {
-				$tokens[] = $token;
+			if ( \mb_strlen( $item ) > $max_item_length ) {
+				continue;
+			}
+
+			$token = (string) \preg_replace( '/[^a-z0-9_-]/', '', \strtolower( $item ) );
+
+			if ( $token === '' || isset( $seen[ $token ] ) ) {
+				continue;
+			}
+
+			$seen[ $token ] = true;
+			$tokens[]       = $token;
+
+			if ( \count( $tokens ) >= $max_items ) {
+				break;
 			}
 		}
 
-		return \array_values( \array_unique( $tokens ) );
+		return $tokens;
+	}
+
+	/**
+	 * Return a list field's item count and item length limits.
+	 *
+	 * @param array<string,mixed> $config Field config.
+	 * @return array{0:int,1:int}
+	 */
+	private function list_limits( array $config ): array
+	{
+		return [
+			\max( 1, (int) ( $config['max_items'] ?? SettingsSchema::DEFAULT_MAX_ITEMS ) ),
+			\max( 1, (int) ( $config['max_item_length'] ?? SettingsSchema::DEFAULT_MAX_ITEM_LENGTH ) ),
+		];
 	}
 
 	/**
