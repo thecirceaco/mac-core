@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace MacCore\Tests\Unit;
 
+use MacCore\Licensing\LicensingService;
 use MacCore\Vendor\SureCart\Licensing\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
@@ -152,6 +153,36 @@ final class SureCartSdkTest extends TestCase
 		$this->assertSame( [], \get_option( self::OPTION ) );
 	}
 
+	public function test_license_tab_checks_manage_options_before_the_sdk_handles_the_form(): void
+	{
+		$this->respond( 'GET', 'licenses/key_other', $this->license_response( 'lic_other', 'key_other' ) );
+		$this->respond( 'POST', 'activations/', \mac_core_tests_http_response( 201, [ 'id' => 'act_other' ] ) );
+		$this->respond( 'GET', 'licenses/key_other/expose_current_release', $this->release_response( 'other-plugin', '3.0.0' ) );
+
+		$_POST = [
+			'submit'      => 'Activate License',
+			'_action'     => 'activate',
+			'_nonce'      => \wp_create_nonce( 'MAC Core' ),
+			'license_key' => 'key_other',
+		];
+
+		$service = $this->licensing_service( $this->make_client() );
+		$html    = $this->render_licensing_view( $service );
+
+		$this->assertSame( [], $this->requests() );
+		$this->assertFalse( \get_option( self::OPTION ) );
+		$this->assertStringContainsString( 'You do not have permission to manage the MAC Core license.', $html );
+		$this->assertStringNotContainsString( 'name="_action"', $html );
+
+		// The same submission from a user who can manage options reaches the SDK's form handler.
+		$GLOBALS['mac_core_test_user_caps']['manage_options'] = true;
+
+		$html = $this->render_licensing_view( $service );
+
+		$this->assertContains( 'GET ' . self::API . 'licenses/key_other', $this->requests() );
+		$this->assertStringContainsString( 'This license is not valid for this product.', $html );
+	}
+
 	public function test_register_menu_false_keeps_the_sdk_out_of_the_admin_menu(): void
 	{
 		$this->make_client();
@@ -223,6 +254,26 @@ final class SureCartSdkTest extends TestCase
 	{
 		ob_start();
 		$client->settings()->settings_output();
+
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Build a LicensingService that uses the given SDK client, as initialize() would.
+	 */
+	private function licensing_service( Client $client ): LicensingService
+	{
+		$service = new LicensingService();
+
+		( new \ReflectionProperty( LicensingService::class, 'client' ) )->setValue( $service, $client );
+
+		return $service;
+	}
+
+	private function render_licensing_view( LicensingService $service ): string
+	{
+		ob_start();
+		$service->render_view();
 
 		return (string) ob_get_clean();
 	}

@@ -112,6 +112,8 @@ final class LicensingTest extends TestCase
 		$service = new LicensingService();
 		$service->initialize();
 
+		$GLOBALS['mac_core_test_user_caps']['manage_options'] = true;
+
 		ob_start();
 		$service->render_view();
 		$output = (string) ob_get_clean();
@@ -120,9 +122,32 @@ final class LicensingTest extends TestCase
 		$this->assertStringContainsString( 'SureCart License', $output );
 	}
 
+	public function test_render_view_does_not_run_the_sdk_without_manage_options(): void
+	{
+		\add_filter(
+			'mac_core_surecart_public_token',
+			static fn ( string $token ): string => 'pt_test_token'
+		);
+
+		$service = new LicensingService();
+		$service->initialize();
+
+		$GLOBALS['mac_core_test_user_caps']['edit_posts'] = true;
+
+		ob_start();
+		$service->render_view();
+		$output = (string) ob_get_clean();
+
+		$this->assertSame( 0, \MacCore\Vendor\SureCart\Licensing\Client::$settings_output_calls );
+		$this->assertStringContainsString( 'You do not have permission to manage the MAC Core license.', $output );
+		$this->assertStringNotContainsString( 'SureCart License', $output );
+	}
+
 	public function test_render_view_outputs_inline_notice_when_unavailable(): void
 	{
 		$service = new LicensingService();
+
+		$GLOBALS['mac_core_test_user_caps']['manage_options'] = true;
 
 		ob_start();
 		$service->render_view();

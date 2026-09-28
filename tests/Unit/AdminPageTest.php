@@ -125,6 +125,7 @@ final class AdminPageTest extends TestCase
 
 	public function test_render_license_view_outputs_license_content(): void
 	{
+		$GLOBALS['mac_core_test_user_caps']['manage_options'] = true;
 		$_GET = ['page' => 'mac-core', 'tab' => 'license'];
 
 		ob_start();
