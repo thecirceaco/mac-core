@@ -119,15 +119,17 @@ final class AdminPageTest extends TestCase
 		$this->assertSame( 1, \substr_count( $this->render_tab( 'settings', $top_level ), 'MAC Core settings saved.' ) );
 	}
 
-	public function test_top_level_menu_setting_is_the_first_setting_on_the_settings_tab(): void
+	public function test_plugin_group_comes_first_with_the_menu_and_uninstall_settings(): void
 	{
 		$output = $this->render_tab( 'settings' );
 
-		$this->assertStringContainsString( '<h3>Plugin</h3>', $output );
 		$this->assertStringContainsString( '<th scope="row"><label for="mac-core-core-top_level_menu">Top-level admin menu</label></th>', $output );
-		$this->assertStringContainsString( 'name="mac_core_settings[core][top_level_menu]" value="1"> <span>Show MAC Core as a top-level admin menu item</span>', $output );
-		$this->assertLessThan( \strpos( $output, '<h3>Uninstall</h3>' ), \strpos( $output, '<h3>Plugin</h3>' ) );
+		$this->assertStringContainsString( 'name="mac_core_settings[core][top_level_menu]" value="1"> <span>Show MAC Core as a top-level admin menu item</span></label></td>', $output );
+		$this->assertStringContainsString( '<th scope="row"><label for="mac-core-core-delete_data_on_uninstall">Delete plugin data</label></th>', $output );
+		$this->assertStringContainsString( 'name="mac_core_settings[core][delete_data_on_uninstall]" value="1"> <span>Delete plugin data on uninstall</span></label><p class="description">When the plugin is deleted, also remove its settings, its license details and the last login times it recorded.</p>', $output );
+		$this->assertLessThan( \strpos( $output, '<h3>Branding</h3>' ), \strpos( $output, '<h3>Plugin</h3>' ) );
 		$this->assertLessThan( \strpos( $output, 'mac_core_settings[core][delete_data_on_uninstall]' ), \strpos( $output, 'mac_core_settings[core][top_level_menu]' ) );
+		$this->assertStringNotContainsString( '<h3>Uninstall</h3>', $output );
 	}
 
 	public function test_render_defaults_to_settings_view_without_tab_query(): void
@@ -138,7 +140,7 @@ final class AdminPageTest extends TestCase
 		$this->make_page()->render();
 		$output = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'Core Policies', $output );
+		$this->assertStringContainsString( '<h2>General</h2>', $output );
 		$this->assertStringContainsString( 'class="nav-tab nav-tab-active">Settings</a>', $output );
 	}
 
@@ -150,13 +152,13 @@ final class AdminPageTest extends TestCase
 		$this->make_page()->render();
 		$output = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'Core Policies', $output );
-		$this->assertStringContainsString( 'Media Policies', $output );
-		$this->assertStringContainsString( '<h3>Uninstall</h3>', $output );
-		$this->assertStringContainsString( '<h3>Comments</h3>', $output );
-		$this->assertStringContainsString( '<h3>Content Types</h3>', $output );
-		$this->assertStringContainsString( '<h3>Image Sizes</h3>', $output );
-		$this->assertStringContainsString( '<h3>Uploads</h3>', $output );
+		// Short section titles without descriptions, and the groups in this order.
+		$this->assertStringContainsString( '<h2>General</h2><h3>Plugin</h3>', $output );
+		$this->assertStringContainsString( '<h2>Media</h2><h3>Image Sizes</h3>', $output );
+		$this->assertSame(
+			[ 'Plugin', 'Branding', 'Comments', 'Content', 'Admin', 'Updates', 'Image Sizes', 'Uploads' ],
+			$this->group_titles( $output )
+		);
 		$this->assertStringContainsString( 'name="mac_core_settings[core][comment_control_enabled]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][disable_native_posts]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[core][excerpt_length]"', $output );
@@ -164,16 +166,52 @@ final class AdminPageTest extends TestCase
 		$this->assertStringContainsString( 'name="mac_core_settings[media][custom_image_widths]"', $output );
 		$this->assertStringContainsString( '<textarea class="large-text code" id="mac-core-media-custom_image_widths"', $output );
 		$this->assertStringContainsString( '<textarea class="large-text code" id="mac-core-media-removed_image_sizes"', $output );
-		$this->assertStringContainsString( 'Height is automatic and aspect ratio is preserved.', $output );
-		$this->assertStringContainsString( 'Applies to both intermediate and advanced image sizes.', $output );
-		$this->assertStringContainsString( 'Disables WordPress image compression for JPEG, WebP, and AVIF uploads.', $output );
-		$this->assertStringContainsString( 'Stops every automatic update, including WordPress core security releases,', $output );
+		$this->assertStringContainsString( 'In pixels, one per line or comma-separated.', $output );
+		$this->assertStringContainsString( 'Theme and plugin sizes work too, like woocommerce_single.', $output );
+		$this->assertStringContainsString( 'The images WordPress generates from JPEG, WebP and AVIF uploads are saved at full quality (100), so the files are larger.', $output );
 		$this->assertStringContainsString( 'page=mac-core&tab=helpers', $output );
 		$this->assertStringNotContainsString( 'name="mac_core_settings[utils][utils_enabled]"', $output );
-		$this->assertLessThan(
-			strpos( $output, '<h3>Branding</h3>' ),
-			strpos( $output, '<h3>Uninstall</h3>' )
+
+		// The excerpt settings follow Native Posts in the Content group.
+		$this->assertLessThan( \strpos( $output, '<h3>Admin</h3>' ), \strpos( $output, 'mac_core_settings[core][excerpt_length_enabled]' ) );
+		$this->assertLessThan( \strpos( $output, 'mac_core_settings[core][excerpt_length_enabled]' ), \strpos( $output, 'mac_core_settings[core][disable_native_posts]' ) );
+	}
+
+	public function test_checkbox_shows_its_option_next_to_the_box_and_its_description_below(): void
+	{
+		$output = $this->render_tab( 'settings' );
+
+		$this->assertStringContainsString(
+			'<th scope="row"><label for="mac-core-core-disable_auto_updates">Automatic updates</label></th><td><label for="mac-core-core-disable_auto_updates"><input type="checkbox" id="mac-core-core-disable_auto_updates" name="mac_core_settings[core][disable_auto_updates]" value="1"> <span>Disable automatic updates</span></label><p class="description">Stops every automatic update: WordPress, including security releases, plugins, themes and translations.',
+			$output
 		);
+		$this->assertStringContainsString( '<span>Allow comments on posts</span></label></td>', $output );
+	}
+
+	public function test_addon_checkbox_without_option_keeps_its_description_next_to_the_box(): void
+	{
+		\add_filter(
+			'mac_core_settings_sections',
+			static function ( array $sections ): array {
+				$sections['addon'] = [
+					'title'  => 'Addon',
+					'fields' => [
+						'enabled' => [
+							'type'        => 'checkbox',
+							'label'       => 'Enabled',
+							'description' => 'Enable the addon.',
+							'default'     => false,
+						],
+					],
+				];
+
+				return $sections;
+			}
+		);
+
+		$output = $this->render_tab( 'settings' );
+
+		$this->assertStringContainsString( 'name="mac_core_settings[addon][enabled]" value="1"> <span>Enable the addon.</span></label></td>', $output );
 	}
 
 	public function test_render_helpers_view_outputs_utils_fields(): void
@@ -184,14 +222,16 @@ final class AdminPageTest extends TestCase
 		$this->make_page()->render();
 		$output = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'Utils', $output );
-		$this->assertStringContainsString( '<h3>Loading</h3>', $output );
-		$this->assertStringContainsString( 'name="mac_core_settings[utils][utils_enabled]"', $output );
+		$this->assertStringContainsString( '<h2>Helpers</h2><p>Functions for templates and builders, like Bricks.</p><table', $output );
+		$this->assertSame( [], $this->group_titles( $output ) );
+		$this->assertStringContainsString( 'name="mac_core_settings[utils][utils_enabled]" value="1"> <span>Load the helpers checked below</span>', $output );
+		$this->assertStringContainsString( '<th scope="row"><label for="mac-core-utils-count_array_items_enabled">Count array items</label></th>', $output );
+		$this->assertStringContainsString( '<span>Load mac_core_count_array_items()</span></label><p class="description">Counts the items of an array saved in a post&#039;s meta, like a gallery or a relationship field.</p>', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[utils][format_price_enabled]"', $output );
 		$this->assertStringContainsString( 'name="mac_core_settings[utils][plugin_status_enabled]"', $output );
 		$this->assertStringContainsString( 'class="nav-tab nav-tab-active">Helpers</a>', $output );
-		$this->assertStringNotContainsString( 'Core Policies', $output );
-		$this->assertStringNotContainsString( 'Media Policies', $output );
+		$this->assertStringNotContainsString( '<h2>General</h2>', $output );
+		$this->assertStringNotContainsString( '<h2>Media</h2>', $output );
 	}
 
 	public function test_render_license_view_outputs_license_content(): void
@@ -271,6 +311,18 @@ final class AdminPageTest extends TestCase
 	private function set_top_level_menu( bool $top_level ): void
 	{
 		$GLOBALS['mac_core_test_options']['mac_core_settings']['core']['top_level_menu'] = $top_level;
+	}
+
+	/**
+	 * Return the group subheadings in the order the page shows them.
+	 *
+	 * @return array<int,string>
+	 */
+	private function group_titles( string $output ): array
+	{
+		\preg_match_all( '#<h3>(.*?)</h3>#', $output, $matches );
+
+		return $matches[1];
 	}
 
 	private function has_action_callback( string $hook, string $class, string $method, int $priority ): bool

@@ -275,10 +275,18 @@ final class AdminPage implements Service
 
 		switch ( $config['type'] ) {
 			case 'checkbox':
+				// The `option` sentence goes next to the box and the description below it.
+				// Without an `option`, the description goes next to the box.
+				$option      = $config['option'] !== '' ? $config['option'] : $config['description'];
+				$description = $config['option'] !== '' ? $config['description'] : '';
+
 				echo '<label for="' . \esc_attr( $field_id ) . '">';
 				echo '<input type="checkbox" id="' . \esc_attr( $field_id ) . '" name="' . \esc_attr( $field_name ) . '" value="1"' . ( $current ? ' checked' : '' ) . '>';
-				echo ' <span>' . \esc_html( $config['description'] ) . '</span>';
+				echo ' <span>' . \esc_html( $option ) . '</span>';
 				echo '</label>';
+				if ( $description !== '' ) {
+					echo '<p class="description">' . \esc_html( $description ) . '</p>';
+				}
 				break;
 
 			case 'integer':
