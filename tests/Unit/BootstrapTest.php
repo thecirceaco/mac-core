@@ -17,6 +17,7 @@ use MacCore\Admin\PluginListingLinks;
 use MacCore\Contracts\Service;
 use MacCore\Kernel;
 use MacCore\Licensing\LicensingService;
+use MacCore\Licensing\UpdateCompatibility;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
@@ -59,6 +60,8 @@ final class BootstrapTest extends TestCase
 		$this->assertTrue( $this->has_action_callback( 'admin_menu', AdminPage::class, 'register_page' ) );
 		$this->assertTrue( $this->has_action_callback( 'admin_init', AdminPage::class, 'redirect_default_view' ) );
 		$this->assertTrue( $this->has_filter_callback( 'plugin_row_meta', PluginListingLinks::class, 'row_meta' ) );
+		$this->assertTrue( $this->has_filter_callback( 'site_transient_update_plugins', UpdateCompatibility::class, 'filter_update_transient' ) );
+		$this->assertTrue( $this->has_filter_callback( 'plugins_api', UpdateCompatibility::class, 'filter_plugin_information' ) );
 		$this->assertTrue( $this->has_filter_callback( 'plugin_action_links_mac-core/mac-core.php', PluginListingLinks::class, 'action_links' ) );
 		$this->assertTrue( $this->has_action_callback( 'init', BootstrapTestService::class, 'handle' ) );
 		$this->assertArrayHasKey( 'automatic_updater_disabled', $GLOBALS['mac_core_test_filters'] );

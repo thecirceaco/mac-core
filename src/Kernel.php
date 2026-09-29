@@ -16,6 +16,7 @@ use MacCore\Admin\MenuPlacement;
 use MacCore\Admin\PluginListingLinks;
 use MacCore\Contracts\Service;
 use MacCore\Licensing\LicensingService;
+use MacCore\Licensing\UpdateCompatibility;
 use MacCore\Policies\Core\AddDeveloperBranding;
 use MacCore\Policies\Core\AddLastLoginColumn;
 use MacCore\Policies\Core\ControlComments;
@@ -96,6 +97,7 @@ final class Kernel
 			new AdminPage( $settings, $schema, $licensing, $placement ),
 			new PluginListingLinks( $placement ),
 			$licensing,
+			new UpdateCompatibility(),
 			new UtilsLoader( $settings ),
 
             // Core.

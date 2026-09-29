@@ -2,7 +2,7 @@
 Contributors: thecirceaco
 Tags: core, agency
 Requires at least: 6.9
-Tested up to: 7.0
+Tested up to: 7.1.2
 Requires PHP: 8.3
 Stable tag: 1.3.0
 License: GPL v3 or later

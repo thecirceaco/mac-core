@@ -386,6 +386,7 @@ function mac_core_tests_reset_wp_state(): void
 	$GLOBALS['mac_core_test_is_admin']        = true;
 	$GLOBALS['mac_core_test_is_admin_bar_showing'] = true;
 	$GLOBALS['mac_core_test_admin_bar_state'] = true;
+	$GLOBALS['mac_core_test_wp_version']      = '7.1.2';
 }
 
 mac_core_tests_reset_wp_state();
@@ -1119,6 +1120,13 @@ if ( ! function_exists( 'get_site_url' ) ) {
 	function get_site_url(): string
 	{
 		return 'https://example.test';
+	}
+}
+
+if ( ! function_exists( 'wp_get_wp_version' ) ) {
+	function wp_get_wp_version(): string
+	{
+		return (string) ( $GLOBALS['mac_core_test_wp_version'] ?? '7.1.2' );
 	}
 }
 
