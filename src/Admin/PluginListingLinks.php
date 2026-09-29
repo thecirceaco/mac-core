@@ -19,6 +19,11 @@ final class PluginListingLinks implements Service
 {
 	private const DOCS_URL = 'https://docs.circea.co/';
 
+	public function __construct(
+		private readonly MenuPlacement $placement
+	) {
+	}
+
 	public function register(): void
 	{
 		\add_filter( 'plugin_action_links_' . $this->plugin_basename(), [ $this, 'action_links' ] );
@@ -64,7 +69,7 @@ final class PluginListingLinks implements Service
 	 */
 	private function tab_url( string $tab ): string
 	{
-		return \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=' . $tab );
+		return $this->placement->url( $tab );
 	}
 
 	/**

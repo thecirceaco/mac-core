@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace MacCore\Tests\Unit;
 
+use MacCore\Admin\MenuPlacement;
 use MacCore\Settings\SettingsController;
 use MacCore\Settings\SettingsSchema;
 use MacCore\Settings\WordPressSettingsRepository;
@@ -54,8 +55,7 @@ final class SettingsControllerTest extends TestCase
 			],
 		];
 
-		$controller = new SettingsController( $this->settings, new SettingsSchema() );
-		$controller->handle_save();
+		$this->run_save( $this->make_controller() );
 
 		$this->assertSame( 77, $this->settings->get( 'core', 'excerpt_length' ) );
 		$this->assertCount( 1, $GLOBALS['mac_core_test_settings_errors'] );
@@ -83,8 +83,7 @@ final class SettingsControllerTest extends TestCase
 			],
 		];
 
-		$controller = new SettingsController( $this->settings, new SettingsSchema() );
-		$controller->handle_save();
+		$this->run_save( $this->make_controller() );
 
 		$this->assertTrue( $this->settings->get( 'utils', 'utils_enabled' ) );
 		$this->assertTrue( $this->settings->get( 'utils', 'format_price_enabled' ) );
@@ -112,12 +111,49 @@ final class SettingsControllerTest extends TestCase
 			],
 		];
 
-		$controller = new SettingsController( $this->settings, new SettingsSchema() );
+		$controller = $this->make_controller();
 		$controller->handle_save();
 
 		$this->assertSame( 40, $this->settings->get( 'core', 'excerpt_length' ) );
 		$this->assertCount( 1, $GLOBALS['mac_core_test_settings_errors'] );
 		$this->assertSame( 'error', $GLOBALS['mac_core_test_settings_errors'][0]['type'] );
+		$this->assertNull( $GLOBALS['mac_core_test_redirect_to'] );
+	}
+
+	public function test_save_redirects_back_to_the_tab_with_the_notices_in_a_transient(): void
+	{
+		$this->submit_tab( 'settings', [ 'core' => [ 'excerpt_length' => '66' ] ] );
+
+		$this->assertSame( 'https://example.test/wp-admin/options-general.php?page=mac-core&tab=settings&settings-updated=true', $GLOBALS['mac_core_test_redirect_to'] );
+		$this->assertSame( 'saved', $GLOBALS['mac_core_test_transients']['settings_errors'][0]['code'] );
+
+		$this->submit_tab( 'helpers', [ 'utils' => [ 'utils_enabled' => '1' ] ] );
+
+		$this->assertSame( 'https://example.test/wp-admin/options-general.php?page=mac-core&tab=helpers&settings-updated=true', $GLOBALS['mac_core_test_redirect_to'] );
+	}
+
+	public function test_turning_the_top_level_menu_on_and_off_redirects_to_the_new_address(): void
+	{
+		$this->submit_tab( 'settings', [ 'core' => [ 'top_level_menu' => '1' ] ] );
+
+		$this->assertTrue( $this->settings->get( 'core', 'top_level_menu' ) );
+		$this->assertSame( 'https://example.test/wp-admin/admin.php?page=mac-core&tab=settings&settings-updated=true', $GLOBALS['mac_core_test_redirect_to'] );
+
+		// An unchecked box is left out of the submission.
+		$this->submit_tab( 'settings', [ 'core' => [ 'excerpt_length' => '40' ] ] );
+
+		$this->assertFalse( $this->settings->get( 'core', 'top_level_menu' ) );
+		$this->assertSame( 'https://example.test/wp-admin/options-general.php?page=mac-core&tab=settings&settings-updated=true', $GLOBALS['mac_core_test_redirect_to'] );
+	}
+
+	public function test_saving_helpers_tab_keeps_the_top_level_menu(): void
+	{
+		$this->settings->save( [ 'core' => [ 'top_level_menu' => '1' ] ] );
+
+		$this->submit_tab( 'helpers', [ 'utils' => [ 'utils_enabled' => '1' ] ] );
+
+		$this->assertTrue( $this->settings->get( 'core', 'top_level_menu' ) );
+		$this->assertSame( 'https://example.test/wp-admin/admin.php?page=mac-core&tab=helpers&settings-updated=true', $GLOBALS['mac_core_test_redirect_to'] );
 	}
 
 	public function test_saving_helpers_tab_keeps_settings_tab_values(): void
@@ -203,7 +239,32 @@ final class SettingsControllerTest extends TestCase
 			'mac_core_settings'       => $values,
 		];
 
-		$controller = new SettingsController( $this->settings, new SettingsSchema() );
-		$controller->handle_save();
+		$this->run_save( $this->make_controller() );
+	}
+
+	/**
+	 * Run handle_save() and check that it ended the request after its redirect.
+	 */
+	private function run_save( SettingsController $controller ): void
+	{
+		try {
+			$controller->handle_save();
+			$this->fail( 'The save did not end the request after redirecting.' );
+		} catch ( \MacCore_Test_Request_Ended ) {
+			// The controller redirected and ended the request.
+		}
+	}
+
+	/**
+	 * Build the controller as the kernel does, sharing the settings repository.
+	 */
+	private function make_controller(): SettingsController
+	{
+		return new SettingsController(
+			$this->settings,
+			new SettingsSchema(),
+			new MenuPlacement( $this->settings ),
+			\mac_core_tests_end_request()
+		);
 	}
 }

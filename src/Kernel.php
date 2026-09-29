@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MacCore;
 
 use MacCore\Admin\AdminPage;
+use MacCore\Admin\MenuPlacement;
 use MacCore\Admin\PluginListingLinks;
 use MacCore\Contracts\Service;
 use MacCore\Licensing\LicensingService;
@@ -85,14 +86,15 @@ final class Kernel
      */
     private function get_services(): array
     {
-        $schema   = new SettingsSchema();
-        $settings = new WordPressSettingsRepository( $schema );
-        $licensing = new LicensingService();
+        $schema    = new SettingsSchema();
+        $settings  = new WordPressSettingsRepository( $schema );
+        $placement = new MenuPlacement( $settings );
+        $licensing = new LicensingService( $placement );
 
 		$services = [
-			new SettingsController( $settings, $schema ),
-			new AdminPage( $settings, $schema, $licensing ),
-			new PluginListingLinks(),
+			new SettingsController( $settings, $schema, $placement ),
+			new AdminPage( $settings, $schema, $licensing, $placement ),
+			new PluginListingLinks( $placement ),
 			$licensing,
 			new UtilsLoader( $settings ),
 

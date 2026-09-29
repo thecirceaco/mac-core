@@ -256,6 +256,26 @@ if ( ! class_exists( 'WP_Admin_Bar' ) ) {
 	}
 }
 
+if ( ! class_exists( 'MacCore_Test_Request_Ended' ) ) {
+	/**
+	 * Thrown by the end_request closure that tests give the settings controller.
+	 */
+	final class MacCore_Test_Request_Ended extends RuntimeException
+	{
+	}
+}
+
+/**
+ * Return an end_request closure for the settings controller, which throws instead
+ * of exiting after the redirect that follows a save.
+ */
+function mac_core_tests_end_request(): Closure
+{
+	return static function (): never {
+		throw new MacCore_Test_Request_Ended();
+	};
+}
+
 function mac_core_tests_make_post_type( string $name, string $singular_label, string $plural_label ): WP_Post_Type
 {
 	return new WP_Post_Type(
@@ -847,6 +867,21 @@ if ( ! function_exists( 'add_settings_error' ) ) {
 			'message' => $message,
 			'type'    => $type,
 		];
+	}
+}
+
+if ( ! function_exists( 'get_settings_errors' ) ) {
+	/**
+	 * @return array<int,array{setting:string,code:string,message:string,type:string}>
+	 */
+	function get_settings_errors( string $setting = '' ): array
+	{
+		return array_values(
+			array_filter(
+				$GLOBALS['mac_core_test_settings_errors'],
+				static fn ( array $error ): bool => $setting === '' || $error['setting'] === $setting
+			)
+		);
 	}
 }
 

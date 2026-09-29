@@ -13,7 +13,10 @@ declare(strict_types=1);
 
 namespace MacCore\Tests\Unit;
 
+use MacCore\Admin\MenuPlacement;
 use MacCore\Licensing\LicensingService;
+use MacCore\Settings\SettingsSchema;
+use MacCore\Settings\WordPressSettingsRepository;
 use MacCore\Vendor\SureCart\Licensing\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
@@ -223,8 +226,8 @@ final class SureCartSdkTest extends TestCase
 				'menu_slug'            => 'mac-core',
 				'icon_url'             => '',
 				'position'             => null,
-				'activated_redirect'   => \admin_url( 'admin.php?page=mac-core&tab=license' ),
-				'deactivated_redirect' => \admin_url( 'admin.php?page=mac-core&tab=license' ),
+				'activated_redirect'   => \admin_url( 'options-general.php?page=mac-core&tab=license' ),
+				'deactivated_redirect' => \admin_url( 'options-general.php?page=mac-core&tab=license' ),
 				'register_menu'        => false,
 			]
 		);
@@ -263,7 +266,7 @@ final class SureCartSdkTest extends TestCase
 	 */
 	private function licensing_service( Client $client ): LicensingService
 	{
-		$service = new LicensingService();
+		$service = new LicensingService( new MenuPlacement( new WordPressSettingsRepository( new SettingsSchema() ) ) );
 
 		( new \ReflectionProperty( LicensingService::class, 'client' ) )->setValue( $service, $client );
 

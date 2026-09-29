@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace MacCore\Settings;
 
+use MacCore\Admin\MenuPlacement;
 use MacCore\Contracts\Service;
 
 if ( ! \defined( 'ABSPATH' ) ) {
@@ -17,9 +18,15 @@ if ( ! \defined( 'ABSPATH' ) ) {
 
 final class SettingsController implements Service
 {
+	/**
+	 * @param \Closure|null $end_request Runs instead of exiting after the redirect that follows a save.
+	 *                                   Tests pass a closure that throws, to see where the request ended.
+	 */
 	public function __construct(
 		private readonly SettingsRepositoryInterface $settings,
-		private readonly SettingsSchema $schema
+		private readonly SettingsSchema $schema,
+		private readonly MenuPlacement $placement,
+		private readonly ?\Closure $end_request = null
 	) {
 	}
 
@@ -86,5 +93,26 @@ final class SettingsController implements Service
 		$this->settings->save( $submitted, $this->schema->get_tab_modules( $tab ) );
 
 		\add_settings_error( 'mac_core_settings', 'saved', 'MAC Core settings saved.', 'success' );
+
+		$this->redirect_to_tab( $tab );
+	}
+
+	/**
+	 * Send the browser back to the saved tab, as WordPress does after saving its own
+	 * settings, so a reload does not post the form again. The notices travel in the
+	 * settings_errors transient, which settings_errors() reads on the next request.
+	 * When the save moved the page between Settings and the top level, the browser
+	 * goes to the page's new address.
+	 */
+	private function redirect_to_tab( string $tab ): void
+	{
+		\set_transient( 'settings_errors', \get_settings_errors(), 30 );
+		\wp_safe_redirect( \add_query_arg( [ 'settings-updated' => 'true' ], $this->placement->url( $tab ) ) );
+
+		if ( null !== $this->end_request ) {
+			( $this->end_request )();
+		}
+
+		exit;
 	}
 }

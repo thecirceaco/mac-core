@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace MacCore\Tests\Unit;
 
 use MacCore\Admin\AdminPage;
+use MacCore\Admin\MenuPlacement;
 use MacCore\Licensing\LicensingService;
 use MacCore\Settings\SettingsSchema;
 use MacCore\Settings\WordPressSettingsRepository;
@@ -28,23 +29,41 @@ final class AdminPageTest extends TestCase
 		$this->define_constants();
 	}
 
-	public function test_add_menu_page_registers_mac_core_top_level_page(): void
+	public function test_page_is_under_settings_by_default(): void
 	{
 		$page = $this->make_page();
 
-		$page->add_menu_page();
+		$page->register_page();
 
-		$this->assertArrayHasKey( 'mac-core', $GLOBALS['mac_core_test_menu_pages'] );
+		$this->assertSame( [], $GLOBALS['mac_core_test_menu_pages'] );
+		$this->assertSame( 'options-general.php', $GLOBALS['mac_core_test_submenu_pages']['mac-core']['parent_slug'] );
+		$this->assertSame( 'MAC Core', $GLOBALS['mac_core_test_submenu_pages']['mac-core']['page_title'] );
+		$this->assertSame( 'MAC Core', $GLOBALS['mac_core_test_submenu_pages']['mac-core']['menu_title'] );
+		$this->assertSame( 'manage_options', $GLOBALS['mac_core_test_submenu_pages']['mac-core']['capability'] );
+		$this->assertSame( [ $page, 'render' ], $GLOBALS['mac_core_test_submenu_pages']['mac-core']['callback'] );
+	}
+
+	public function test_page_is_a_top_level_menu_item_when_that_setting_is_on(): void
+	{
+		$this->set_top_level_menu( true );
+		$page = $this->make_page();
+
+		$page->register_page();
+
+		$this->assertSame( [], $GLOBALS['mac_core_test_submenu_pages'] );
 		$this->assertSame( 'MAC Core', $GLOBALS['mac_core_test_menu_pages']['mac-core']['menu_title'] );
+		$this->assertSame( 'manage_options', $GLOBALS['mac_core_test_menu_pages']['mac-core']['capability'] );
+		$this->assertSame( [ $page, 'render' ], $GLOBALS['mac_core_test_menu_pages']['mac-core']['callback'] );
 		$this->assertStringStartsWith( 'data:image/svg+xml;base64,', $GLOBALS['mac_core_test_menu_pages']['mac-core']['icon_url'] );
 	}
 
-	public function test_register_adds_default_view_redirect_hook(): void
+	public function test_register_adds_menu_and_default_view_redirect_hooks(): void
 	{
 		$page = $this->make_page();
 
 		$page->register();
 
+		$this->assertTrue( $this->has_action_callback( 'admin_menu', AdminPage::class, 'register_page', 20 ) );
 		$this->assertTrue( $this->has_action_callback( 'admin_init', AdminPage::class, 'redirect_default_view', 20 ) );
 	}
 
@@ -54,9 +73,61 @@ final class AdminPageTest extends TestCase
 		$_SERVER['REQUEST_METHOD'] = 'GET';
 
 		$this->assertSame(
+			'https://example.test/wp-admin/options-general.php?page=mac-core&tab=settings',
+			$this->make_page()->default_view_redirect_target()
+		);
+
+		$this->set_top_level_menu( true );
+
+		$this->assertSame(
 			'https://example.test/wp-admin/admin.php?page=mac-core&tab=settings',
 			$this->make_page()->default_view_redirect_target()
 		);
+	}
+
+	public function test_tab_links_follow_the_menu_placement(): void
+	{
+		$under_settings = $this->render_tab( 'settings' );
+
+		$this->set_top_level_menu( true );
+		$top_level = $this->render_tab( 'settings' );
+
+		foreach ( [ 'settings', 'helpers', 'license', 'support' ] as $tab ) {
+			$this->assertStringContainsString( 'href="https://example.test/wp-admin/options-general.php?page=mac-core&tab=' . $tab . '"', $under_settings );
+			$this->assertStringContainsString( 'href="https://example.test/wp-admin/admin.php?page=mac-core&tab=' . $tab . '"', $top_level );
+		}
+
+		$this->assertStringNotContainsString( 'admin.php?page=mac-core', $under_settings );
+		$this->assertStringNotContainsString( 'options-general.php?page=mac-core', $top_level );
+	}
+
+	/**
+	 * Under Settings, WordPress prints settings notices itself, so the page must not print them again.
+	 */
+	public function test_page_prints_settings_notices_only_as_a_top_level_menu_item(): void
+	{
+		\add_settings_error( 'mac_core_settings', 'saved', 'MAC Core settings saved.', 'success' );
+
+		$under_settings = $this->make_page();
+		$under_settings->register_page();
+
+		$this->set_top_level_menu( true );
+		$top_level = $this->make_page();
+		$top_level->register_page();
+
+		$this->assertSame( 0, \substr_count( $this->render_tab( 'settings', $under_settings ), 'MAC Core settings saved.' ) );
+		$this->assertSame( 1, \substr_count( $this->render_tab( 'settings', $top_level ), 'MAC Core settings saved.' ) );
+	}
+
+	public function test_top_level_menu_setting_is_the_first_setting_on_the_settings_tab(): void
+	{
+		$output = $this->render_tab( 'settings' );
+
+		$this->assertStringContainsString( '<h3>Plugin</h3>', $output );
+		$this->assertStringContainsString( '<th scope="row"><label for="mac-core-core-top_level_menu">Top-level admin menu</label></th>', $output );
+		$this->assertStringContainsString( 'name="mac_core_settings[core][top_level_menu]" value="1"> <span>Show MAC Core as a top-level admin menu item</span>', $output );
+		$this->assertLessThan( \strpos( $output, '<h3>Uninstall</h3>' ), \strpos( $output, '<h3>Plugin</h3>' ) );
+		$this->assertLessThan( \strpos( $output, 'mac_core_settings[core][delete_data_on_uninstall]' ), \strpos( $output, 'mac_core_settings[core][top_level_menu]' ) );
 	}
 
 	public function test_render_defaults_to_settings_view_without_tab_query(): void
@@ -180,10 +251,26 @@ final class AdminPageTest extends TestCase
 
 	private function make_page(): AdminPage
 	{
-		$schema   = new SettingsSchema();
-		$settings = new WordPressSettingsRepository( $schema );
+		$schema    = new SettingsSchema();
+		$settings  = new WordPressSettingsRepository( $schema );
+		$placement = new MenuPlacement( $settings );
 
-		return new AdminPage( $settings, $schema, new LicensingService() );
+		return new AdminPage( $settings, $schema, new LicensingService( $placement ), $placement );
+	}
+
+	private function render_tab( string $tab, ?AdminPage $page = null ): string
+	{
+		$_GET = ['page' => 'mac-core', 'tab' => $tab];
+
+		ob_start();
+		( $page ?? $this->make_page() )->render();
+
+		return (string) ob_get_clean();
+	}
+
+	private function set_top_level_menu( bool $top_level ): void
+	{
+		$GLOBALS['mac_core_test_options']['mac_core_settings']['core']['top_level_menu'] = $top_level;
 	}
 
 	private function has_action_callback( string $hook, string $class, string $method, int $priority ): bool

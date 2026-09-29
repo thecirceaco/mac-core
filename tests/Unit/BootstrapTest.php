@@ -56,7 +56,7 @@ final class BootstrapTest extends TestCase
 		\do_action( 'plugins_loaded' );
 
 		$this->assertTrue( $this->has_action_callback( 'init', LicensingService::class, 'initialize' ) );
-		$this->assertTrue( $this->has_action_callback( 'admin_menu', AdminPage::class, 'add_menu_page' ) );
+		$this->assertTrue( $this->has_action_callback( 'admin_menu', AdminPage::class, 'register_page' ) );
 		$this->assertTrue( $this->has_action_callback( 'admin_init', AdminPage::class, 'redirect_default_view' ) );
 		$this->assertTrue( $this->has_filter_callback( 'plugin_row_meta', PluginListingLinks::class, 'row_meta' ) );
 		$this->assertTrue( $this->has_filter_callback( 'plugin_action_links_mac-core/mac-core.php', PluginListingLinks::class, 'action_links' ) );
@@ -76,7 +76,7 @@ final class BootstrapTest extends TestCase
 
 		$this->assertArrayNotHasKey( 'plugins_loaded', $GLOBALS['mac_core_test_actions'] );
 		$this->assertTrue( $this->has_action_callback( 'init', LicensingService::class, 'initialize' ) );
-		$this->assertTrue( $this->has_action_callback( 'admin_menu', AdminPage::class, 'add_menu_page' ) );
+		$this->assertTrue( $this->has_action_callback( 'admin_menu', AdminPage::class, 'register_page' ) );
 	}
 
 	private function has_action_callback( string $hook, string $class, string $method ): bool

@@ -20,32 +20,54 @@ if ( ! \defined( 'ABSPATH' ) ) {
 
 final class AdminPage implements Service
 {
+	/**
+	 * Whether this request registered the page as a top-level menu item, or under Settings.
+	 */
+	private ?bool $top_level = null;
+
 	public function __construct(
 		private readonly SettingsRepositoryInterface $settings,
 		private readonly SettingsSchema $schema,
-		private readonly LicensingService $licensing
+		private readonly LicensingService $licensing,
+		private readonly MenuPlacement $placement
 	) {
 	}
 
 	public function register(): void
 	{
-		\add_action( 'admin_menu', [ $this, 'add_menu_page' ], 20 );
+		// Priority 20, so as a top-level item MAC Core sits at the end of the menu.
+		\add_action( 'admin_menu', [ $this, 'register_page' ], 20 );
 		\add_action( 'admin_init', [ $this, 'redirect_default_view' ], 20 );
 	}
 
 	/**
-	 * Register the top-level MAC Core admin page.
+	 * Register the MAC Core page under Settings, or as a top-level menu item with
+	 * the MAC icon when the "Top-level admin menu" setting is on.
 	 */
-	public function add_menu_page(): void
+	public function register_page(): void
 	{
-		\add_menu_page(
+		$this->top_level = $this->placement->is_top_level();
+
+		if ( $this->top_level ) {
+			\add_menu_page(
+				'MAC Core',
+				'MAC Core',
+				'manage_options',
+				\MAC_CORE_ADMIN_SLUG,
+				[ $this, 'render' ],
+				MenuIcon::url(),
+				null
+			);
+
+			return;
+		}
+
+		\add_options_page(
 			'MAC Core',
 			'MAC Core',
 			'manage_options',
 			\MAC_CORE_ADMIN_SLUG,
-			[ $this, 'render' ],
-			MenuIcon::url(),
-			null
+			[ $this, 'render' ]
 		);
 	}
 
@@ -64,7 +86,12 @@ final class AdminPage implements Service
 
 		echo '<div class="wrap">';
 		echo '<h1>MAC Core</h1>';
-		\settings_errors( 'mac_core_settings' );
+
+		// Under Settings, WordPress already prints settings notices (options-head.php).
+		if ( $this->top_level ?? $this->placement->is_top_level() ) {
+			\settings_errors( 'mac_core_settings' );
+		}
+
 		$this->render_tabs( $tabs, $current_view );
 		echo '<div class="mac-core-admin-view">';
 		\call_user_func( $current_tab['callback'] );
@@ -116,7 +143,7 @@ final class AdminPage implements Service
 			return null;
 		}
 
-		return \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=settings' );
+		return $this->placement->url( 'settings' );
 	}
 
 	/**
@@ -223,7 +250,7 @@ final class AdminPage implements Service
 		echo '<nav class="nav-tab-wrapper">';
 
 		foreach ( $tabs as $slug => $tab ) {
-			$url   = \admin_url( 'admin.php?page=' . \MAC_CORE_ADMIN_SLUG . '&tab=' . $slug );
+			$url   = $this->placement->url( (string) $slug );
 			$class = $slug === $current_view ? ' nav-tab-active' : '';
 
 			echo '<a href="' . \esc_url( $url ) . '" class="nav-tab' . \esc_attr( $class ) . '">' . \esc_html( $tab['label'] ) . '</a>';

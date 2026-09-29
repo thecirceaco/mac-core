@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace MacCore\Tests\Unit;
 
 use MacCore\Admin\AdminPage;
+use MacCore\Admin\MenuPlacement;
 use MacCore\Licensing\LicensingService;
 use MacCore\Settings\SettingsController;
 use MacCore\Settings\SettingsSchema;
@@ -62,8 +63,9 @@ final class LateAddonSettingsTest extends TestCase
 		// The same objects the kernel shares between services.
 		$schema     = new SettingsSchema();
 		$settings   = new WordPressSettingsRepository( $schema );
-		$page       = new AdminPage( $settings, $schema, new LicensingService() );
-		$controller = new SettingsController( $settings, $schema );
+		$placement  = new MenuPlacement( $settings );
+		$page       = new AdminPage( $settings, $schema, new LicensingService( $placement ), $placement );
+		$controller = new SettingsController( $settings, $schema, $placement, \mac_core_tests_end_request() );
 
 		// The utils loader reads settings when the kernel boots, before the add-on registers.
 		$this->assertFalse( $settings->get( 'utils', 'utils_enabled' ) );
@@ -155,7 +157,12 @@ final class LateAddonSettingsTest extends TestCase
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		$_POST                     = $this->form_submission( $html );
 
-		$controller->handle_save();
+		try {
+			$controller->handle_save();
+			$this->fail( 'The save did not end the request after redirecting.' );
+		} catch ( \MacCore_Test_Request_Ended ) {
+			// The controller redirected and ended the request.
+		}
 	}
 
 	/**

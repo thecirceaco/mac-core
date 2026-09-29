@@ -9,7 +9,10 @@ declare(strict_types=1);
 
 namespace MacCore\Tests\Unit;
 
+use MacCore\Admin\MenuPlacement;
 use MacCore\Licensing\LicensingService;
+use MacCore\Settings\SettingsSchema;
+use MacCore\Settings\WordPressSettingsRepository;
 use PHPUnit\Framework\TestCase;
 
 final class LicensingTest extends TestCase
@@ -30,11 +33,15 @@ final class LicensingTest extends TestCase
 		if ( ! defined( 'MAC_CORE_ADMIN_SLUG' ) ) {
 			define( 'MAC_CORE_ADMIN_SLUG', 'mac-core' );
 		}
+
+		if ( ! defined( 'MAC_CORE_SETTINGS_OPTION' ) ) {
+			define( 'MAC_CORE_SETTINGS_OPTION', 'mac_core_settings' );
+		}
 	}
 
 	public function test_register_adds_initialize_hook(): void
 	{
-		$service = new LicensingService();
+		$service = $this->make_service();
 
 		$service->register();
 
@@ -48,7 +55,7 @@ final class LicensingTest extends TestCase
 			static fn ( string $token ): string => ''
 		);
 
-		$service = new LicensingService();
+		$service = $this->make_service();
 
 		$service->initialize();
 
@@ -70,7 +77,7 @@ final class LicensingTest extends TestCase
 			static fn ( string $token ): string => 'pt_test_token'
 		);
 
-		$service = new LicensingService();
+		$service = $this->make_service();
 
 		$service->initialize();
 
@@ -97,9 +104,25 @@ final class LicensingTest extends TestCase
 		$this->assertSame( null, $page['position'] );
 		$this->assertSame( '', $page['icon_url'] );
 		$this->assertFalse( $page['register_menu'] );
-		$this->assertStringContainsString( 'page=mac-core&tab=license', $page['activated_redirect'] );
-		$this->assertStringContainsString( 'page=mac-core&tab=license', $page['deactivated_redirect'] );
+		$this->assertSame( 'https://example.test/wp-admin/options-general.php?page=mac-core&tab=license', $page['activated_redirect'] );
+		$this->assertSame( 'https://example.test/wp-admin/options-general.php?page=mac-core&tab=license', $page['deactivated_redirect'] );
 		$this->assertArrayNotHasKey( 'admin_notices', $GLOBALS['mac_core_test_actions'] );
+	}
+
+	public function test_license_redirects_go_to_the_top_level_page_when_that_setting_is_on(): void
+	{
+		$GLOBALS['mac_core_test_options']['mac_core_settings']['core']['top_level_menu'] = true;
+		\add_filter(
+			'mac_core_surecart_public_token',
+			static fn ( string $token ): string => 'pt_test_token'
+		);
+
+		$this->make_service()->initialize();
+
+		$page = \MacCore\Vendor\SureCart\Licensing\Client::$pages[0];
+
+		$this->assertSame( 'https://example.test/wp-admin/admin.php?page=mac-core&tab=license', $page['activated_redirect'] );
+		$this->assertSame( 'https://example.test/wp-admin/admin.php?page=mac-core&tab=license', $page['deactivated_redirect'] );
 	}
 
 	public function test_render_view_outputs_surecart_settings_page_when_initialized(): void
@@ -109,7 +132,7 @@ final class LicensingTest extends TestCase
 			static fn ( string $token ): string => 'pt_test_token'
 		);
 
-		$service = new LicensingService();
+		$service = $this->make_service();
 		$service->initialize();
 
 		$GLOBALS['mac_core_test_user_caps']['manage_options'] = true;
@@ -129,7 +152,7 @@ final class LicensingTest extends TestCase
 			static fn ( string $token ): string => 'pt_test_token'
 		);
 
-		$service = new LicensingService();
+		$service = $this->make_service();
 		$service->initialize();
 
 		$GLOBALS['mac_core_test_user_caps']['edit_posts'] = true;
@@ -145,7 +168,7 @@ final class LicensingTest extends TestCase
 
 	public function test_render_view_outputs_inline_notice_when_unavailable(): void
 	{
-		$service = new LicensingService();
+		$service = $this->make_service();
 
 		$GLOBALS['mac_core_test_user_caps']['manage_options'] = true;
 
@@ -154,6 +177,11 @@ final class LicensingTest extends TestCase
 		$output = (string) ob_get_clean();
 
 		$this->assertStringContainsString( 'MAC Core licensing is not available yet.', $output );
+	}
+
+	private function make_service(): LicensingService
+	{
+		return new LicensingService( new MenuPlacement( new WordPressSettingsRepository( new SettingsSchema() ) ) );
 	}
 
 	private function has_action_callback( string $hook, string $class, string $method, int $priority ): bool

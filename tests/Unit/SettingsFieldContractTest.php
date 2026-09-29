@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace MacCore\Tests\Unit;
 
 use MacCore\Admin\AdminPage;
+use MacCore\Admin\MenuPlacement;
 use MacCore\Licensing\LicensingService;
 use MacCore\Settings\SettingsController;
 use MacCore\Settings\SettingsSchema;
@@ -53,9 +54,10 @@ final class SettingsFieldContractTest extends TestCase
 	{
 		$this->add_section( self::SECRET_FIELD );
 
-		$schema   = new SettingsSchema();
-		$settings = new WordPressSettingsRepository( $schema );
-		$page     = new AdminPage( $settings, $schema, new LicensingService() );
+		$schema    = new SettingsSchema();
+		$settings  = new WordPressSettingsRepository( $schema );
+		$placement = new MenuPlacement( $settings );
+		$page      = new AdminPage( $settings, $schema, new LicensingService( $placement ), $placement );
 
 		$html = $this->render_settings_tab( $page );
 
@@ -88,7 +90,7 @@ final class SettingsFieldContractTest extends TestCase
 		$settings = new WordPressSettingsRepository( $schema );
 
 		// The browser sends the empty password field when the key is not retyped.
-		$this->submit_settings_tab( new SettingsController( $settings, $schema ), [ 'addon' => [ 'api_key' => '' ] ] );
+		$this->submit_settings_tab( new SettingsController( $settings, $schema, new MenuPlacement( $settings ), \mac_core_tests_end_request() ), [ 'addon' => [ 'api_key' => '' ] ] );
 
 		$this->assertSame( 'success', $GLOBALS['mac_core_test_settings_errors'][0]['type'] );
 		$this->assertSame( 'sk_live_stored', $GLOBALS['mac_core_test_options']['mac_core_settings']['addon']['api_key'] );
@@ -419,6 +421,11 @@ final class SettingsFieldContractTest extends TestCase
 			'mac_core_settings'       => $values,
 		];
 
-		$controller->handle_save();
+		try {
+			$controller->handle_save();
+			$this->fail( 'The save did not end the request after redirecting.' );
+		} catch ( \MacCore_Test_Request_Ended ) {
+			// The controller redirected and ended the request.
+		}
 	}
 }

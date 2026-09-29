@@ -37,6 +37,13 @@ final class SettingsSchema
 				'title'       => 'Core Policies',
 				'description' => 'Site-wide WordPress behavior for admin, editorial, and branding defaults.',
 				'fields'      => [
+					'top_level_menu'                   => [
+						'type'        => 'checkbox',
+						'group'       => 'Plugin',
+						'label'       => 'Top-level admin menu',
+						'description' => 'Show MAC Core as a top-level admin menu item',
+						'default'     => false,
+					],
 					'delete_data_on_uninstall'         => [
 						'type'        => 'checkbox',
 						'group'       => 'Uninstall',
