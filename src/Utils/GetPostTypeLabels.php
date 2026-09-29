@@ -22,8 +22,19 @@ final class GetPostTypeLabels
 {
 	/**
 	 * Get a singular or plural label for a post type.
+	 *
+	 * The label is escaped for HTML, like the other helpers' output, because
+	 * builders such as Bricks print a helper's return value as it is.
 	 */
 	public static function get( ?string $post_type = null, string $type = 'singular', string $fallback = '' ): string
+	{
+		return \esc_html( self::label( $post_type, $type, $fallback ) );
+	}
+
+	/**
+	 * Return the unescaped label, the fallback, or the default label.
+	 */
+	private static function label( ?string $post_type, string $type, string $fallback ): string
 	{
 		$type = \strtolower( \trim( $type ) );
 		$type = $type === 'plural' ? 'plural' : 'singular';

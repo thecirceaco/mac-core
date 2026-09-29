@@ -48,4 +48,16 @@ final class GetTaxonomyLabelsTest extends TestCase
 		$this->assertSame( 'Fallback', GetTaxonomyLabels::get( 'missing', 'singular', 'Fallback' ) );
 		$this->assertSame( 'Terms', GetTaxonomyLabels::get( 'missing', 'plural' ) );
 	}
+
+	/**
+	 * Builders such as Bricks print the return value as it is, so labels and fallbacks come back escaped.
+	 */
+	public function test_get_escapes_labels_and_fallbacks(): void
+	{
+		$GLOBALS['mac_core_test_taxonomies']['event-category'] = \mac_core_tests_make_taxonomy( 'event-category', 'Topic <script>alert(1)</script>', 'Topics & "Tracks"' );
+
+		$this->assertSame( 'Topic &lt;script&gt;alert(1)&lt;/script&gt;', GetTaxonomyLabels::get( 'event-category' ) );
+		$this->assertSame( 'Topics &amp; &quot;Tracks&quot;', GetTaxonomyLabels::get( 25, 'plural' ) );
+		$this->assertSame( '&lt;b&gt;Fallback&lt;/b&gt;', GetTaxonomyLabels::get( 'missing', 'singular', '<b>Fallback</b>' ) );
+	}
 }

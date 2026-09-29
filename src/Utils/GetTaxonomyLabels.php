@@ -24,6 +24,9 @@ final class GetTaxonomyLabels
 	/**
 	 * Get a singular or plural label for a taxonomy.
 	 *
+	 * The label is escaped for HTML, like the other helpers' output, because
+	 * builders such as Bricks print a helper's return value as it is.
+	 *
 	 * @param int|string|WP_Term|null $term_or_tax Taxonomy slug, term ID, term object, or null for category.
 	 */
 	public static function get(
@@ -31,6 +34,16 @@ final class GetTaxonomyLabels
 		string $type = 'singular',
 		string $fallback = ''
 	): string {
+		return \esc_html( self::label( $term_or_tax, $type, $fallback ) );
+	}
+
+	/**
+	 * Return the unescaped label, the fallback, or the default label.
+	 *
+	 * @param int|string|WP_Term|null $term_or_tax Taxonomy slug, term ID, term object, or null for category.
+	 */
+	private static function label( int|string|WP_Term|null $term_or_tax, string $type, string $fallback ): string
+	{
 		$type = \strtolower( \trim( $type ) );
 		$type = $type === 'plural' ? 'plural' : 'singular';
 

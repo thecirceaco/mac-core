@@ -40,4 +40,16 @@ final class GetPostTypeLabelsTest extends TestCase
 		$this->assertSame( 'Fallback', GetPostTypeLabels::get( 'missing', 'singular', 'Fallback' ) );
 		$this->assertSame( 'Posts', GetPostTypeLabels::get( 'missing', 'plural' ) );
 	}
+
+	/**
+	 * Builders such as Bricks print the return value as it is, so labels and fallbacks come back escaped.
+	 */
+	public function test_get_escapes_labels_and_fallbacks(): void
+	{
+		$GLOBALS['mac_core_test_post_type_objects']['event'] = \mac_core_tests_make_post_type( 'event', 'Event <img src=x onerror=alert(1)>', 'Events & "Talks"' );
+
+		$this->assertSame( 'Event &lt;img src=x onerror=alert(1)&gt;', GetPostTypeLabels::get( 'event' ) );
+		$this->assertSame( 'Events &amp; &quot;Talks&quot;', GetPostTypeLabels::get( 'event', 'plural' ) );
+		$this->assertSame( '&lt;b&gt;Fallback&lt;/b&gt;', GetPostTypeLabels::get( 'missing', 'singular', '<b>Fallback</b>' ) );
+	}
 }
