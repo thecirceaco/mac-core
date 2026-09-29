@@ -209,12 +209,12 @@ class Client {
 	 */
 	public function endpoint() {
 		// allow a constant to be set.
-		if ( defined( 'SURECART_LICENSING_ENDPOINT' ) ) {
-			return trailingslashit( SURECART_LICENSING_ENDPOINT );
+		if ( defined( 'MAC_CORE_SURECART_LICENSING_ENDPOINT' ) ) {
+			return trailingslashit( MAC_CORE_SURECART_LICENSING_ENDPOINT );
 		}
 
 		// filterable endpoint.
-		return trailingslashit( apply_filters( 'surecart_licensing_endpoint', 'https://api.surecart.com' ) );
+		return trailingslashit( apply_filters( 'mac_core_surecart_licensing_endpoint', 'https://api.surecart.com' ) );
 	}
 
 	/**
@@ -329,7 +329,7 @@ class Client {
 	 */
 	public function is_local_server() {
 		$is_local = in_array( $_SERVER['REMOTE_ADDR'], array( '127.0.0.1', '::1' ), true );
-		return apply_filters( 'surecart_licensing_is_local', $is_local );
+		return apply_filters( 'mac_core_surecart_licensing_is_local', $is_local );
 	}
 
 	/**

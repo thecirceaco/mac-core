@@ -28,21 +28,23 @@ These are the only differences from upstream `src/`:
 +		}
 ```
 
+3. **Prefixed global names.** The four global names the SDK reads get MAC Core's prefix: `MAC_CORE_` on the constant, `mac_core_` on the filters. Upstream, every bundled copy of the SDK reads the same names, so a value set in `wp-config.php` or a filter for another plugin's copy would also change MAC Core's licensing, and the other way around. Only the names change.
+
+| Upstream name | MAC Core name | Kind | Where | Effect |
+| --- | --- | --- | --- | --- |
+| `SURECART_LICENSING_ENDPOINT` | `MAC_CORE_SURECART_LICENSING_ENDPOINT` | constant | `Client::endpoint()`, `Client.php:212-213` | Replaces the API base URL for every licensing request. |
+| `surecart_licensing_endpoint` | `mac_core_surecart_licensing_endpoint` | filter | `Client::endpoint()`, `Client.php:217` | Same, when the constant isn't defined. Default `https://api.surecart.com`. |
+| `surecart_client_license_form_action` | `mac_core_surecart_client_license_form_action` | filter | `Settings::form_action_url()`, `Settings.php:82` | Sets the license form's `action` URL (`Settings.php:226`). |
+| `surecart_licensing_is_local` | `mac_core_surecart_licensing_is_local` | filter | `Client::is_local_server()`, `Client.php:332` | None today. Nothing in the SDK or MAC Core calls `is_local_server()`. |
+
+MAC Core itself doesn't define or hook any of them. Another MAC plugin that bundles the SDK prefixes the same names with its own prefix, for example `MAC_MEMBERS_SURECART_LICENSING_ENDPOINT` and `mac_members_surecart_licensing_endpoint` in MAC Members.
+
+The option and transient keys the SDK builds from the plugin slug, like `surecart_<md5 of the slug>_version_info`, stay as they are: they already differ per plugin, and new names would lose what's stored under the old ones.
+
 ## Updating
 
 1. Clone the upstream repository and check out the new tag.
 2. Copy its `src/*.php` over the files here and reapply the local changes above.
 3. Run `diff -u <upstream>/src/<File>.php <File>.php` for each file. Only the local changes should show.
 4. Update the version and commit in this file.
-5. Run `composer test`. `tests/Unit/SureCartSdkTest.php` runs this copy against stubbed SureCart API responses.
-
-## Unprefixed global names
-
-The SDK still reads these global names. Any plugin, theme or `wp-config.php` on the site can set them, and every bundled copy of the SDK reads the same names, so a value set for another product also applies to MAC Core. MAC Core itself doesn't define or hook any of them. Prefixing them is a separate decision.
-
-| Name | Kind | Where | Effect |
-| --- | --- | --- | --- |
-| `SURECART_LICENSING_ENDPOINT` | constant | `Client::endpoint()`, `Client.php:212-213` | Replaces the API base URL for every licensing request. |
-| `surecart_licensing_endpoint` | filter | `Client::endpoint()`, `Client.php:217` | Same, when the constant isn't defined. Default `https://api.surecart.com`. |
-| `surecart_client_license_form_action` | filter | `Settings::form_action_url()`, `Settings.php:82` | Sets the license form's `action` URL (`Settings.php:226`). |
-| `surecart_licensing_is_local` | filter | `Client::is_local_server()`, `Client.php:332` | None today. Nothing in the SDK or MAC Core calls `is_local_server()`. |
+5. Run `composer test`. `tests/Unit/SureCartSdkTest.php` runs this copy against stubbed SureCart API responses. `tests/Unit/PrefixedSureCartSdkTest.php` fails if a file keeps the upstream namespace, or if a hook the SDK fires or a constant it reads has no MAC Core prefix, which also catches a global name that a new SDK version adds.

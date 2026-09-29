@@ -79,7 +79,7 @@ class Settings {
 	 * Form action URL
 	 */
 	private function form_action_url() {
-		return apply_filters( 'surecart_client_license_form_action', '' );
+		return apply_filters( 'mac_core_surecart_client_license_form_action', '' );
 	}
 
 	/**

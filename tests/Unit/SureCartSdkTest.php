@@ -186,6 +186,54 @@ final class SureCartSdkTest extends TestCase
 		$this->assertStringContainsString( 'This license is not valid for this product.', $html );
 	}
 
+	/**
+	 * Values meant for another product's copy of the SDK use the upstream names and don't reach MAC Core's.
+	 */
+	public function test_licensing_endpoint_reads_only_the_mac_core_prefixed_names(): void
+	{
+		$client = $this->make_client();
+
+		\add_filter( 'surecart_licensing_endpoint', static fn (): string => 'https://other.example.test' );
+		\define( 'SURECART_LICENSING_ENDPOINT', 'https://other-constant.example.test' );
+
+		$this->assertSame( 'https://api.surecart.com/', $client->endpoint() );
+
+		\add_filter( 'mac_core_surecart_licensing_endpoint', static fn (): string => 'https://filter.example.test' );
+
+		$this->assertSame( 'https://filter.example.test/', $client->endpoint() );
+
+		\define( 'MAC_CORE_SURECART_LICENSING_ENDPOINT', 'https://constant.example.test' );
+
+		$this->assertSame( 'https://constant.example.test/', $client->endpoint() );
+	}
+
+	public function test_license_form_action_reads_only_the_mac_core_prefixed_filter(): void
+	{
+		$client = $this->make_client();
+
+		\add_filter( 'surecart_client_license_form_action', static fn (): string => 'https://other.example.test/form' );
+
+		$this->assertStringContainsString( '<form method="post" action="">', $this->render_license_tab( $client ) );
+
+		\add_filter( 'mac_core_surecart_client_license_form_action', static fn (): string => 'https://example.test/license-form' );
+
+		$this->assertStringContainsString( '<form method="post" action="https://example.test/license-form">', $this->render_license_tab( $client ) );
+	}
+
+	public function test_local_server_check_reads_only_the_mac_core_prefixed_filter(): void
+	{
+		$_SERVER['REMOTE_ADDR'] = '203.0.113.10';
+		$client                 = $this->make_client();
+
+		\add_filter( 'surecart_licensing_is_local', static fn (): bool => true );
+
+		$this->assertFalse( $client->is_local_server() );
+
+		\add_filter( 'mac_core_surecart_licensing_is_local', static fn (): bool => true );
+
+		$this->assertTrue( $client->is_local_server() );
+	}
+
 	public function test_register_menu_false_keeps_the_sdk_out_of_the_admin_menu(): void
 	{
 		$this->make_client();
