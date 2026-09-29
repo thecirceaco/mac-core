@@ -10,7 +10,7 @@
  * Plugin Name:       MAC Core
  * Plugin URI:        https://circea.co
  * Description:       Company standard core functionality plugin for WordPress projects.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Author:            Circea
  * Author URI:        https://circea.co
  * Update URI:        https://updates.circea.co/mac-core/

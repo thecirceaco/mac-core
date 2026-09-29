@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,15 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 1.3.0 =
+* MAC Core's page now sits under Settings > MAC Core. A new `Top-level admin menu` setting, off by default, gives it its own item in the main admin menu with the MAC icon, as before. After updating, the page moves under Settings on every site until that setting is turned on.
+* The settings page has new texts: a short title for each row, the full sentence next to each checkbox and a short description below it where it helps. The sections are now General, Media and Helpers, the Uninstall group joined Plugin, and Content Types and Content became one Content group. Stored settings don't change.
+* Saving sends you back to the tab you saved, so reloading the page no longer sends the form again, and each notice shows once. A save that moves the page takes you to its new address.
+* `mac_core_get_post_type_label()` and `mac_core_get_taxonomy_label()` escape their output for HTML, like the other text helpers, because Bricks prints `{echo:}` results as they are.
+* `mac_core_count_array_items()`, `mac_core_format_price()` and `mac_core_get_plugin_status()` accept the string arguments a Bricks `{echo:}` tag passes, and missing ones. A wrong argument returns 0, an empty string or false instead of an error.
+* The bundled SureCart SDK reads names prefixed for MAC Core: `MAC_CORE_SURECART_LICENSING_ENDPOINT`, `mac_core_surecart_licensing_endpoint`, `mac_core_surecart_client_license_form_action` and `mac_core_surecart_licensing_is_local`. Values set for another plugin's copy of the SDK no longer change MAC Core's licensing. A site that set the old names for MAC Core needs the new ones.
+* Add-on settings: a checkbox field can set `option`, the sentence next to the box; its `description` then shows below the box.
 
 = 1.2.0 =
 * Comment settings now only close comments: they never reopen comments closed on a post or page, or closed by WordPress on older posts. Before, they forced comments and pings open.
