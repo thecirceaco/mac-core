@@ -4,7 +4,7 @@ Tags: core, agency
 Requires at least: 6.9
 Tested up to: 7.1.2
 Requires PHP: 8.3
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPL v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -23,6 +23,9 @@ Features may evolve over time and are tailored to the agency’s development sta
 2. Activate the plugin through the Plugins screen.
 
 == Changelog ==
+
+= 1.3.2 =
+* Activating or deactivating the license now brings you back to the License tab instead of the Settings tab. The bundled SureCart SDK lost the tab when it redirected after the license form.
 
 = 1.3.1 =
 * The Updates screen and "View details" no longer say "Not tested" for a MAC Core update on a WordPress patch release. A tested version counts for its whole branch, so 7.1 covers 7.1.2 and 7.1.3, as for plugins on wordpress.org.
