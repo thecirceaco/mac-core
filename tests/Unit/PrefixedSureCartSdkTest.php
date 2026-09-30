@@ -77,6 +77,18 @@ final class PrefixedSureCartSdkTest extends TestCase
 	}
 
 	/**
+	 * The license form redirect prints the raw URL as a JavaScript string. Upstream's esc_url() turns & into
+	 * &#038;, which a script doesn't decode, so the tab=license of the redirect ended up in the URL fragment.
+	 */
+	public function test_license_form_redirect_keeps_the_tab_in_the_query(): void
+	{
+		$settings = (string) file_get_contents( dirname( __DIR__, 2 ) . '/inc/Vendor/SureCart/Licensing/Settings.php' );
+
+		$this->assertStringContainsString( 'window.location.assign(<?php echo wp_json_encode( esc_url_raw( $url ) ); ?>);', $settings );
+		$this->assertStringNotContainsString( 'window.location.assign("<?php echo esc_url( $url ); ?>");', $settings );
+	}
+
+	/**
 	 * Return the vendored SDK files. index.php is MAC Core's directory stub, not part of the SDK.
 	 *
 	 * @return array<int,string>
